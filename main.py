@@ -15,5 +15,7 @@ if __name__ == '__main__':
     print 'Your current version should be 2.7.6'
     print "Let's get started, shall we?"
     print "First baby steps in the New World"
+    print "Emilie"
+    print "second test"
     database = classes.Database()
     print 'patient info: ', database.get_patient_info(args['patient_name'])
