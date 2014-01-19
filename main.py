@@ -7,3 +7,4 @@ if __name__ == '__main__':
     print "Let's get started, shall we?"
     print "First baby steps in the New World"
     print "Emilie"
+    print "second test"
