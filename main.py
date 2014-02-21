@@ -3,15 +3,17 @@ import sqlalchemy
 import sqlalchemy.orm as orm
 import sqlalchemy.ext.declarative as declarative
 
+Base = declarative.declarative_base()
+
 def initialize_argument_parser():
     parser = argparse.ArgumentParser(description='Debugging output')
     parser.add_argument('-n', '--name', dest='name', type=str,
             help='The name of the solution')
-    parser.add_argument('--is_for_profit', dest='is_for_profit', type=int,
+    parser.add_argument('--is-for-profit', dest='is_for_profit', type=int,
             help='1 if for profit, 0 if nonprofit')
     return vars(parser.parse_args())
 
-class Solution(declarative.declarative_base()):
+class Solution(Base):
     __tablename__ = 'solutions'
     id = sqlalchemy.Column("rowid", sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String)
@@ -26,12 +28,20 @@ class Solution(declarative.declarative_base()):
 def fetch_session(db_filename = 'database.sqlite3'):
     engine = sqlalchemy.create_engine('sqlite:///{0}'.format(db_filename))
     session = orm.sessionmaker(bind=engine)
+    Base.metadata.create_all(engine)
     return orm.scoped_session(session)
 
 if __name__ == '__main__':
     args = initialize_argument_parser()
-    print 'Hello world'
-    print "Emilie"
-    print "second test"
     session = fetch_session()
+    test = Solution('test', 1) 
+    table = Solution.__table__
+    insert = table.insert().values(
+            name=args['name'], is_for_profit=args['is_for_profit'])
+    conn = session.connection()
+    conn.execute(insert)
+
+    #sqlalchemy.sql.expression.insert(table, test)
+    #session.connection().execute(table.insert(test))
     print session.query(Solution).all()
+    session.commit()
