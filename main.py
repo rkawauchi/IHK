@@ -11,6 +11,8 @@ def initialize_argument_parser():
             help='The name of the solution')
     parser.add_argument('--is-for-profit', dest='is_for_profit', type=int,
             help='1 if for profit, 0 if nonprofit')
+    parser.add_argument('--founder-count', dest='founder_count', type=int,
+            help='Number of founders')
     return vars(parser.parse_args())
 
 class Solution(Base):
@@ -18,6 +20,7 @@ class Solution(Base):
     id = sqlalchemy.Column("rowid", sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String)
     is_for_profit = sqlalchemy.Column(sqlalchemy.Integer)
+    founder_count = sqlalchemy.Column(sqlalchemy.Integer)
     
     def __init__(self, name, is_for_profit):
         self.name=name
@@ -34,12 +37,13 @@ def fetch_session(db_filename = 'database.sqlite3'):
 if __name__ == '__main__':
     args = initialize_argument_parser()
     session = fetch_session()
-    test = Solution('test', 1) 
     table = Solution.__table__
-    insert = table.insert().values(
-            name=args['name'], is_for_profit=args['is_for_profit'])
+    test = Solution('Herp', 1)
+    insert = table.insert()
+            
     conn = session.connection()
-    conn.execute(insert)
+    keys = args.keys();
+    conn.execute(insert, [args])
 
     #sqlalchemy.sql.expression.insert(table, test)
     #session.connection().execute(table.insert(test))
