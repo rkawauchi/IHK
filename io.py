@@ -5,7 +5,7 @@ import sqlalchemy.ext.declarative as declarative
 Base = declarative.declarative_base()
 
 class District(Base):
-    __tablename__ = 'district'
+    __tablename__ = 'districts'
     id = sqlalchemy.Column('rowid', sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String)
     state = sqlalchemy.Column(sqlalchemy.String)
@@ -15,11 +15,18 @@ class District(Base):
     #population_male = sqlalchemy.Column(sqlalchemy.Integer) 
     #population_female =  sqlalchemy.Column(sqlalchemy.Integer) 
     
-    def __init__(self, name, is_for_profit):
+    def __init__(self, name, state, classification, household_total,
+            population_total):
         self.name=name
+        self.state=state
+        self.classification=classification
+        self.household_total=household_total
+        self.population_total=population_total
 
     def __repr__(self):
-        return 'Solution({0}, {1})'.format(self.name, self.is_for_profit)
+        return 'District({0}, {1}, {2}, {3}, {4})'.format(self.name, self.state,
+                self.classification, self.household_total,
+                self.population_total)
 
 def fetch_session(db_filename = 'database.sqlite3'):
     engine = sqlalchemy.create_engine('sqlite:///{0}'.format(db_filename))
@@ -33,4 +40,4 @@ if __name__ == '__main__':
     session = fetch_session()
             
     #print session.query(District.classification=='Urban').all()
-    print session.query(District).all()
+    print session.query(District).first()
