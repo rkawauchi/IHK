@@ -4,107 +4,107 @@ create table raw_data ("State", "District", "Level", "Name", "TRU", "No of House
 .mode csv
 create table if not exists districts (name TEXT, state TEXT, classification TEXT, household_total INTEGER, population_total INTEGER);
 .import "data/Andaman and Nicobar Islands 35.CSV" raw_data
-insert or replace into districts select Name, "Andaman and Nicobar Islands", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Andaman and Nicobar Islands", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Andhra Pradesh 28.CSV" raw_data
-insert or replace into districts select Name, "Andhra Pradesh", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Andhra Pradesh", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Arunachal Pradesh 12.CSV" raw_data
-insert or replace into districts select Name, "Arunachal Pradesh", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Arunachal Pradesh", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Assam 18.CSV" raw_data
-insert or replace into districts select Name, "Assam", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Assam", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Bihar 10.CSV" raw_data
-insert or replace into districts select Name, "Bihar", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Bihar", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Chandigarh (4).CSV" raw_data
-insert or replace into districts select Name, "Chandigarh", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Chandigarh", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Chhattisgarh 22.CSV" raw_data
-insert or replace into districts select Name, "Chhattisgarh", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Chhattisgarh", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Dadra and Nagar Haveli 26.CSV" raw_data
-insert or replace into districts select Name, "Dadra and Nagar Haveli", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Dadra and Nagar Haveli", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Daman and Diu 25.CSV" raw_data
-insert or replace into districts select Name, "Daman and Diu", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Daman and Diu", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Goa 30.CSV" raw_data
-insert or replace into districts select Name, "Goa", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Goa", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Gujarat 24.CSV" raw_data
-insert or replace into districts select Name, "Gujarat", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Gujarat", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Haryana (06).CSV" raw_data
-insert or replace into districts select Name, "Haryana", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Haryana", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Himacahl Pradesh (02).CSV" raw_data
-insert or replace into districts select Name, "Himacahl Pradesh", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Himacahl Pradesh", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/JAMMU and Kashmir (1).CSV" raw_data
-insert or replace into districts select Name, "JAMMU and Kashmir", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Jammu and Kashmir", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Jharkhand 20.CSV" raw_data
-insert or replace into districts select Name, "Jharkhand", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Jharkhand", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Karnataka 29.CSV" raw_data
-insert or replace into districts select Name, "Karnataka", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Karnataka", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Kerala 32.CSV" raw_data
-insert or replace into districts select Name, "Kerala", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Kerala", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Lakshadweep 31.CSV" raw_data
-insert or replace into districts select Name, "Lakshadweep", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Lakshadweep", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Madhya Pradesh 23.CSV" raw_data
-insert or replace into districts select Name, "Madhya Pradesh", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Madhya Pradesh", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Maharashtra 27.CSV" raw_data
-insert or replace into districts select Name, "Maharashtra", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Maharashtra", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Manipur 14.CSV" raw_data
-insert or replace into districts select Name, "Manipur", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Manipur", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Meghalaya 17.CSV" raw_data
-insert or replace into districts select Name, "Meghalaya", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Meghalaya", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Mizoram 15.CSV" raw_data
-insert or replace into districts select Name, "Mizoram", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Mizoram", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Nagaland 13.CSV" raw_data
-insert or replace into districts select Name, "Nagaland", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Nagaland", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Nct of Delhi (7).CSV" raw_data
-insert or replace into districts select Name, "Nct of Delhi", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Delhi", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Odisha 21.CSV" raw_data
-insert or replace into districts select Name, "Odisha", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Odisha", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Puducherry 34.CSV" raw_data
-insert or replace into districts select Name, "Puducherry", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Puducherry", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Punjab (3).CSV" raw_data
-insert or replace into districts select Name, "Punjab", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Punjab", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Rajasthan (08).CSV" raw_data
-insert or replace into districts select Name, "Rajasthan", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Rajasthan", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Sikkim 11.CSV" raw_data
-insert or replace into districts select Name, "Sikkim", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Sikkim", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Tamil Nadu 33.CSV" raw_data
-insert or replace into districts select Name, "Tamil Nadu", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Tamil Nadu", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Tripura 16.CSV" raw_data
-insert or replace into districts select Name, "Tripura", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Tripura", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Uttarakhand (5).CSV" raw_data
-insert or replace into districts select Name, "Uttarakhand", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Uttarakhand", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/Utter (09).CSV" raw_data
-insert or replace into districts select Name, "Utter", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "Utter", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
 .import "data/West Bengal 19.CSV" raw_data
-insert or replace into districts select Name, "West Bengal", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
+insert or replace into districts select trim(Name), "West Bengal", TRU, "No of households", "Total Population Person" from raw_data where Level='DISTRICT';
 drop table raw_data;
