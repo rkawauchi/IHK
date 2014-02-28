@@ -14,13 +14,20 @@ print('create table if not exists districts (name TEXT, state TEXT, classificati
 def import_from_file(filename):
     print('.import "data/'+filename+'" raw_data', file=output_file)
 
+#Use standardized names for states
+def clean_state(state):
+    state = re.sub('Nct of Delhi', 'Delhi', state)
+    state = re.sub('JAMMU and Kashmir', 'Jammu and Kashmir', state)
+    return state
+    
+
 for filename in os.listdir("data/"):
     if filename.endswith('.CSV'):
         import_from_file(filename)
         state_name = re.sub(r'.CSV', '', filename)
         state_name = re.sub(r'[()\d]', '', state_name)
         state_name = state_name.strip()
-        print('insert or replace into districts select Name, "'+state_name+'", TRU, "No of households", "Total Population Person" from raw_data where Level=\'DISTRICT\';', file=output_file)
+        print('insert or replace into districts select trim(Name), "'+clean_state(state_name)+'", TRU, "No of households", "Total Population Person" from raw_data where Level=\'DISTRICT\';', file=output_file)
         print('drop table raw_data;', file=output_file)
         
         
