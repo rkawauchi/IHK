@@ -16,10 +16,12 @@ def import_from_file(filename):
 
 #Use standardized names for states
 def clean_state(state):
-    state = re.sub(r'\([A-Z]*\)', '', state)
+    state = re.sub(r'\([A-Z&]*\)', '', state)
     state = re.sub(r'[()\d]', '', state)
     state = re.sub('Nct of Delhi', 'Delhi', state)
     state = re.sub('JAMMU', 'Jammu', state)
+    state = re.sub('Utter', 'Uttar Pradesh', state)
+    state = re.sub('&', 'and', state)
     state = state.strip()
     return state
 
