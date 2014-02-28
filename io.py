@@ -36,14 +36,14 @@ class State(Base):
     household_middle = sqlalchemy.Column(sqlachemy.Integer)
     household_rich = sqlalchemy.Column(sqlachemy.Integer)
     
-    def __init__(self, name):
+    def __init__(self, name, household_poor, household_middle, household_rich):
         self.name=name
         self.household_poor=household_poor
         self.household_middle=household_middle
         self.household_rich=household_rich
 
     def __repr__(self):
-        return 'District({0}, {1}, {2}, {3}, {4})'.format(self.name,
+        return 'State({0}, {1}, {2}, {3})'.format(self.name,
                 self.household_poor, self.household_middle,
                 self.household_rich)
 
