@@ -32,9 +32,9 @@ class State(Base):
     __tablename__ = 'states'
     id = sqlalchemy.Column('rowid', sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String)
-    household_poor = sqlalchemy.Column(sqlachemy.Integer)
-    household_middle = sqlalchemy.Column(sqlachemy.Integer)
-    household_rich = sqlalchemy.Column(sqlachemy.Integer)
+    household_poor = sqlalchemy.Column(sqlalchemy.Integer)
+    household_middle = sqlalchemy.Column(sqlalchemy.Integer)
+    household_rich = sqlalchemy.Column(sqlalchemy.Integer)
     
     def __init__(self, name, household_poor, household_middle, household_rich):
         self.name=name
