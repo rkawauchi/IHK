@@ -1,56 +1,43 @@
-
-worryLevel = 0.8
-
-def symptomToDiagnosis(input):
-    if input in ('hasHeadache', 'isTired'):
-        return ('glcmeter','premeter')
-    # implement link to backend
-    #return list(
-    #   SELECT *
-    #   FROM symptoms S
-    #   INNER JOIN diagnosis D ON S.symptomID = D.symptomID
-    #   WHERE S.symptomName = "input")
-
-class Person():
-    def __init__(self, money, symptoms, location, selfAwareness):
-        self.money = money
-        self.symptoms = symptoms
-        self.disease = disease
-        self.location = location
-        self.selfAwareness = selfAwareness
-
 class Kiosk():
-    def __init__(self, visit_cost, location):
-        self.visit_cost = visit_cost
+    def __init__(self, location, visit_cost, diabetes_threshold,
+            cardio_threshold):
         self.location = location
-        self.expertise = expertise #each kiosk has ability to cure some diseases
-        self.diagnosis = diagnosis #each kiosk has ability to measure some symptoms
+        self.visit_cost = visit_cost
+        self.diabetes_threshold = diabetes_threshold
+        self.cardio_threshold = cardio_threshold
+        #Initial cost to create kiosk: $5000. We are measuring in rupees
+        self.money = -309900
         print 'initializing Kiosk'
 
-    #patient should be Person
+    #patient shold be Person
     def visit(self, patient):
-        if not patient.disease in self.expertise:
-            print "patient cannot be cured by the kiosk"
-            return False
-        patient.money -= visit_cost
-        #improve patient.diabetes
-        #improve patient.cardio
-        return True
-
-        #Patient should be from class Person
-    def filter(self, patient):
-        if patient.selfAwareness < worryLevel:
-            print "patient don't think cure is needed"
         if not patient.location == self.location:
-            print "patient not at proper location"
+            print 'patient not in correct location'
             return False
-        if not symptomToDiagnosis(patient.symptoms) in self.diagnosis: #filter under-equipped kiosks or structure. step possibly 
-            print "kiosk doesn't have proper equipment"
-            #patient should visit hospital
         if not patient.money>self.visit_cost:
+<<<<<<< HEAD
             print "patient cannot afford treatment"
             return False
         else:
             visit(self,patient)
             
+=======
+            print 'patient cannot afford treatment'
+        patient.money -= visit_cost
+        kiosk.money += visit_cost
+        
+        #If we diagnose diabetes
+        if patient.diabetes<diabetes_threshold:
+            #For now, we ignore the details and just improve the patient's
+            #health.
+            patient.diabetes = diabetes_threshold
 
+        #If we diagnose cardiovascular problems
+        if patient.cardio<cardio_threshold:
+            #For now, we ignore the details and just improve the patient's
+            #health.
+            patient.cardio = cardio_threshold
+>>>>>>> upstream/master
+
+        #The visit was successful
+        return True
