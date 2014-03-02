@@ -1,6 +1,9 @@
 class Person():
-    def __init__(self, money, diabetes, cardio, location):
+    def __init__(self, money, symptoms, location, selfAwareness):
         self.money = money
-        self.diabetes = diabetes
-        self.cardio = cardio
+        self.symptoms = symptoms
+        self.disease = disease
         self.location = location
+        self.selfAwareness = selfAwareness
+
+

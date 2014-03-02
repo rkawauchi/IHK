@@ -52,4 +52,5 @@ class Kiosk():
             return False
         else:
             visit(self,patient)
+            
 
