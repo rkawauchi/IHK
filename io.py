@@ -32,20 +32,12 @@ class State(Base):
     __tablename__ = 'states'
     id = sqlalchemy.Column('rowid', sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String)
-    household_poor = sqlalchemy.Column(sqlalchemy.Integer)
-    household_middle = sqlalchemy.Column(sqlalchemy.Integer)
-    household_rich = sqlalchemy.Column(sqlalchemy.Integer)
     
     def __init__(self, name, household_poor, household_middle, household_rich):
         self.name=name
-        self.household_poor=household_poor
-        self.household_middle=household_middle
-        self.household_rich=household_rich
 
     def __repr__(self):
-        return 'State({0}, {1}, {2}, {3})'.format(self.name,
-                self.household_poor, self.household_middle,
-                self.household_rich)
+        return 'State({0})'.format(name)
 
 def fetch_session(db_filename = 'database.sqlite3'):
     engine = sqlalchemy.create_engine('sqlite:///{0}'.format(db_filename))
