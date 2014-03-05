@@ -32,20 +32,26 @@ class State(Base):
     __tablename__ = 'states'
     id = sqlalchemy.Column('rowid', sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String)
+    abbreviation = sqlalchemy.Column(sqlalchemy.String)
     
-    def __init__(self, name, household_poor, household_middle, household_rich):
+    def __init__(self, name, abbreviation):
         self.name=name
+        self.abbreviation = abbreviation
 
     def __repr__(self):
-        return 'State({0})'.format(name)
+        return 'State({0}, {1})'.format(self.name, self.abbreviation)
 
 def fetch_session(db_filename = 'database.sqlite3'):
     engine = sqlalchemy.create_engine('sqlite:///{0}'.format(db_filename))
     session = orm.sessionmaker(bind=engine)
-    #Creates tables if they don't exist. If district doesn't exist, this
-    #won't work, so don't do that.
-    #Base.metadata.create_all(engine)
+    #Creates tables if they don't exist.
+    Base.metadata.create_all(engine)
     return orm.scoped_session(session)
+
+def add_state(connection, state_name, state_abbreviation):
+    table = State.__table__
+    insert = table.insert()
+    connection.execute(insert, name=state_name, abbreviation = state_abbreviation)
 
 if __name__ == '__main__':
     session = fetch_session()
