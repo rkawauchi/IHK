@@ -1,6 +1,7 @@
 import sqlalchemy
 import sqlalchemy.orm as orm
 import sqlalchemy.ext.declarative as declarative
+import util
 
 Base = declarative.declarative_base()
 
@@ -47,6 +48,13 @@ def fetch_session(db_filename = 'database.sqlite3'):
     #Creates tables if they don't exist.
     Base.metadata.create_all(engine)
     return orm.scoped_session(session)
+
+def add_all_states():
+    session = fetch_session()
+    connection = session.connection()
+    for state in util.state_names: 
+        add_state(connection, state, 'temp')
+    session.commit()
 
 def add_state(connection, state_name, state_abbreviation):
     table = State.__table__

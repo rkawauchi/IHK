@@ -1,5 +1,5 @@
-import io
 import argparse
+import io
 
 def initialize_argument_parser():
     parser = argparse.ArgumentParser(description='Simulate Indian health solutions')
@@ -9,4 +9,4 @@ def initialize_argument_parser():
 
 if __name__ == "__main__":
     args = initialize_argument_parser()
-    print 'Solution to test:', args['solution']
+    io.add_all_states()
