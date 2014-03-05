@@ -53,8 +53,8 @@ def init_states():
     session = fetch_session()
     connection = session.connection()
     wipe_states(connection)
-    for state in util.state_names: 
-        add_state(connection, state, 'temp')
+    for i, state in enumerate(util.state_names):
+        add_state(connection, state, util.state_abbreviations[i])
     session.commit()
 
 def wipe_states(connection):
@@ -71,4 +71,4 @@ if __name__ == '__main__':
     session = fetch_session()
             
     #print session.query(District.classification=='Urban').all()
-    print session.query(District).first()
+    print session.query().first()
