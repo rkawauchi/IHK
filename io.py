@@ -49,12 +49,18 @@ def fetch_session(db_filename = 'database.sqlite3'):
     Base.metadata.create_all(engine)
     return orm.scoped_session(session)
 
-def add_all_states():
+def init_states():
     session = fetch_session()
     connection = session.connection()
+    wipe_states(connection)
     for state in util.state_names: 
         add_state(connection, state, 'temp')
     session.commit()
+
+def wipe_states(connection):
+    table = State.__table__
+    delete = table.delete()
+    connection.execute(delete)
 
 def add_state(connection, state_name, state_abbreviation):
     table = State.__table__

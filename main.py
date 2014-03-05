@@ -9,4 +9,4 @@ def initialize_argument_parser():
 
 if __name__ == "__main__":
     args = initialize_argument_parser()
-    io.add_all_states()
+    io.init_states()
