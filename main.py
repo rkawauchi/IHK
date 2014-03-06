@@ -12,5 +12,9 @@ def initialize_argument_parser():
 if __name__ == "__main__":
     args = initialize_argument_parser()
     data = io.Database()
-    for state in data.get_all_states():
-        print state.to_dict()
+    
+    print data.get_state_by_name('Mizoram')
+    print data.get_state_by_abbreviation('KA')
+
+    #for state in data.get_all_states():
+    #    print state.to_dict()
