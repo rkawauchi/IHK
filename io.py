@@ -42,33 +42,40 @@ class State(Base):
     def __repr__(self):
         return 'State({0}, {1})'.format(self.name, self.abbreviation)
 
-def fetch_session(db_filename = 'database.sqlite3'):
+class Database(object):
+
+    def __init__(self, db_filename = 'database.sqlite3'):
+        self.session = fetch_session(db_filename)
+        self.connection = self.session.connection()
+
+    def init_states(self):
+        self.wipe_states()
+        for i, state in enumerate(util.state_names):
+            self.add_state(state, util.state_abbreviations[i])
+        self.session.commit()
+
+    def wipe_states(self):
+        table = State.__table__
+        delete = table.delete()
+        self.connection.execute(delete)
+
+    def add_state(self, state_name, state_abbreviation):
+        table = State.__table__
+        insert = table.insert()
+        self.connection.execute(insert, name=state_name, abbreviation = state_abbreviation)
+
+    def get_all_states(self):
+        return self.session.query(State).all()
+
+def fetch_session(db_filename):
     engine = sqlalchemy.create_engine('sqlite:///{0}'.format(db_filename))
     session = orm.sessionmaker(bind=engine)
     #Creates tables if they don't exist.
     Base.metadata.create_all(engine)
     return orm.scoped_session(session)
 
-def init_states():
-    session = fetch_session()
-    connection = session.connection()
-    wipe_states(connection)
-    for i, state in enumerate(util.state_names):
-        add_state(connection, state, util.state_abbreviations[i])
-    session.commit()
-
-def wipe_states(connection):
-    table = State.__table__
-    delete = table.delete()
-    connection.execute(delete)
-
-def add_state(connection, state_name, state_abbreviation):
-    table = State.__table__
-    insert = table.insert()
-    connection.execute(insert, name=state_name, abbreviation = state_abbreviation)
-
 if __name__ == '__main__':
-    session = fetch_session()
+    data = Database()
             
     #print session.query(District.classification=='Urban').all()
     print session.query().first()
