@@ -1,6 +1,8 @@
 import argparse
 import io
 
+#Define commmand line arguments which can be passed to main.py
+#Currently irrelevant, but could be useful later
 def initialize_argument_parser():
     parser = argparse.ArgumentParser(description='Simulate Indian health solutions')
     parser.add_argument('-s', '--solution', dest='solution', 
