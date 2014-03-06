@@ -77,6 +77,15 @@ class Database(object):
         return self.session.query(State).filter(
                 State.abbreviation == abbreviation).first()
 
+    def get_districts_by_state_name(self, state_name):
+        return self.session.query(District).filter(
+                District.state == state_name).all()
+
+    def get_districts_by_state(self, state):
+        return self.session.query(District).filter(
+                District.state == state.name).all()
+
+
 def fetch_session(db_filename):
     engine = sqlalchemy.create_engine('sqlite:///{0}'.format(db_filename))
     session = orm.sessionmaker(bind=engine)
