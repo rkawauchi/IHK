@@ -42,6 +42,9 @@ class State(Base):
     def __repr__(self):
         return 'State({0}, {1})'.format(self.name, self.abbreviation)
 
+    def to_dict(self):
+        return {'name': self.name, 'abbreviation': self.abbreviation}
+
 class Database(object):
 
     def __init__(self, db_filename = 'database.sqlite3'):
