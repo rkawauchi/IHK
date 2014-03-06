@@ -2,6 +2,7 @@ import sqlalchemy
 import sqlalchemy.orm as orm
 import sqlalchemy.ext.declarative as declarative
 import util
+import csv
 
 Base = declarative.declarative_base()
 
@@ -85,7 +86,6 @@ class Database(object):
         return self.session.query(District).filter(
                 District.state == state.name).all()
 
-
 def fetch_session(db_filename):
     engine = sqlalchemy.create_engine('sqlite:///{0}'.format(db_filename))
     session = orm.sessionmaker(bind=engine)
@@ -93,8 +93,15 @@ def fetch_session(db_filename):
     Base.metadata.create_all(engine)
     return orm.scoped_session(session)
 
+def import_mpce():
+    #http://www.blog.pythonlibrary.org/2014/02/26/python-101-reading-and-writing-csv-files/
+    with open('data/mpce/urp_rural.csv', 'r') as input_file:
+        reader = csv.reader(input_file)
+        for row in reader:
+            #remove extra spaces around each element in the row
+            row = [value.strip() for value in row]
+            print row
+
 if __name__ == '__main__':
-    data = Database()
-            
-    #print session.query(District.classification=='Urban').all()
-    print session.query().first()
+
+    import_mpce()
