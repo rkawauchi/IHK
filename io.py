@@ -70,6 +70,13 @@ class Database(object):
     def get_all_states(self):
         return self.session.query(State).all()
 
+    def get_state_by_name(self, name):
+        return self.session.query(State).filter(State.name == name).first()
+
+    def get_state_by_abbreviation(self, abbreviation):
+        return self.session.query(State).filter(
+                State.abbreviation == abbreviation).first()
+
 def fetch_session(db_filename):
     engine = sqlalchemy.create_engine('sqlite:///{0}'.format(db_filename))
     session = orm.sessionmaker(bind=engine)
