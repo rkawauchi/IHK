@@ -1,6 +1,7 @@
 import sqlalchemy
 import sqlalchemy.orm as orm
 import sqlalchemy.ext.declarative as declarative
+import util
 
 Base = declarative.declarative_base()
 
@@ -32,31 +33,52 @@ class State(Base):
     __tablename__ = 'states'
     id = sqlalchemy.Column('rowid', sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String)
-    household_poor = sqlalchemy.Column(sqlalchemy.Integer)
-    household_middle = sqlalchemy.Column(sqlalchemy.Integer)
-    household_rich = sqlalchemy.Column(sqlalchemy.Integer)
+    abbreviation = sqlalchemy.Column(sqlalchemy.String)
     
-    def __init__(self, name, household_poor, household_middle, household_rich):
+    def __init__(self, name, abbreviation):
         self.name=name
-        self.household_poor=household_poor
-        self.household_middle=household_middle
-        self.household_rich=household_rich
+        self.abbreviation = abbreviation
 
     def __repr__(self):
-        return 'State({0}, {1}, {2}, {3})'.format(self.name,
-                self.household_poor, self.household_middle,
-                self.household_rich)
+        return 'State({0}, {1})'.format(self.name, self.abbreviation)
 
-def fetch_session(db_filename = 'database.sqlite3'):
+    def to_dict(self):
+        return {'name': self.name, 'abbreviation': self.abbreviation}
+
+class Database(object):
+
+    def __init__(self, db_filename = 'database.sqlite3'):
+        self.session = fetch_session(db_filename)
+        self.connection = self.session.connection()
+
+    def init_states(self):
+        self.wipe_states()
+        for i, state in enumerate(util.state_names):
+            self.add_state(state, util.state_abbreviations[i])
+        self.session.commit()
+
+    def wipe_states(self):
+        table = State.__table__
+        delete = table.delete()
+        self.connection.execute(delete)
+
+    def add_state(self, state_name, state_abbreviation):
+        table = State.__table__
+        insert = table.insert()
+        self.connection.execute(insert, name=state_name, abbreviation = state_abbreviation)
+
+    def get_all_states(self):
+        return self.session.query(State).all()
+
+def fetch_session(db_filename):
     engine = sqlalchemy.create_engine('sqlite:///{0}'.format(db_filename))
     session = orm.sessionmaker(bind=engine)
-    #Creates tables if they don't exist. If district doesn't exist, this
-    #won't work, so don't do that.
-    #Base.metadata.create_all(engine)
+    #Creates tables if they don't exist.
+    Base.metadata.create_all(engine)
     return orm.scoped_session(session)
 
 if __name__ == '__main__':
-    session = fetch_session()
+    data = Database()
             
     #print session.query(District.classification=='Urban').all()
-    print session.query(District).first()
+    print session.query().first()
