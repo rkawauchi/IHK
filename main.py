@@ -9,4 +9,6 @@ def initialize_argument_parser():
 
 if __name__ == "__main__":
     args = initialize_argument_parser()
-    io.init_states()
+    data = io.Database()
+    for state in data.get_all_states():
+        print state.to_dict()
