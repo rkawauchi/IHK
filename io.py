@@ -92,6 +92,30 @@ class Mpce(Base):
         return 'MPCE({0}, {1}, {2})'.format(self.mpce_type, 
                 self.classification, self.state)
 
+class Person(Base):
+    __tablename__ = 'people'
+    id = sqlalchemy.Column('rowid', sqlalchemy.Integer, primary_key = True)
+    money = sqlalchemy.Column(sqlalchemy.Integer)
+    #currently assuming 0-1 ranking for health measures
+    #the data type may change laters
+    diabetes = sqlalchemy.Column(sqlalchemy.Float)
+    cardio = sqlalchemy.Column(sqlalchemy.Float)
+    district = sqlalchemy.Column(sqlalchemy.String)
+    state = sqlalchemy.Column(sqlalchemy.String)
+    #urban or rural
+    classification = sqlalchemy.Column(sqlalchemy.String)
+
+    def __init__(self, money, diabetes, cardio, district, state,
+            classification):
+        self.money = money
+        self.diabetes = diabetes
+        self.cardio = cardio
+        self.district = district
+        self.state = state
+        self.classification = classification
+
+    #missing proper __repr__
+
 class Database(object):
 
     def __init__(self, db_filename = 'database.sqlite3', import_data=False):
