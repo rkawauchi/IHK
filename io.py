@@ -119,9 +119,11 @@ class Person(Base):
 class Database(object):
 
     def __init__(self, db_filename = 'database.sqlite3', import_data=False):
-        self.session = fetch_session(db_filename)
+        self.engine, self.session = fetch_session(db_filename)
         self.connection = self.session.connection()
         if import_data:
+            #Creates tables if they don't exist.
+            Base.metadata.create_all(engine)
             self._import_mpce()
 
     def init_states(self):
@@ -200,13 +202,10 @@ def extract_mpce_info(filename):
     classification = filename_split[1]
     return mpce_type, classification
     
-
 def fetch_session(db_filename):
     engine = sqlalchemy.create_engine('sqlite:///{0}'.format(db_filename))
     session = orm.sessionmaker(bind=engine)
-    #Creates tables if they don't exist.
-    Base.metadata.create_all(engine)
-    return orm.scoped_session(session)
+    return engine, orm.scoped_session(session)
 
 
 if __name__ == '__main__':
