@@ -31,6 +31,10 @@ def demonstrate_queries():
 if __name__ == "__main__":
     args = initialize_argument_parser()
     data = io.Database()
-    people.generate_population(data)
+    test_state_name = 'Andhra Pradesh'
+    test_state = data.get_state_by_name(test_state_name)
+    test_district = data.get_districts_by_state_name(test_state_name)[0]
+    print 'test:', test_district.name, 'in', test_state.name
+    people.generate_district_population(data, test_state, test_district)
     
     #demonstrate_queries()
