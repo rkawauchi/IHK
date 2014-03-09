@@ -1,5 +1,6 @@
 import argparse
 import io
+import people
 
 #Define commmand line arguments which can be passed to main.py
 #Currently irrelevant, but could be useful later
@@ -30,5 +31,6 @@ def demonstrate_queries():
 if __name__ == "__main__":
     args = initialize_argument_parser()
     data = io.Database()
+    people.generate_population(data)
     
-    demonstrate_queries()
+    #demonstrate_queries()
