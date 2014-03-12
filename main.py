@@ -9,7 +9,7 @@ def initialize_argument_parser():
             help='the solution to test', default='health kiosk')
     return vars(parser.parse_args())
 
-def demonstrate_queries():
+def demonstrate_queries(data):
     
     mizoram = data.get_state_by_name('Mizoram')
     karnataka = data.get_state_by_abbreviation('KA')
@@ -31,4 +31,4 @@ if __name__ == "__main__":
     args = initialize_argument_parser()
     data = io.Database()
     
-    demonstrate_queries()
+    demonstrate_queries(data)
