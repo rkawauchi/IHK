@@ -1,29 +1,11 @@
 import io
 
-<<<<<<< HEAD
-class Person():
-    def __init__(self, money, diabetes, cardio, location):
-        self.money = money
-        self.diabetes = diabetes
-        self.cardio = cardio
-        self.location = location
-# connect to extract data
-
-data = io.Database()
-#delhi = data.get_state_by_name("Mizoram")
-#print delhi
-# a = data.get_all_states()
-#    print a
-
 def state_name(state_name):
     return data.session.query(io.State).filter(io.State.name == state_name).all()
 
 def rural_pop(state_name, cl):
     return data.session.query(io.District.state, io.District.name, io.District.classification, io.District.population_total).filter(io.District.state == state_name).filter(io.District.classification == cl).all()
 
-print rural_pop("Tamil Nadu", "Rural")
-
-=======
 def generate_population(data):
     for state in data.session.query(io.State):
         generate_state_population(data, state)
@@ -76,4 +58,11 @@ def generate_people(data):
             print 'district', district.name
         print 'state', state.name
     return population
->>>>>>> upstream/master
+
+if __name__ == "__main__":
+    data = io.Database()
+    delhi = data.get_state_by_name("Mizoram")
+    print delhi
+    a = data.get_all_states()
+    print a
+    print rural_pop("Tamil Nadu", "Rural")
