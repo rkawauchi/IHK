@@ -10,7 +10,7 @@ def initialize_argument_parser():
             help='the solution to test', default='health kiosk')
     return vars(parser.parse_args())
 
-def demonstrate_queries():
+def demonstrate_queries(data):
     
     mizoram = data.get_state_by_name('Mizoram')
     karnataka = data.get_state_by_abbreviation('KA')
@@ -37,4 +37,8 @@ if __name__ == "__main__":
     print 'test:', test_district.name, 'in', test_state.name
     people.generate_district_population(data, test_state, test_district)
     
+<<<<<<< HEAD
+    demonstrate_queries(data)
+=======
     #demonstrate_queries()
+>>>>>>> upstream/master
