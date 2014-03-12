@@ -92,11 +92,39 @@ class Mpce(Base):
         return 'MPCE({0}, {1}, {2})'.format(self.mpce_type, 
                 self.classification, self.state)
 
+class Person(Base):
+    __tablename__ = 'people'
+    id = sqlalchemy.Column('rowid', sqlalchemy.Integer, primary_key = True)
+    money = sqlalchemy.Column(sqlalchemy.Integer)
+    #currently assuming 0-1 ranking for health measures
+    #the data type may change laters
+    diabetes = sqlalchemy.Column(sqlalchemy.Float)
+    cardio = sqlalchemy.Column(sqlalchemy.Float)
+    district = sqlalchemy.Column(sqlalchemy.String)
+    state = sqlalchemy.Column(sqlalchemy.String)
+    #urban or rural
+    classification = sqlalchemy.Column(sqlalchemy.String)
+
+    def __init__(self, money, diabetes, cardio, district, state,
+            classification):
+        self.money = money
+        self.diabetes = diabetes
+        self.cardio = cardio
+        self.district = district
+        self.state = state
+        self.classification = classification
+
+    #missing proper __repr__
+
 class Database(object):
 
-    def __init__(self, db_filename = 'database.sqlite3'):
-        self.session = fetch_session(db_filename)
+    def __init__(self, db_filename = 'database.sqlite3', import_data=False):
+        self.engine, self.session = fetch_session(db_filename)
         self.connection = self.session.connection()
+        if import_data:
+            #Creates tables if they don't exist.
+            Base.metadata.create_all(engine)
+            self._import_mpce()
 
     def init_states(self):
         self.wipe_states()
@@ -115,7 +143,8 @@ class Database(object):
         self.connection.execute(insert, name=state_name, abbreviation = state_abbreviation)
 
     #import all MPCE data
-    def import_mpce(self):
+    #single underscore implies that the method is private
+    def _import_mpce(self):
         #wipe the existing MPCE table so we don't have duplicates
         delete = Mpce.__table__.delete()
         self.connection.execute(delete)
@@ -125,11 +154,11 @@ class Database(object):
             if filename.endswith('.csv'):
                 mpce_type, classification = extract_mpce_info(filename)
                 with open(mpce_directory + filename, 'r') as input_file:
-                    self.import_mpce_file(input_file, mpce_type,
+                    self._import_mpce_file(input_file, mpce_type,
                             classification)
         self.session.commit()
 
-    def import_mpce_file(self, input_file, mpce_type, classification):
+    def _import_mpce_file(self, input_file, mpce_type, classification):
         #http://www.blog.pythonlibrary.org/2014/02/26/python-101-reading-and-writing-csv-files/
         reader = csv.reader(input_file)
         for row in reader:
@@ -173,16 +202,12 @@ def extract_mpce_info(filename):
     classification = filename_split[1]
     return mpce_type, classification
     
-
 def fetch_session(db_filename):
     engine = sqlalchemy.create_engine('sqlite:///{0}'.format(db_filename))
     session = orm.sessionmaker(bind=engine)
-    #Creates tables if they don't exist.
-    Base.metadata.create_all(engine)
-    return orm.scoped_session(session)
+    return engine, orm.scoped_session(session)
 
 
 if __name__ == '__main__':
     data = Database()
-    data.import_mpce()
     print data.session.query(Mpce).filter(Mpce.state=='Andhra Pradesh').limit(10).all()
