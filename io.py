@@ -131,14 +131,14 @@ class Database(object):
     def _init_states(self):
         self._wipe_states()
         for i, state in enumerate(util.state_names):
-            self.add_state(state, util.state_abbreviations[i])
+            self._add_state(state, util.state_abbreviations[i])
 
     def _wipe_states(self):
         table = State.__table__
         delete = table.delete()
         self.connection.execute(delete)
 
-    def add_state(self, state_name, state_abbreviation):
+    def _add_state(self, state_name, state_abbreviation):
         table = State.__table__
         insert = table.insert()
         self.connection.execute(insert, name=state_name, abbreviation = state_abbreviation)
@@ -173,6 +173,19 @@ class Database(object):
             #add the row to the mpce table
             insert = Mpce.__table__.insert()
             self.connection.execute(insert, mpce.__dict__)
+
+    def _import_districts(self):
+        #wipe the existing districts table so we don't have duplicates
+        delete = District.__table__.delete()
+        self.connection.execute(delete)
+
+        district_directory = 'data/mpce/'
+        for filename in os.listdir(district_directory):
+            if filename.endswith('.csv'):
+                mpce_type, classification = extract_mpce_info(filename)
+                with open(district_directory + filename, 'r') as input_file:
+                    self._import_mpce_file(input_file, mpce_type,
+                            classification)
 
     def get_all_states(self):
         return self.session.query(State).all()
