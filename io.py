@@ -123,14 +123,15 @@ class Database(object):
         self.connection = self.session.connection()
         if import_data:
             #Creates tables if they don't exist.
-            Base.metadata.create_all(engine)
+            Base.metadata.create_all(self.engine)
             self._import_mpce()
+            self.init_states()
+            self.session.commit()
 
     def init_states(self):
         self.wipe_states()
         for i, state in enumerate(util.state_names):
             self.add_state(state, util.state_abbreviations[i])
-        self.session.commit()
 
     def wipe_states(self):
         table = State.__table__
@@ -156,7 +157,6 @@ class Database(object):
                 with open(mpce_directory + filename, 'r') as input_file:
                     self._import_mpce_file(input_file, mpce_type,
                             classification)
-        self.session.commit()
 
     def _import_mpce_file(self, input_file, mpce_type, classification):
         #http://www.blog.pythonlibrary.org/2014/02/26/python-101-reading-and-writing-csv-files/
