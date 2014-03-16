@@ -143,18 +143,37 @@ class Database(object):
 
     def _init_states(self):
         self._wipe_states()
-        for i, state in enumerate(util.state_names):
-            self._add_state(state, util.state_abbreviations[i])
+        for i, state_name in enumerate(util.state_names):
+            population_urban = self._get_district_population_by_state(
+                    state_name, 'Urban')
+            population_rural = self._get_district_population_by_state(
+                    state_name, 'Rural')
+            self._add_state(state_name, util.state_abbreviations[i], 'Urban',
+                    population_urban)
+            self._add_state(state_name, util.state_abbreviations[i], 'Rural',
+                    population_rural)
+
+    def _get_district_population_by_state(self, state_name, classification):
+        print 'state', state_name
+        return self.session.query(
+                District.state, District.classification,
+                sqlalchemy.func.sum(District.population_total)) \
+                .filter(District.state == state_name) \
+                .filter(District.classification == classification) \
+                .group_by(District.state).first()[2]
 
     def _wipe_states(self):
         table = State.__table__
         delete = table.delete()
         self.connection.execute(delete)
 
-    def _add_state(self, state_name, state_abbreviation):
+    def _add_state(self, name, abbreviation, classification,
+            population_total):
         table = State.__table__
         insert = table.insert()
-        self.connection.execute(insert, name=state_name, abbreviation = state_abbreviation)
+        self.connection.execute(insert, name=name, abbreviation = abbreviation,
+                classification=classification, 
+                population_total=population_total)
 
     #import all MPCE data
     #single underscore implies that the method is private
