@@ -37,8 +37,4 @@ if __name__ == "__main__":
     print 'test:', test_district.name, 'in', test_state.name
     people.generate_district_population(data, test_state, test_district)
     
-<<<<<<< HEAD
-    demonstrate_queries(data)
-=======
-    #demonstrate_queries()
->>>>>>> upstream/master
+    #demonstrate_queries(data)
