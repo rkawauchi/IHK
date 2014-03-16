@@ -1,10 +1,17 @@
 import io
+from sqlalchemy import func
 
 def state_name(state_name):
     return data.session.query(io.State).filter(io.State.name == state_name).all()
 
-def rural_pop(state_name, cl):
-    return data.session.query(io.District.state, io.District.name, io.District.classification, io.District.population_total).filter(io.District.state == state_name).filter(io.District.classification == cl).all()
+def rural_byState_pop(state_name):
+    return data.session.query(io.District.state, io.District.name, io.District.classification, func.sum(io.District.population_total)).filter(io.District.state == state_name).filter(io.District.classification == "Rural").group_by(io.District.state).all()
+
+def urban_byState_pop(state_name):
+    return data.session.query(io.District.state, io.District.name, io.District.classification, func.sum(io.District.population_total)).filter(io.District.state == state_name).filter(io.District.classification == "Urban").group_by(io.District.state).all()
+
+def total_byState_pop(state_name):
+    return data.session.query(io.District.state, io.District.classification, func.sum(io.District.population_total)).filter(io.District.state == state_name).filter(io.District.classification == "Total").group_by(io.District.state).all()
 
 def generate_population(data):
     for state in data.session.query(io.State):
@@ -61,8 +68,6 @@ def generate_people(data):
 
 if __name__ == "__main__":
     data = io.Database()
-    delhi = data.get_state_by_name("Mizoram")
-    print delhi
-    a = data.get_all_states()
-    print a
-    print rural_pop("Tamil Nadu", "Rural")
+    state_pop = total_byState_pop("Tamil Nadu")
+    print state_pop[0][2]
+
