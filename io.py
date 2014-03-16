@@ -125,15 +125,15 @@ class Database(object):
             #Creates tables if they don't exist.
             Base.metadata.create_all(self.engine)
             self._import_mpce()
-            self.init_states()
+            self._init_states()
             self.session.commit()
 
-    def init_states(self):
-        self.wipe_states()
+    def _init_states(self):
+        self._wipe_states()
         for i, state in enumerate(util.state_names):
             self.add_state(state, util.state_abbreviations[i])
 
-    def wipe_states(self):
+    def _wipe_states(self):
         table = State.__table__
         delete = table.delete()
         self.connection.execute(delete)
