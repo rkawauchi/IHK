@@ -162,13 +162,13 @@ class Database(object):
                     population_total, household_total)
 
     def _get_district_population_by_state(self, state_name, classification, population_type):
-        print 'state', state_name
-        return self.session.query(
+        query = self.session.query(
                 District.state, District.classification,
                 sqlalchemy.func.sum(population_type)) \
                 .filter(District.state == state_name) \
                 .filter(District.classification == classification) \
-                .group_by(District.state).first()[2]
+                .group_by(District.state).first()
+        return query[2]
 
     def _wipe_states(self):
         table = State.__table__
