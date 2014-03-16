@@ -37,16 +37,28 @@ class State(Base):
     id = sqlalchemy.Column('rowid', sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String)
     abbreviation = sqlalchemy.Column(sqlalchemy.String)
-    
-    def __init__(self, name, abbreviation):
+    classification = sqlalchemy.Column(sqlalchemy.String)
+    household_total = sqlalchemy.Column(sqlalchemy.Integer)
+    population_total = sqlalchemy.Column(sqlalchemy.Integer)
+
+    def __init__(self, name, abbreviation, classification, household_total,
+            population_total):
         self.name=name
-        self.abbreviation = abbreviation
+        self.abbreviation=abbreviation
+        self.classification=classification
+        self.household_total=household_total
+        self.population_total=population_total
 
     def __repr__(self):
-        return 'State({0}, {1})'.format(self.name, self.abbreviation)
+        return 'State({0}, {1}, {2}, {3}, {4})'.format(self.name,
+                self.abbreviation, self.classification, self.household_total,
+                self.population_total)
 
     def to_dict(self):
-        return {'name': self.name, 'abbreviation': self.abbreviation}
+        return {'name': self.name, 'abbreviation': self.abbreviation, 
+                'classification': self.classification,
+                'household_total': self.household_total,
+                'population_total': self.population_total}
 
 class Mpce(Base):
     __tablename__ = 'mpce'
@@ -174,12 +186,13 @@ class Database(object):
             insert = Mpce.__table__.insert()
             self.connection.execute(insert, mpce.__dict__)
 
+    #todo - NOT FINISHED
     def _import_districts(self):
         #wipe the existing districts table so we don't have duplicates
         delete = District.__table__.delete()
         self.connection.execute(delete)
 
-        district_directory = 'data/mpce/'
+        district_directory = 'data/districts/'
         for filename in os.listdir(district_directory):
             if filename.endswith('.csv'):
                 mpce_type, classification = extract_mpce_info(filename)
