@@ -278,25 +278,25 @@ def extract_mpce_info(filename):
     classification = filename_split[1]
     return mpce_type, classification
 
-def extract_district_name(filename):
+def clean_state_name(filename):
     #The name is the first thing in the filename
     #it is always followed by a non-word character
     #sometimes & is in the name, so allow that 
-    district = re.sub(r'\.CSV', '', filename)
-    district = re.sub(r'\([A-Z&]*\)', '', district)
-    district = re.sub(r'[()\d]', '', district)
-    district = re.sub('Nct of Delhi', 'Delhi', district)
-    district = re.sub('JAMMU', 'Jammu', district)
-    district = re.sub('Utter', 'Uttar Pradesh', district)
-    district = re.sub('&', 'and', district)
-    district = district.strip()
-    return district
+    state = re.sub(r'\.CSV', '', filename)
+    state = re.sub(r'\([A-Z&]*\)', '', state)
+    state = re.sub(r'[()\d]', '', state)
+    state = re.sub('Nct of Delhi', 'Delhi', state)
+    state = re.sub('JAMMU', 'Jammu', state)
+    state = re.sub('Utter', 'Uttar Pradesh', state)
+    state = re.sub('Himacahl', 'Himachal', state)
+    state = re.sub('&', 'and', state)
+    state = state.strip()
+    return state
 
 def fetch_session(db_filename):
     engine = sqlalchemy.create_engine('sqlite:///{0}'.format(db_filename))
     session = orm.sessionmaker(bind=engine)
     return engine, orm.scoped_session(session)
-
 
 if __name__ == '__main__':
     data = Database()
