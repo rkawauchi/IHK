@@ -219,17 +219,36 @@ class Database(object):
     def _init_districts(self):
         #wipe the existing districts table so we don't have duplicates
         delete = District.__table__.delete()
-        #self.connection.execute(delete)
+        self.connection.execute(delete)
 
         district_directory = 'data/districts/'
         for filename in os.listdir(district_directory):
             if filename.endswith('.CSV'):
-                state_name = extract_district_name(filename)
+                state_name = clean_state_name(filename)
+                with open(district_directory + filename, 'r') as input_file:
+                    self._import_district_file(input_file, state_name)
                 """
                 with open(district_directory + filename, 'r') as input_file:
                     self._import_mpce_file(input_file, mpce_type,
                             classification)
                 """
+
+    def _import_district_file(self, input_file, state_name):
+        #http://stackoverflow.com/questions/3122206/how-to-define-column-headers-when-reading-a-csv-file-in-python
+        #http://courses.cs.washington.edu/courses/cse140/13wi/csv-parsing.html
+        reader = csv.DictReader(input_file)
+        headers = reader.next()
+        insert = District.__table__.insert()
+        for row in reader:
+            #we only care about districts
+            if row['Level'] == 'STATE': continue
+            name = row['Name'].strip()
+            classification = row['TRU'].lower()
+            households = int(row['No of Households'])
+            population = int(row['Total Population Person'])
+            district = District(name, state_name, classification, 
+                    households, population)
+            self.connection.execute(insert, district.__dict__)
 
     def get_all_states(self):
         return self.session.query(State).all()
