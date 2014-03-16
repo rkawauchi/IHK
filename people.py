@@ -1,17 +1,10 @@
 import io
 from sqlalchemy import func
+import numpy as np
+from array import *
 
 def state_name(state_name):
     return data.session.query(io.State).filter(io.State.name == state_name).all()
-
-def rural_byState_pop(state_name):
-    return data.session.query(io.District.state, io.District.name, io.District.classification, func.sum(io.District.population_total)).filter(io.District.state == state_name).filter(io.District.classification == "Rural").group_by(io.District.state).all()
-
-def urban_byState_pop(state_name):
-    return data.session.query(io.District.state, io.District.name, io.District.classification, func.sum(io.District.population_total)).filter(io.District.state == state_name).filter(io.District.classification == "Urban").group_by(io.District.state).all()
-
-def total_byState_pop(state_name):
-    return data.session.query(io.District.state, io.District.classification, func.sum(io.District.population_total)).filter(io.District.state == state_name).filter(io.District.classification == "Total").group_by(io.District.state).all()
 
 def generate_population(data):
     for state in data.session.query(io.State):
@@ -66,8 +59,35 @@ def generate_people(data):
         print 'state', state.name
     return population
 
+
+######################## below by RieK #########################
+
+def pop_byState(state_name, class_type):
+    return data.session.query(io.District.state, io.District.name, io.District.classification, func.sum(io.District.population_total)).filter(io.District.state == state_name).filter(io.District.classification == class_type).group_by(io.District.state).all()
+
+def exp_byState(state_name, class_type):
+    return data.session.query(io.Mpce.state, io.Mpce.mpce_type, io.Mpce.classification, io.Mpce.mpce_average).filter(io.Mpce.state == state_name).filter(io.Mpce.mpce_type == "mmrp").filter(io.Mpce.classification == class_type).all()
+
+def exp_Percentile(state_name, class_type):
+    return data.session.query(io.Mpce).filter(io.Mpce.state == state_name).filter(io.Mpce.mpce_type == "mmrp").filter(io.Mpce.classification == class_type).first()
+
+
+def generate_people_expense(state_name, class_type):
+    mean = exp_byState(state_name, class_type)[0][3]
+    std = 10
+    # For testing, only generating 100,000th of population
+    pop = (pop_byState(state_name, "Rural")[0][3])/100000
+    listP = (exp_Percentile(state_name, class_type)[0][2:11]).append(0,0)
+    #for i in xrange(1:10):
+    #    percentile+i = np.random.uniform(
+    expenseList = np.random.normal(mean, std, pop)
+    return expenseList[0:10]
+
 if __name__ == "__main__":
     data = io.Database()
-    state_pop = total_byState_pop("Tamil Nadu")
-    print state_pop[0][2]
+    print pop_byState("Tamil Nadu", "Rural")[0][3]
+    print exp_byState("Tamil Nadu", "rural")[0][3]
+    print exp_Percentile("Tamil Nadu", "rural").get_d_all(True)
+    #listP = (exp_Percentile("Tamil Nadu", "rural")[0][2:11]).insert(0)
+    #print listP
 
