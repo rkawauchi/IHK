@@ -145,20 +145,20 @@ class Database(object):
         self._wipe_states()
         for i, state_name in enumerate(util.state_names):
             population_urban = self._get_district_population_by_state(
-                    state_name, 'Urban', District.population_total)
+                    state_name, 'urban', District.population_total)
             household_urban = self._get_district_population_by_state(
-                    state_name, 'Urban', District.household_total)
+                    state_name, 'urban', District.household_total)
             population_rural = self._get_district_population_by_state(
-                    state_name, 'Rural', District.population_total)
+                    state_name, 'rural', District.population_total)
             household_rural = self._get_district_population_by_state(
-                    state_name, 'Rural', District.household_total)
+                    state_name, 'rural', District.household_total)
             population_total = population_urban + population_rural
             household_total = household_urban + household_rural
-            self._add_state(state_name, util.state_abbreviations[i], 'Urban',
+            self._add_state(state_name, util.state_abbreviations[i], 'urban',
                     population_urban, household_urban)
-            self._add_state(state_name, util.state_abbreviations[i], 'Rural',
+            self._add_state(state_name, util.state_abbreviations[i], 'rural',
                     population_rural, household_rural)
-            self._add_state(state_name, util.state_abbreviations[i], 'Total',
+            self._add_state(state_name, util.state_abbreviations[i], 'total',
                     population_total, household_total)
 
     def _get_district_population_by_state(self, state_name, classification, population_type):
