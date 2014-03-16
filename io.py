@@ -137,8 +137,8 @@ class Database(object):
             #Creates tables if they don't exist.
             Base.metadata.create_all(self.engine)
             self._init_mpce()
+            self._init_districts()
             self._init_states()
-            #self._init_districts()
             self.session.commit()
 
     def _init_states(self):
