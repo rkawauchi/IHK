@@ -136,8 +136,9 @@ class Database(object):
         if import_data:
             #Creates tables if they don't exist.
             Base.metadata.create_all(self.engine)
-            self._import_mpce()
+            self._init_mpce()
             self._init_states()
+            #self._init_districts()
             self.session.commit()
 
     def _init_states(self):
@@ -157,7 +158,7 @@ class Database(object):
 
     #import all MPCE data
     #single underscore implies that the method is private
-    def _import_mpce(self):
+    def _init_mpce(self):
         #wipe the existing MPCE table so we don't have duplicates
         delete = Mpce.__table__.delete()
         self.connection.execute(delete)
@@ -187,18 +188,20 @@ class Database(object):
             self.connection.execute(insert, mpce.__dict__)
 
     #todo - NOT FINISHED
-    def _import_districts(self):
+    def _init_districts(self):
         #wipe the existing districts table so we don't have duplicates
         delete = District.__table__.delete()
-        self.connection.execute(delete)
+        #self.connection.execute(delete)
 
         district_directory = 'data/districts/'
         for filename in os.listdir(district_directory):
-            if filename.endswith('.csv'):
-                mpce_type, classification = extract_mpce_info(filename)
+            if filename.endswith('.CSV'):
+                state_name = extract_district_name(filename)
+                """
                 with open(district_directory + filename, 'r') as input_file:
                     self._import_mpce_file(input_file, mpce_type,
                             classification)
+                """
 
     def get_all_states(self):
         return self.session.query(State).all()
@@ -227,7 +230,21 @@ def extract_mpce_info(filename):
     mpce_type = filename_split[0]
     classification = filename_split[1]
     return mpce_type, classification
-    
+
+def extract_district_name(filename):
+    #The name is the first thing in the filename
+    #it is always followed by a non-word character
+    #sometimes & is in the name, so allow that 
+    district = re.sub(r'\.CSV', '', filename)
+    district = re.sub(r'\([A-Z&]*\)', '', district)
+    district = re.sub(r'[()\d]', '', district)
+    district = re.sub('Nct of Delhi', 'Delhi', district)
+    district = re.sub('JAMMU', 'Jammu', district)
+    district = re.sub('Utter', 'Uttar Pradesh', district)
+    district = re.sub('&', 'and', district)
+    district = district.strip()
+    return district
+
 def fetch_session(db_filename):
     engine = sqlalchemy.create_engine('sqlite:///{0}'.format(db_filename))
     session = orm.sessionmaker(bind=engine)
