@@ -145,19 +145,27 @@ class Database(object):
         self._wipe_states()
         for i, state_name in enumerate(util.state_names):
             population_urban = self._get_district_population_by_state(
-                    state_name, 'Urban')
+                    state_name, 'Urban', District.population_total)
+            household_urban = self._get_district_population_by_state(
+                    state_name, 'Urban', District.household_total)
             population_rural = self._get_district_population_by_state(
-                    state_name, 'Rural')
+                    state_name, 'Rural', District.population_total)
+            household_rural = self._get_district_population_by_state(
+                    state_name, 'Rural', District.household_total)
+            population_total = population_urban + population_rural
+            household_total = household_urban + household_rural
             self._add_state(state_name, util.state_abbreviations[i], 'Urban',
-                    population_urban)
+                    population_urban, household_urban)
             self._add_state(state_name, util.state_abbreviations[i], 'Rural',
-                    population_rural)
+                    population_rural, household_rural)
+            self._add_state(state_name, util.state_abbreviations[i], 'Total',
+                    population_total, household_total)
 
-    def _get_district_population_by_state(self, state_name, classification):
+    def _get_district_population_by_state(self, state_name, classification, population_type):
         print 'state', state_name
         return self.session.query(
                 District.state, District.classification,
-                sqlalchemy.func.sum(District.population_total)) \
+                sqlalchemy.func.sum(population_type)) \
                 .filter(District.state == state_name) \
                 .filter(District.classification == classification) \
                 .group_by(District.state).first()[2]
@@ -168,12 +176,13 @@ class Database(object):
         self.connection.execute(delete)
 
     def _add_state(self, name, abbreviation, classification,
-            population_total):
+            population_total, household_total):
         table = State.__table__
         insert = table.insert()
         self.connection.execute(insert, name=name, abbreviation = abbreviation,
                 classification=classification, 
-                population_total=population_total)
+                population_total=population_total,
+                household_total = household_total)
 
     #import all MPCE data
     #single underscore implies that the method is private
