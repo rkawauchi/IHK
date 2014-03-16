@@ -37,16 +37,28 @@ class State(Base):
     id = sqlalchemy.Column('rowid', sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String)
     abbreviation = sqlalchemy.Column(sqlalchemy.String)
-    
-    def __init__(self, name, abbreviation):
+    classification = sqlalchemy.Column(sqlalchemy.String)
+    household_total = sqlalchemy.Column(sqlalchemy.Integer)
+    population_total = sqlalchemy.Column(sqlalchemy.Integer)
+
+    def __init__(self, name, abbreviation, classification, household_total,
+            population_total):
         self.name=name
-        self.abbreviation = abbreviation
+        self.abbreviation=abbreviation
+        self.classification=classification
+        self.household_total=household_total
+        self.population_total=population_total
 
     def __repr__(self):
-        return 'State({0}, {1})'.format(self.name, self.abbreviation)
+        return 'State({0}, {1}, {2}, {3}, {4})'.format(self.name,
+                self.abbreviation, self.classification, self.household_total,
+                self.population_total)
 
     def to_dict(self):
-        return {'name': self.name, 'abbreviation': self.abbreviation}
+        return {'name': self.name, 'abbreviation': self.abbreviation, 
+                'classification': self.classification,
+                'household_total': self.household_total,
+                'population_total': self.population_total}
 
 class Mpce(Base):
     __tablename__ = 'mpce'
@@ -138,28 +150,56 @@ class Database(object):
         self.connection = self.session.connection()
         if import_data:
             #Creates tables if they don't exist.
-            Base.metadata.create_all(engine)
-            self._import_mpce()
+            Base.metadata.create_all(self.engine)
+            self._init_mpce()
+            self._init_districts()
+            self._init_states()
+            self.session.commit()
 
-    def init_states(self):
-        self.wipe_states()
-        for i, state in enumerate(util.state_names):
-            self.add_state(state, util.state_abbreviations[i])
-        self.session.commit()
+    def _init_states(self):
+        self._wipe_states()
+        for i, state_name in enumerate(util.state_names):
+            population_urban = self._get_district_population_by_state(
+                    state_name, 'urban', District.population_total)
+            household_urban = self._get_district_population_by_state(
+                    state_name, 'urban', District.household_total)
+            population_rural = self._get_district_population_by_state(
+                    state_name, 'rural', District.population_total)
+            household_rural = self._get_district_population_by_state(
+                    state_name, 'rural', District.household_total)
+            population_total = population_urban + population_rural
+            household_total = household_urban + household_rural
+            self._add_state(state_name, util.state_abbreviations[i], 'urban',
+                    population_urban, household_urban)
+            self._add_state(state_name, util.state_abbreviations[i], 'rural',
+                    population_rural, household_rural)
+            self._add_state(state_name, util.state_abbreviations[i], 'total',
+                    population_total, household_total)
 
-    def wipe_states(self):
+    def _get_district_population_by_state(self, state_name, classification, population_type):
+        query = self.session.query(sqlalchemy.func.sum(population_type)) \
+                .filter(District.state == state_name) \
+                .filter(District.classification == classification) \
+                .group_by(District.state).first()
+        return query[0]
+
+    def _wipe_states(self):
         table = State.__table__
         delete = table.delete()
         self.connection.execute(delete)
 
-    def add_state(self, state_name, state_abbreviation):
+    def _add_state(self, name, abbreviation, classification,
+            population_total, household_total):
         table = State.__table__
         insert = table.insert()
-        self.connection.execute(insert, name=state_name, abbreviation = state_abbreviation)
+        self.connection.execute(insert, name=name, abbreviation = abbreviation,
+                classification=classification, 
+                population_total=population_total,
+                household_total = household_total)
 
     #import all MPCE data
     #single underscore implies that the method is private
-    def _import_mpce(self):
+    def _init_mpce(self):
         #wipe the existing MPCE table so we don't have duplicates
         delete = Mpce.__table__.delete()
         self.connection.execute(delete)
@@ -171,7 +211,6 @@ class Database(object):
                 with open(mpce_directory + filename, 'r') as input_file:
                     self._import_mpce_file(input_file, mpce_type,
                             classification)
-        self.session.commit()
 
     def _import_mpce_file(self, input_file, mpce_type, classification):
         #http://www.blog.pythonlibrary.org/2014/02/26/python-101-reading-and-writing-csv-files/
@@ -188,6 +227,41 @@ class Database(object):
             #add the row to the mpce table
             insert = Mpce.__table__.insert()
             self.connection.execute(insert, mpce.__dict__)
+
+    #todo - NOT FINISHED
+    def _init_districts(self):
+        #wipe the existing districts table so we don't have duplicates
+        delete = District.__table__.delete()
+        self.connection.execute(delete)
+
+        district_directory = 'data/districts/'
+        for filename in os.listdir(district_directory):
+            if filename.endswith('.CSV'):
+                state_name = clean_state_name(filename)
+                with open(district_directory + filename, 'r') as input_file:
+                    self._import_district_file(input_file, state_name)
+                """
+                with open(district_directory + filename, 'r') as input_file:
+                    self._import_mpce_file(input_file, mpce_type,
+                            classification)
+                """
+
+    def _import_district_file(self, input_file, state_name):
+        #http://stackoverflow.com/questions/3122206/how-to-define-column-headers-when-reading-a-csv-file-in-python
+        #http://courses.cs.washington.edu/courses/cse140/13wi/csv-parsing.html
+        reader = csv.DictReader(input_file)
+        headers = reader.next()
+        insert = District.__table__.insert()
+        for row in reader:
+            #we only care about districts
+            if row['Level'] == 'STATE': continue
+            name = row['Name'].strip()
+            classification = row['TRU'].lower()
+            households = int(row['No of Households'])
+            population = int(row['Total Population Person'])
+            district = District(name, state_name, classification, 
+                    households, population)
+            self.connection.execute(insert, district.__dict__)
 
     def get_all_states(self):
         return self.session.query(State).all()
@@ -216,12 +290,26 @@ def extract_mpce_info(filename):
     mpce_type = filename_split[0]
     classification = filename_split[1]
     return mpce_type, classification
-    
+
+def clean_state_name(filename):
+    #The name is the first thing in the filename
+    #it is always followed by a non-word character
+    #sometimes & is in the name, so allow that 
+    state = re.sub(r'\.CSV', '', filename)
+    state = re.sub(r'\([A-Z&]*\)', '', state)
+    state = re.sub(r'[()\d]', '', state)
+    state = re.sub('Nct of Delhi', 'Delhi', state)
+    state = re.sub('JAMMU', 'Jammu', state)
+    state = re.sub('Utter', 'Uttar Pradesh', state)
+    state = re.sub('Himacahl', 'Himachal', state)
+    state = re.sub('&', 'and', state)
+    state = state.strip()
+    return state
+
 def fetch_session(db_filename):
     engine = sqlalchemy.create_engine('sqlite:///{0}'.format(db_filename))
     session = orm.sessionmaker(bind=engine)
     return engine, orm.scoped_session(session)
-
 
 if __name__ == '__main__':
     data = Database()
