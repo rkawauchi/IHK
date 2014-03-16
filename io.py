@@ -100,6 +100,21 @@ class Mpce(Base):
         self.household_total = household_total
         self.household_sample = household_sample
 
+    def get_d_all(self, add_zero=False):
+        d_all = list()
+        if add_zero:
+            d_all.append(0)
+        d_all.append(self.d1)
+        d_all.append(self.d2)
+        d_all.append(self.d3)
+        d_all.append(self.d4)
+        d_all.append(self.d5)
+        d_all.append(self.d6)
+        d_all.append(self.d7)
+        d_all.append(self.d8)
+        d_all.append(self.d9)
+        return d_all
+
     def __repr__(self):
         return 'MPCE({0}, {1}, {2})'.format(self.mpce_type, 
                 self.classification, self.state)
