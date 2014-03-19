@@ -15,6 +15,13 @@ class Kiosk():
             print 'patient not in correct location'
             return False
         if not patient.money>self.visit_cost:
+<<<<<<< HEAD
+            print "patient cannot afford treatment"
+            return False
+        else:
+            visit(self,patient)
+            
+=======
             print 'patient cannot afford treatment'
         patient.money -= visit_cost
         kiosk.money += visit_cost
@@ -30,6 +37,7 @@ class Kiosk():
             #For now, we ignore the details and just improve the patient's
             #health.
             patient.cardio = cardio_threshold
+>>>>>>> upstream/master
 
         #The visit was successful
         return True
