@@ -9,10 +9,11 @@ def fix_date(string):
 
 def parse_page(url):
 	data_dict = {}
-	response = requests.get(url)
-	if response.status_code != 200:
-		print 'Something went wrong'
-	html = response.content
+	#response = requests.get(url)
+	#if response.status_code != 200:
+	#	print 'Something went wrong'
+	#html = response.content
+	html = open('sana-mobile.html', 'r')
 	soup = BeautifulSoup(html)
 
 	#title
@@ -67,13 +68,26 @@ def parse_page(url):
 	#summary
 	stringsA = []
 	span_tags = soup.findAll('div', {'class': 'group-middle'})
-	for string in span_tags[0].strings:
-    	stringsA.append(string)
-    print stringsA
+	tag_list = span_tags[0].contents
+	section_dict = {}
+	section_dict['Summary'] = 0
+	section_dict['Program goals'] = 0
+	section_dict['Key program components'] = 0
+	for i in xrange(0,len(tag_list)):
+		for j in section_dict.keys():
+			if tag_list[i].string == j:
+				section_dict[j] = tag_list[i+1].string
+	data_dict.update(section_dict)
+	print data_dict
+	#for string in span_tags:
+	#	print string.content
+		#print string.get_text()
 	#summary = span_tags[0].string.strip()
 	#data_dict['summary'] = summary
 
-	print data_dict
+	
+
+	#print data_dict
 
 	"""
 	
