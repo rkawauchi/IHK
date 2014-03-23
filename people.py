@@ -69,25 +69,25 @@ def exp_byState(state_name, class_type):
     return data.session.query(io.Mpce.state, io.Mpce.mpce_type, io.Mpce.classification, io.Mpce.mpce_average).filter(io.Mpce.state == state_name).filter(io.Mpce.mpce_type == "mmrp").filter(io.Mpce.classification == class_type).all()
 
 def exp_Percentile(state_name, class_type):
-    return data.session.query(io.Mpce).filter(io.Mpce.state == state_name).filter(io.Mpce.mpce_type == "mmrp").filter(io.Mpce.classification == class_type).first()
-
+    temp = data.session.query(io.Mpce).filter(io.Mpce.state == state_name).filter(io.Mpce.mpce_type == "mmrp").filter(io.Mpce.classification == class_type).first()
+    return temp.get_d_all(True)
 
 def generate_people_expense(state_name, class_type):
-    mean = exp_byState(state_name, class_type)[0][3]
-    std = 10
+    #mean = exp_byState(state_name, class_type)[0][3]
+    #std = 10
     # For testing, only generating 100,000th of population
-    pop = (pop_byState(state_name, "Rural")[0][3])/100000
-    listP = (exp_Percentile(state_name, class_type)[0][2:11]).append(0,0)
-    #for i in xrange(1:10):
-    #    percentile+i = np.random.uniform(
-    expenseList = np.random.normal(mean, std, pop)
-    return expenseList[0:10]
+    pop = 0.1 * (pop_byState(state_name, "Rural")[0][3])/100000
+    listPercentile = exp_Percentile(state_name, class_type)
+    expenseList=[]
+    for i in xrange(10):
+        genUniform = np.random.uniform(listPercentile[i], listPercentile[i+1], pop)
+        expenseList.append(genUniform)
+    return expenseList
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     data = io.Database()
     print pop_byState("Tamil Nadu", "Rural")[0][3]
     print exp_byState("Tamil Nadu", "rural")[0][3]
-    print exp_Percentile("Tamil Nadu", "rural").get_d_all(True)
-    #listP = (exp_Percentile("Tamil Nadu", "rural")[0][2:11]).insert(0)
-    #print listP
+    print exp_Percentile("Tamil Nadu", "rural")
+    print generate_people_expense("Tamil Nadu", "rural")
 
