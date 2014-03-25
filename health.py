@@ -34,6 +34,8 @@ class Hospital:
         #expertise is probably a list of things the hospital can do
         self.expertise = expertise
         self.equipment_level = equipment_level #cf. equipment_level index
+
+        """
         self.nbOutpatientsFree
         self.nbOutpatientPaying = nbPopPaying
         self.nbSurgeryFree =
@@ -43,6 +45,7 @@ class Hospital:
         self.priceSurgerySubsidized = 900 #750*88%+2000*12% (balance between ICCE and ECCE)
         self.priceSurgeryFree = 0
         self.nbPopFree = nbPopFree #check sum free + paid = Screened
+        """
 
 
 
