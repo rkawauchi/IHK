@@ -11,13 +11,21 @@ Hospital::equipmentLevel information
 """
 
 class Solution:
-    def __init__(self, zoneReach, treatmentRatePerYear, expertise, beginDate, endDate, operatingStatus):
-        self.zoneReach = "KA" #modify to match: reach only Karnataka state
+    def __init__(self, location, expertise, start_date, end_date, is_operating):
+        self.location = location
+        self.expertise = expertise
+        self.start_date = start_date
+        self.end_date = end_date
+        self.is_operating = is_operating
+
+        """
+        self.location = "KA" #modify to match: reach only Karnataka state
         self.treatmentRatePerYear = 2646000 #number of people treated per year by the whole system. Treatment definition = "went into Aravind System and met with one personel"
         self.expertise = "Eyecare" #Aravind System will only treat the patients that have problem related to Eyecare
         self.beginDate = 01-01-1976 #convert in the most common date format. By default if no month/day, first january
         self.endDate = "N/A" #system is still operating
         self.operatingStatus = 'Y'
+        """
 
 class Hopital:
     def __init__(self, name, area, popTargeted, nbPopPaying, nbPopFree, popTreated, expertise)
@@ -134,7 +142,7 @@ class
         return True
 
     solution_id = 1
-    zoneReach = #Karnataka
+    location = #Karnataka
     treatment_rate = 
 
 class 
