@@ -63,7 +63,7 @@ class OutreachCamp:
         self.nbOutpatients
         self.costRegistration = 0
 
-
+"""
 Surgery (only Hospital)
         - Free 
         - Subsidized
@@ -72,6 +72,7 @@ Surgery (only Hospital)
 OutPatient
         - Free (Hospital, Camps)
         - Paying (Hospital, VisionCenter(10Rpee), CommunityEyeClinic (10 Rpee)
+"""
 
 class Cost:
     def __init__(self, Operation, Salary, Asset)
