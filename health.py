@@ -29,14 +29,11 @@ class Solution:
 
 class Hospital:
 
-    def __init__(self, location, popTargeted, nbPopPaying, nbPopFree, popTreated, expertise):
+    def __init__(self, location,expertise):
         self.location = location
         #expertise is probably a list of things the hospital can do
         #Don't differentiate between "primary" and "secondary" yet
         self.expertise = expertise
-        self.popTargeted = popTargeted
-        self.popScreened = nbPopPaying + nbPopFree
-        self.popTreated = popTreated #surgeries
         self.equipmentLevel = equipmentLevel #cf. equipmentLevel index
         self.nbOutpatientsFree
         self.nbOutpatientPaying = nbPopPaying
