@@ -47,11 +47,6 @@ class Hospital:
         self.nbPopFree = nbPopFree #check sum free + paid = Screened
         """
 
-
-
-
-
-
 #possible merge 
 class CommunityEye:
     def __init__()
@@ -121,15 +116,8 @@ class HumanResources: '''#number of personel per structure
             return (programMotherInclusion + programEmployeeWelfare + programSelfDevelopment + programEmployeeFormation) /(4)
 class 
 
-
-
-
         print 'initializing Aravind System'
-
-
-
 #Parent
-
 
     #patient in class Person
     def visit_or_not(self, patient):
