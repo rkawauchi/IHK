@@ -27,9 +27,9 @@ class Solution:
         self.operatingStatus = 'Y'
         """
 
-class Hopital:
-    def __init__(self, name, area, popTargeted, nbPopPaying, nbPopFree, popTreated, expertise)
-        self.name = name
+class Hospital:
+
+    def __init__(self, area, popTargeted, nbPopPaying, nbPopFree, popTreated, expertise)
         self.area = {'locations': area[0], 'adress': area[1]} #area is a list with first element = [regions], second element = adress
         self.popTargeted = popTargeted
         self.popScreened = nbPopPaying + nbPopFree
