@@ -192,6 +192,9 @@ class Database(object):
                     population_rural, household_rural)
             self._add_state(state_name, util.state_abbreviations[i], 'total',
                     population_total, household_total)
+        data_directory = 'data/'
+        with open(data_directory+'gsp.csv') as gsp_file:
+            self._import_gsp_file(gsp_file)
 
     def _get_district_population_by_state(self, state_name, classification, population_type):
         query = self.session.query(sqlalchemy.func.sum(population_type)) \
@@ -277,7 +280,7 @@ class Database(object):
             self.connection.execute(insert, district.__dict__)
 
     #year_span indicates which year of gdp data we want to add to the database
-    def _import_state_gdp_file(self, input_file, year_span='2012-13'):
+    def _import_gsp_file(self, input_file, year_span='2012-13'):
         reader = csv.DictReader(input_file)
         headers = reader.next()
         insert = State.__table__.insert()
