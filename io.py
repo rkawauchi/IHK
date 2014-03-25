@@ -283,7 +283,6 @@ class Database(object):
     def _import_gsp_file(self, input_file, year_span='2012-13'):
         reader = csv.DictReader(input_file)
         headers = reader.next()
-        insert = State.__table__.insert()
         for row in reader:
             #we only care about the GSP (Gross State Product)
             #which is mislabeled as GDSP 
@@ -293,7 +292,7 @@ class Database(object):
             gsp = row[year_span]
             #add the gsp information to the relevant State
             for state in self.states:
-                if state.name == state_name and state.classification == total:
+                if state.name == state_name and state.classification == 'total':
                     state.gsp = gsp
 
     def get_all_states(self):
