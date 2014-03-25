@@ -285,7 +285,10 @@ class Database(object):
                 continue
             state_name = clean_state_name(row['State Name'])
             gsp = row[year_span]
-            self.states[state_name].gsp = gsp
+            #add the gsp information to the relevant State
+            for state in self.states:
+                if state.name = state_name and state.classification = total:
+                    state.gsp = gsp
 
     def get_all_states(self):
         return self.session.query(State).all()
