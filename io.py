@@ -148,13 +148,27 @@ class Database(object):
     def __init__(self, db_filename = 'database.sqlite3', import_data=False):
         self.engine, self.session = fetch_session(db_filename)
         self.connection = self.session.connection()
+        self.states = list()
         if import_data:
             #Creates tables if they don't exist.
             Base.metadata.create_all(self.engine)
             self._init_mpce()
             self._init_districts()
             self._init_states()
+            self._perform_insertions()
             self.session.commit()
+
+    def _perform_insertions(self):
+        table = State.__table__
+        insert = table.insert()
+        for state in states:
+            self.connection.execute(insert, name = state.name,
+                    abbreviation = state.abbreviation, 
+                    classification = state.classification, 
+                    population_total = state.population_total,
+                    household_total = state.household_total,
+                    gsp = state.gsp)
+            
 
     def _init_states(self):
         self._wipe_states()
@@ -190,12 +204,8 @@ class Database(object):
 
     def _add_state(self, name, abbreviation, classification,
             population_total, household_total):
-        table = State.__table__
-        insert = table.insert()
-        self.connection.execute(insert, name=name, abbreviation = abbreviation,
-                classification=classification, 
-                population_total=population_total,
-                household_total = household_total)
+        self.states.append(State(name, abbreviation, classification,
+            household_total, population_total)
 
     #import all MPCE data
     #single underscore implies that the method is private
