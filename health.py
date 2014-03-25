@@ -31,12 +31,12 @@ class Hospital:
 
     def __init__(self, location, popTargeted, nbPopPaying, nbPopFree, popTreated, expertise):
         self.location = location
-        #self.area = {'locations': area[0], 'adress': area[1]} #area is a list with first element = [regions], second element = adress
+        #expertise is probably a list of things the hospital can do
+        #Don't differentiate between "primary" and "secondary" yet
+        self.expertise = expertise
         self.popTargeted = popTargeted
         self.popScreened = nbPopPaying + nbPopFree
         self.popTreated = popTreated #surgeries
-        self.expertiseMain = expertise[0] # element is one of the main healthcare categories
-        self.expertiseSpecific = expertise[1] # element is a list of specialties for the main category
         self.equipmentLevel = equipmentLevel #cf. equipmentLevel index
         self.nbOutpatientsFree
         self.nbOutpatientPaying = nbPopPaying
