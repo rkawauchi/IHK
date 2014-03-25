@@ -211,7 +211,7 @@ class Database(object):
     def _add_state(self, name, abbreviation, classification,
             population_total, household_total):
         self.states.append(State(name, abbreviation, classification,
-            household_total, population_total)
+            household_total, population_total))
 
     #import all MPCE data
     #single underscore implies that the method is private
@@ -293,7 +293,7 @@ class Database(object):
             gsp = row[year_span]
             #add the gsp information to the relevant State
             for state in self.states:
-                if state.name = state_name and state.classification = total:
+                if state.name == state_name and state.classification == total:
                     state.gsp = gsp
 
     def get_all_states(self):
