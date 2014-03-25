@@ -291,13 +291,16 @@ def extract_mpce_info(filename):
     classification = filename_split[1]
     return mpce_type, classification
 
-def clean_state_name(filename):
+def clean_state_filename(filename):
     #The name is the first thing in the filename
     #it is always followed by a non-word character
     #sometimes & is in the name, so allow that 
     state = re.sub(r'\.CSV', '', filename)
     state = re.sub(r'\([A-Z&]*\)', '', state)
     state = re.sub(r'[()\d]', '', state)
+    return clean_state_name(state)
+
+def clean_state_name(state):
     state = re.sub('Nct of Delhi', 'Delhi', state)
     state = re.sub('JAMMU', 'Jammu', state)
     state = re.sub('Utter', 'Uttar Pradesh', state)
