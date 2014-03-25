@@ -345,7 +345,7 @@ def clean_state_name(state):
     state = re.sub('&', 'and', state)
     state = state.strip()
     if state not in util.state_names:
-        print 'Error: state name not cleaned', state
+        print 'Warning: state name not found while cleaning', state
     return state
 
 def fetch_session(db_filename):
