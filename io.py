@@ -52,9 +52,9 @@ class State(Base):
         self.gsp=gsp
 
     def __repr__(self):
-        return 'State({0}, {1}, {2}, {3}, {4})'.format(self.name,
+        return 'State({0}, {1}, {2}, {3}, {4}, {5})'.format(self.name,
                 self.abbreviation, self.classification, self.household_total,
-                self.population_total)
+                self.population_total, self.gsp)
 
     def to_dict(self):
         return {'name': self.name, 'abbreviation': self.abbreviation, 
