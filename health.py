@@ -147,3 +147,9 @@ class
 
 class 
 '''
+
+if __name__ == "__main__":
+    #This is very bad right now because the Solution __init__ method isn't
+    #fully developed yet. But this is an example of how to work with a class
+    aravind = Solution(location = 'Karnataka', expertise = 'eyecare',
+            start_date = 'TODO', end_date = None, is_operating = True)
