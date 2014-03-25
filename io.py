@@ -299,8 +299,13 @@ class Database(object):
     def get_all_states(self):
         return self.session.query(State).all()
 
-    def get_state_by_name(self, name):
-        return self.session.query(State).filter(State.name == name).first()
+    #The function specifies that it will return a single state, but
+    #the database contains three states (urban, rural, and total)
+    #Assume that if no other classification is specified, the total
+    #for the whole state is desired
+    def get_state_by_name(self, name, classification = 'total'):
+        return self.session.query(State).filter(State.name == name)\
+                .filter(State.classification == classification).first()
 
     def get_state_by_abbreviation(self, abbreviation):
         return self.session.query(State).filter(
