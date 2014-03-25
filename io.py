@@ -253,7 +253,7 @@ class Database(object):
         district_directory = 'data/districts/'
         for filename in os.listdir(district_directory):
             if filename.endswith('.CSV'):
-                state_name = clean_state_name(filename)
+                state_name = clean_state_filename(filename)
                 with open(district_directory + filename, 'r') as input_file:
                     self._import_district_file(input_file, state_name)
                 """
