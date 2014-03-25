@@ -113,13 +113,6 @@ class Mpce(Base):
         d_all.append(self.d7)
         d_all.append(self.d8)
         d_all.append(self.d9)
-        avg = 0
-        for i in xrange(1,10):
-            temp = d_all[i]-d_all[i-1]
-            avg = avg + temp
-        avg = avg/(len(d_all)-1)
-        d10 = self.d9 + avg
-        d_all.append(d10)
         return d_all
 
     def __repr__(self):
@@ -321,3 +314,4 @@ def fetch_session(db_filename):
 if __name__ == '__main__':
     data = Database()
     print data.session.query(Mpce).filter(Mpce.state=='Andhra Pradesh').limit(10).all()
+

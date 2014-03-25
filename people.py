@@ -2,6 +2,8 @@ import io
 from sqlalchemy import func
 import numpy as np
 from array import *
+from math import log10, log
+import random
 
 def state_name(state_name):
     return data.session.query(io.State).filter(io.State.name == state_name).all()
@@ -70,24 +72,34 @@ def exp_byState(state_name, class_type):
 
 def exp_Percentile(state_name, class_type):
     temp = data.session.query(io.Mpce).filter(io.Mpce.state == state_name).filter(io.Mpce.mpce_type == "mmrp").filter(io.Mpce.classification == class_type).first()
-    return temp.get_d_all(True)
+    return temp.get_d_all(False)
 
-def generate_people_expense(state_name, class_type):
-    #mean = exp_byState(state_name, class_type)[0][3]
-    #std = 10
+def generate_expense(state_name, class_type):
+    # mean = exp_byState(state_name, class_type)[0][3]
     # For testing, only generating 100,000th of population
     pop = 0.1 * (pop_byState(state_name, "Rural")[0][3])/100000
     listPercentile = exp_Percentile(state_name, class_type)
     expenseList=[]
-    for i in xrange(10):
+    for i in xrange(len(listPercentile)-1):
         genUniform = np.random.uniform(listPercentile[i], listPercentile[i+1], pop)
         expenseList.append(genUniform)
     return expenseList
+
+def generate_expense_log(state_name, class_type):
+    # For testing, only generating 100,000th of population
+    pop = (pop_byState(state_name, "Rural")[0][3])/100000
+    listPercentile = exp_Percentile(state_name, class_type)
+    logPercentile = []
+    # http://stackoverflow.com/questions/4561113/python-list-conversion
+    logPercentile[:] = [log(x) for x in listPercentile]
+    expenseList = np.random.lognormal(mean=np.mean(logPercentile), sigma=np.std(logPercentile), size=pop)
+    return expenseList
+
 
 if __name__ == '__main__':
     data = io.Database()
     print pop_byState("Tamil Nadu", "Rural")[0][3]
     print exp_byState("Tamil Nadu", "rural")[0][3]
-    print exp_Percentile("Tamil Nadu", "rural")
-    print generate_people_expense("Tamil Nadu", "rural")
+    print exp_Percentile("Andhra Pradesh", "rural")
+    print generate_expense_log("Andhra Pradesh", "rural")[1:10]
 
