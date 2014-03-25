@@ -40,14 +40,16 @@ class State(Base):
     classification = sqlalchemy.Column(sqlalchemy.String)
     household_total = sqlalchemy.Column(sqlalchemy.Integer)
     population_total = sqlalchemy.Column(sqlalchemy.Integer)
+    gsp = sqlalchemy.Column(sqlalchemy.Integer)
 
     def __init__(self, name, abbreviation, classification, household_total,
-            population_total):
+            population_total, gsp = 0):
         self.name=name
         self.abbreviation=abbreviation
         self.classification=classification
         self.household_total=household_total
         self.population_total=population_total
+        self.gsp=gsp
 
     def __repr__(self):
         return 'State({0}, {1}, {2}, {3}, {4})'.format(self.name,
@@ -58,7 +60,8 @@ class State(Base):
         return {'name': self.name, 'abbreviation': self.abbreviation, 
                 'classification': self.classification,
                 'household_total': self.household_total,
-                'population_total': self.population_total}
+                'population_total': self.population_total,
+                'gsp': self.gsp}
 
 class Mpce(Base):
     __tablename__ = 'mpce'
