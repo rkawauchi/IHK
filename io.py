@@ -285,8 +285,8 @@ class Database(object):
         headers = reader.next()
         for row in reader:
             #we only care about the GSP (Gross State Product)
-            #which is mislabeled as GDSP 
-            if not row['Sector'] == 'GDSP (2004-05 Prices)':
+            #which is mislabeled as GSDP 
+            if not row['Sector'] == 'GSDP (2004-05 Prices)':
                 continue
             state_name = clean_state_name(row['State Name'])
             gsp = row[year_span]
