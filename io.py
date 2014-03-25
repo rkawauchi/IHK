@@ -263,6 +263,20 @@ class Database(object):
                     households, population)
             self.connection.execute(insert, district.__dict__)
 
+    #year_span indicates which year of gdp data we want to add to the database
+    def _import_state_gdp_file(self, input_file, year_span='2012-13'):
+        reader = csv.DictReader(input_file)
+        headers = reader.next()
+        insert = State.__table__.insert()
+        for row in reader:
+            #we only care about the GSP (Gross State Product)
+            #which is mislabeled as GDSP 
+            if not row['Sector'] == 'GDSP (2004-05 Prices)':
+                continue
+            state_name = clean_state_name(row['State Name'])
+            gsp = row[year_span]
+            self.states[state_name].gsp = gsp
+
     def get_all_states(self):
         return self.session.query(State).all()
 
