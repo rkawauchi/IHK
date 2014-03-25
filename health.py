@@ -19,61 +19,56 @@ class Solution:
         self.endDate = "N/A" #system is still operating
         self.operatingStatus = 'Y'
 
-    class Hopital:
-        def __init__(self, name, area, popTargeted, nbPopPaying, nbPopFree, popTreated, expertise)
-            self.name = name
-            self.area = {'locations': area[0], 'adress': area[1]} #area is a list with first element = [regions], second element = adress
-            self.popTargeted = popTargeted
-            self.popScreened = nbPopPaying + nbPopFree
-            self.popTreated = popTreated #surgeries
-            self.expertiseMain = expertise[0] # element is one of the main healthcare categories
-            self.expertiseSpecific = expertise[1] # element is a list of specialties for the main category
-            self.equipmentLevel = equipmentLevel #cf. equipmentLevel index
-            self.nbOutpatientsFree
-            self.nbOutpatientPaying = nbPopPaying
-            self.nbSurgeryFree =
-            self.nbSurgerySubsidized =
-            self.nbSurgeryPay =
-            self.priceSurgeryPay = 
-            self.priceSurgerySubsidized = 900 #750*88%+2000*12% (balance between ICCE and ECCE)
-            self.priceSurgeryFree = 0
-            self.nbPopFree = nbPopFree #check sum free + paid = Screened
-    
+class Hopital:
+    def __init__(self, name, area, popTargeted, nbPopPaying, nbPopFree, popTreated, expertise)
+        self.name = name
+        self.area = {'locations': area[0], 'adress': area[1]} #area is a list with first element = [regions], second element = adress
+        self.popTargeted = popTargeted
+        self.popScreened = nbPopPaying + nbPopFree
+        self.popTreated = popTreated #surgeries
+        self.expertiseMain = expertise[0] # element is one of the main healthcare categories
+        self.expertiseSpecific = expertise[1] # element is a list of specialties for the main category
+        self.equipmentLevel = equipmentLevel #cf. equipmentLevel index
+        self.nbOutpatientsFree
+        self.nbOutpatientPaying = nbPopPaying
+        self.nbSurgeryFree =
+        self.nbSurgerySubsidized =
+        self.nbSurgeryPay =
+        self.priceSurgeryPay = 
+        self.priceSurgerySubsidized = 900 #750*88%+2000*12% (balance between ICCE and ECCE)
+        self.priceSurgeryFree = 0
+        self.nbPopFree = nbPopFree #check sum free + paid = Screened
 
 
 
 
 
-    #possible merge 
-    class CommunityEye:
-        def __init__()
-            self.nbOutpatients
-            self.costRegistration = 10
 
-    class VisionCenter:
-        def __init__()
-            self.nbOutpatients
-            self.costRegistration = 10
+#possible merge 
+class CommunityEye:
+    def __init__()
+        self.nbOutpatients
+        self.costRegistration = 10
 
-    class OutreachCamp:
-        def __init__()
-            self.nbOutpatients
-            self.costRegistration = 0
+class VisionCenter:
+    def __init__()
+        self.nbOutpatients
+        self.costRegistration = 10
 
-
-    Surgery (only Hospital)
-            - Free 
-            - Subsidized
-            - Pay
-
-    OutPatient
-            - Free (Hospital, Camps)
-            - Paying (Hospital, VisionCenter(10Rpee), CommunityEyeClinic (10 Rpee)
+class OutreachCamp:
+    def __init__()
+        self.nbOutpatients
+        self.costRegistration = 0
 
 
+Surgery (only Hospital)
+        - Free 
+        - Subsidized
+        - Pay
 
-
-
+OutPatient
+        - Free (Hospital, Camps)
+        - Paying (Hospital, VisionCenter(10Rpee), CommunityEyeClinic (10 Rpee)
 
 class Cost:
     def __init__(self, Operation, Salary, Asset)
