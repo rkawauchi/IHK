@@ -29,8 +29,9 @@ class Solution:
 
 class Hospital:
 
-    def __init__(self, area, popTargeted, nbPopPaying, nbPopFree, popTreated, expertise)
-        self.area = {'locations': area[0], 'adress': area[1]} #area is a list with first element = [regions], second element = adress
+    def __init__(self, location, popTargeted, nbPopPaying, nbPopFree, popTreated, expertise):
+        self.location = location
+        #self.area = {'locations': area[0], 'adress': area[1]} #area is a list with first element = [regions], second element = adress
         self.popTargeted = popTargeted
         self.popScreened = nbPopPaying + nbPopFree
         self.popTreated = popTreated #surgeries
