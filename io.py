@@ -164,7 +164,7 @@ class Database(object):
     def _perform_insertions(self):
         table = State.__table__
         insert = table.insert()
-        for state in states:
+        for state in self.states:
             self.connection.execute(insert, name = state.name,
                     abbreviation = state.abbreviation, 
                     classification = state.classification, 
