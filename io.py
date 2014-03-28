@@ -353,7 +353,23 @@ def fetch_session(db_filename):
     session = orm.sessionmaker(bind=engine)
     return engine, orm.scoped_session(session)
 
+def demonstrate_queries(data):
+    mizoram = data.get_state_by_name('Mizoram')
+    karnataka = data.get_state_by_abbreviation('KA')
+
+    print mizoram
+    print karnataka
+
+    mizoram_districts = data.get_districts_by_state_name('Mizoram')
+    same_mizoram_districts = data.get_districts_by_state_name(mizoram.name)
+    also_same_mizoram_districts = data.get_districts_by_state(mizoram)
+    
+    print mizoram_districts
+    print mizoram_districts == also_same_mizoram_districts
+
+    #for state in data.get_all_states():
+    #    print state.to_dict()
+
 if __name__ == '__main__':
     data = Database()
     print data.session.query(Mpce).filter(Mpce.state=='Andhra Pradesh').limit(10).all()
-
