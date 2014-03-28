@@ -13,9 +13,8 @@ def initialize_argument_parser():
             help='Recreate database from raw data files')
     return vars(parser.parse_args())
 
-if __name__ == "__main__":
-    args = initialize_argument_parser()
-    data = io.Database(import_data=args['import_data'])
+#Put test code here so it doesn't clutter up the main method
+def test(data):
     test_state_name = 'Meghalaya'
     test_state = data.get_state_by_name(test_state_name)
     print 'test_state', test_state
@@ -23,4 +22,10 @@ if __name__ == "__main__":
     print 'test:', test_district.name, 'in', test_state.name
     #people.generate_district_population(data, test_state, test_district)
     
-    #demonstrate_queries(data)
+    #util.demonstrate_queries(data)
+    
+
+if __name__ == "__main__":
+    args = initialize_argument_parser()
+    data = io.Database(import_data=args['import_data'])
+    test(data)
