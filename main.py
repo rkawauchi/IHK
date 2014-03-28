@@ -1,17 +1,19 @@
 import argparse
 import io
+import util
 import people
 
 #Define commmand line arguments which can be passed to main.py
 #Currently irrelevant, but could be useful later
 def initialize_argument_parser():
     parser = argparse.ArgumentParser(description='Simulate Indian health solutions')
-    parser.add_argument('-s', '--solution', dest='solution', 
+    parser.add_argument('--solution', dest='solution', 
             help='the solution to test', default='health kiosk')
     parser.add_argument('-i', '--import-data', dest='import_data',
             action='store_true', default=False,
             help='Recreate database from raw data files')
-    parser.add_argument('-s', '--test-state', dest='test_state', type=str)
+    parser.add_argument('-s', '--test-state', dest='test_state', type=str,
+            choices = util.state_names)
     parser.add_argument('-d', '--test-district', dest='test_district', type=str)
     return vars(parser.parse_args())
 
