@@ -43,6 +43,10 @@ def insert_wave(data, state, district, mpce, insertion_count):
 
 #generate a dict of values corresponding to the attributes of a Person
 def generate_person_dict(data, state, district, mpce):
+    person = generate_person(data, state, district, mpce)
+    return person.to_dict()
+
+def generate_person(data, state, district, mpce):
     #This is where math and statistics comes in
     money = mpce.mpce_average
     #Just a number in a uniform distribution from 0-1
@@ -52,9 +56,9 @@ def generate_person_dict(data, state, district, mpce):
     district_name = district.name
     state_name = state.name
     classification = 'TODO'
-    return {'money': money, 'diabetes': diabetes,
-            'cardio': cardio, 'district': district_name, 'state': state_name,
-            'classification': classification}
+    person = io.Person(money, diabetes, cardio, district, state, classification)
+    return person
+    
 
 #THIS METHOD DOES NOT WORK
 #It is kept as a reminder of why we can't generate the entire population at once
