@@ -19,10 +19,13 @@ def initialize_argument_parser():
 
 #Put test code here so it doesn't clutter up the main method
 def test(data, args):
-    test_state_name = 'Meghalaya'
+    test_state_name = args['test_state']
     test_state = data.get_state_by_name(test_state_name)
     print 'test_state', test_state
-    test_district = data.get_districts_by_state_name(test_state_name)[0]
+    if args['test_district']:
+        test_district = data.get_district_by_name(args['test_district'])
+    else:
+        test_district = data.get_districts_by_state_name(test_state_name)[0]
     print 'test:', test_district.name, 'in', test_state.name
     #people.generate_district_population(data, test_state, test_district)
     
