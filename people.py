@@ -53,10 +53,9 @@ def generate_person(data, state, district, mpce):
     #Obviously needs to be changed later
     diabetes = random.random()
     cardio = random.random()
-    district_name = district.name
-    state_name = state.name
     classification = 'TODO'
-    person = io.Person(money, diabetes, cardio, district, state, classification)
+    person = io.Person(money, diabetes, cardio, district.name, state.name,
+            classification)
     return person
     
 
