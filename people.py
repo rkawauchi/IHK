@@ -5,28 +5,6 @@ from array import *
 from math import log10, log
 import random
 
-#Accept district and state objects, plus the Database object from io.py
-def generate_district_population(data, state, district):
-    mpce = data.session.query(io.Mpce).filter_by(state=state.name).first()
-    #Bulk insert as per http://docs.sqlalchemy.org/en/rel_0_8/faq.html
-    #split into multiple insertion waves due to memory limitations
-    insertions_per_wave = 1000000
-    #insert the population in waves of 1000000 people 
-    for i in xrange(district.population_total/insertions_per_wave):
-        insert_wave(data, state, district, mpce, insertions_per_wave)
-        print 'wave inserted'
-    #insert the last few people
-    insert_wave(data, state, district, mpce, district.population_total % insertions_per_wave)
-    #commit the changes; otherwise, they will be wasted!
-    data.session.commit()
-    print 'Population of', district.name, 'inserted'
-
-def insert_wave(data, state, district, mpce, insertion_count):
-    insert = io.Person.__table__.insert()
-    data.engine.execute(insert, 
-            [generate_person_dict(data, state, district, mpce)
-            for j in xrange(insertion_count)])
-
 #generate a dict of values corresponding to the attributes of a Person
 def generate_person_dict(data, state, district, mpce):
     person = generate_person(data, state, district, mpce)

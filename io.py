@@ -334,8 +334,9 @@ class Database(object):
     #check whether a district already has population data 
     def exist_people_from_district(self, district_name):
         return bool(self.session.query(Person).filter(
-                Person.name == district_name).first())
+                Person.district == district_name).first())
 
+    #This will take a long time
     def populate_all(self):
         for state in data.session.query(io.State):
             generate_state_population(data, state)
@@ -348,15 +349,36 @@ class Database(object):
             populate_district(data, district, state, force)
 
     #Create a population distribution for the population of a given district
-    #If the district doesn't already have people in it
     def populate_district(self, district, state = None, force=False):
-        if force or not self.exist_people_from_district(district.name):
-            #wipe the existing distribution; don't generate double people 
-            self._delete_population_district(district)
-            if state is None:
-                state = self.get_state_by_name(district.state)
-            people.generate_district_population(self, state,
-                    district)
+        #If the district already has people in it, don't insert more
+        # unless forced to
+        if self.exist_people_from_district(district.name) and not force:
+            return
+        #wipe the existing distribution; don't generate double people 
+        self._delete_population_district(district)
+        if state is None:
+            state = self.get_state_by_name(district.state)
+
+        mpce = self.session.query(Mpce).filter_by(state=state.name).first()
+        #Bulk insert as per http://docs.sqlalchemy.org/en/rel_0_8/faq.html
+        #split into multiple insertion waves due to memory limitations
+        insertions_per_wave = 1000000
+        #insert the population in waves of 1000000 people 
+        for i in xrange(district.population_total/insertions_per_wave):
+            self._insert_population_wave(data, state, district, mpce,
+                    insertions_per_wave)
+            print 'wave inserted'
+        #insert the last few people
+        self._insert_population_wave(state, district, mpce, district.population_total % insertions_per_wave)
+        #commit the changes; otherwise, they will be wasted!
+        self.session.commit()
+        print 'Population of', district.name, 'inserted'
+
+    def _insert_population_wave(self, state, district, mpce, insertion_count):
+        insert = Person.__table__.insert()
+        self.engine.execute(insert, 
+                [people.generate_person_dict(self, state, district, mpce)
+                for j in xrange(insertion_count)])
 
     def _delete_population_district(self, district):
         table = Person.__table__
