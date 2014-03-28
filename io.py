@@ -5,6 +5,7 @@ import util
 import csv
 import os
 import re
+import people
 
 Base = declarative.declarative_base()
 
@@ -329,6 +330,19 @@ class Database(object):
     def get_district_by_name(self, district_name):
         return self.session.query(District).filter(
                 District.name == district_name).first()
+
+    #check whether a district already has population data 
+    def exist_people_from_district(self, district_name):
+        return bool(self.session.query(Person).filter(
+                Person.name == district_name).first())
+
+    #Create a population distribution for the population of a given district
+    #If the district doesn't already have people in it
+    def init_district(self, district, force=False):
+        if force or not self.exist_people_from_district(district.name):
+            state = self.get_state_by_name(district.state)
+            people.generate_district_population(self, state,
+                    district)
 
 #given a filename, determine classification and mpce_type
 #filename is assumed to be of a format like "mmrp_rural.csv" 
