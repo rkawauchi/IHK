@@ -338,7 +338,7 @@ class Database(object):
 
     #Create a population distribution for the population of a given district
     #If the district doesn't already have people in it
-    def init_district(self, district, force=False):
+    def populate_district(self, district, force=False):
         if force or not self.exist_people_from_district(district.name):
             state = self.get_state_by_name(district.state)
             people.generate_district_population(self, state,

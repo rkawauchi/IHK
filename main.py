@@ -27,7 +27,7 @@ def test(data, args):
         test_district = data.get_districts_by_state_name(test_state_name)[0]
     print 'test:', test_district.name, 'in', test_state.name
     
-    data.init_district(test_district, force=True)
+    data.populate_district(test_district, force=True)
     
     #util.demonstrate_queries(data)
 
