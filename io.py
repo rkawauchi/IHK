@@ -144,6 +144,14 @@ class Person(Base):
         self.state = state
         self.classification = classification
 
+    def to_dict(self):
+        return {'money': self.money, 
+                'diabetes': self.diabetes,
+                'cardio': self.cardio,
+                'district': self.district,
+                'state': self.state,
+                'classification': self.classification}
+
     #missing proper __repr__
 
 class Database(object):
