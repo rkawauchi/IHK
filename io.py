@@ -318,6 +318,10 @@ class Database(object):
         return self.session.query(District).filter(
                 District.state == state.name).all()
 
+    def get_district_by_name(self, district_name):
+        return self.session.query(District).filter(
+                District.name == district_name).first()
+
 #given a filename, determine classification and mpce_type
 #filename is assumed to be of a format like "mmrp_rural.csv" 
 #because that's how I named them.
