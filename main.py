@@ -1,7 +1,6 @@
 import argparse
 import io
 import util
-import people
 
 #Define commmand line arguments which can be passed to main.py
 #Currently irrelevant, but could be useful later
@@ -27,7 +26,8 @@ def test(data, args):
     else:
         test_district = data.get_districts_by_state_name(test_state_name)[0]
     print 'test:', test_district.name, 'in', test_state.name
-    #people.generate_district_population(data, test_state, test_district)
+    
+    data.init_district(test_district, force=True)
     
     #util.demonstrate_queries(data)
 
