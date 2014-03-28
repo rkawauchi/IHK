@@ -8,9 +8,11 @@ def initialize_argument_parser():
     parser = argparse.ArgumentParser(description='Simulate Indian health solutions')
     parser.add_argument('-s', '--solution', dest='solution', 
             help='the solution to test', default='health kiosk')
-    parser.add_argument('--import-data', dest='import_data',
+    parser.add_argument('-i', '--import-data', dest='import_data',
             action='store_true', default=False,
             help='Recreate database from raw data files')
+    parser.add_argument('-s', '--test-state', dest='test_state', type=str)
+    parser.add_argument('-d', '--test-district', dest='test_district', type=str)
     return vars(parser.parse_args())
 
 #Put test code here so it doesn't clutter up the main method
