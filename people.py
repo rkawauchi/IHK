@@ -5,20 +5,6 @@ from array import *
 from math import log10, log
 import random
 
-def state_name(state_name):
-    return data.session.query(io.State).filter(io.State.name == state_name).all()
-
-def generate_population(data):
-    for state in data.session.query(io.State):
-        generate_state_population(data, state)
-
-def generate_state_population(data, state):
-    #get only the "total population" entry for each district
-    for district in data.session.query(io.District).filter(
-            io.District.state == state.name).filter(
-            io.District.classification == 'Total'):
-        generate_district_population(data, state, district)
-
 #Accept district and state objects, plus the Database object from io.py
 def generate_district_population(data, state, district):
     mpce = data.session.query(io.Mpce).filter_by(state=state.name).first()

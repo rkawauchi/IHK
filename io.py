@@ -336,20 +336,34 @@ class Database(object):
         return bool(self.session.query(Person).filter(
                 Person.name == district_name).first())
 
+    def populate_all(self):
+        for state in data.session.query(io.State):
+            generate_state_population(data, state)
+
+    def populate_state(self, state, force=False):
+        #get only the "total population" entry for each district
+        for district in data.session.query(io.District).filter(
+                io.District.state == state.name).filter(
+                io.District.classification == 'total'):
+            populate_district(data, district, state, force)
+
     #Create a population distribution for the population of a given district
     #If the district doesn't already have people in it
-    def populate_district(self, district, force=False):
+    def populate_district(self, district, state = None, force=False):
         if force or not self.exist_people_from_district(district.name):
             #wipe the existing distribution; don't generate double people 
-            table = Person.__table__
-            delete = table.delete().where(
-                    table.c.district == district.name)
-            self.connection.execute(delete)
-            self.session.commit()
-            print self.session.query(Person).limit(10).all()
-            state = self.get_state_by_name(district.state)
+            self._delete_population_district(district)
+            if state is None:
+                state = self.get_state_by_name(district.state)
             people.generate_district_population(self, state,
                     district)
+
+    def _delete_population_district(self, district):
+        table = Person.__table__
+        delete = table.delete().where(
+                table.c.district == district.name)
+        self.connection.execute(delete)
+        self.session.commit()
 
 #given a filename, determine classification and mpce_type
 #filename is assumed to be of a format like "mmrp_rural.csv" 
