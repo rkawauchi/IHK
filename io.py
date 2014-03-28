@@ -340,6 +340,13 @@ class Database(object):
     #If the district doesn't already have people in it
     def populate_district(self, district, force=False):
         if force or not self.exist_people_from_district(district.name):
+            #wipe the existing distribution; don't generate double people 
+            table = Person.__table__
+            delete = table.delete().where(
+                    table.c.district == district.name)
+            self.connection.execute(delete)
+            self.session.commit()
+            print self.session.query(Person).limit(10).all()
             state = self.get_state_by_name(district.state)
             people.generate_district_population(self, state,
                     district)
