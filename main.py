@@ -41,15 +41,16 @@ def test(data, args):
     #Get the MPCE data for the district for debugging purposes
     #This will not be done in the final version
     mpce = data.session.query(io.Mpce).filter_by(state=test_state.name).first()
-    print mpce.mpce_average
-    filter_test = util.FilterPopulation(mpce.mpce_average*0, 0, 0)
+    #print mpce.mpce_average
+    filter_test = util.FilterPopulation(mpce.mpce_average*0, 1, 1)
 
-    #Create a hospital to treat the population
-    treatable_symptoms = ['diabetes', 'cardio']
-    hospital = health.Hospital(test_district, treatable_symptoms, None)
+    #Create a solution to treat the population
+    solution = health.Aravind()
+    districts = [data.get_district_by_name(district_name) for district_name in solution.get_district_names()] 
+    hospitals = solution.get_hospitals()
 
-    #Treat the population using the hospital
-    treated_population = [hospital.treat(person) if filter_test.filter_all(person) else person for person in population]
+    #Treat the population using the solution
+    treated_population = [hospitals[person.district].treat(person) if filter_test.filter_all(person) else person for person in population]
 
     #Perform analytics on the treated population
     print 'Average diabetes in treated population', avg([person.diabetes for person in treated_population])
