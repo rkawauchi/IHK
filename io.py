@@ -338,14 +338,14 @@ class Database(object):
 
     #This will take a long time
     def populate_all(self):
-        for state in data.session.query(io.State):
+        for state in data.session.query(State):
             generate_state_population(data, state)
 
     def populate_state(self, state, force=False):
         #get only the "total population" entry for each district
-        for district in data.session.query(io.District).filter(
-                io.District.state == state.name).filter(
-                io.District.classification == 'total'):
+        for district in data.session.query(District).filter(
+                District.state == state.name).filter(
+                District.classification == 'total'):
             populate_district(data, district, state, force)
 
     #Create a population distribution for the population of a given district
