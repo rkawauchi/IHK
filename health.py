@@ -47,6 +47,7 @@ class Hospital:
         self.nbPopFree = nbPopFree #check sum free + paid = Screened
         """
 
+'''
 #possible merge 
 class CommunityEye:
     def __init__()
@@ -96,7 +97,7 @@ class Cost:
             self.costAssetsYearly = '1000' #find in Aravind financials
             self.costEquipment = '1000'
 
-class HumanResources: '''#number of personel per structure
+class HumanResources: """#number of personel per structure
     def __init__(self)
         self.Personel = 999
         self.TrainingLevel = 999
@@ -135,6 +136,7 @@ class
     treatment_rate = 
 
 class 
+"""
 '''
 
 if __name__ == "__main__":
