@@ -27,10 +27,13 @@ def test(data, args):
         test_district = data.get_districts_by_state_name(test_state_name)[0]
     print 'test:', test_district.name, 'in', test_state.name
     
-    data.populate_district(test_district, force=True)
-    
-    #util.demonstrate_queries(data)
+    data.populate_district(test_district)
+    population = data.get_population_district(test_district.name, limit=10000)
+    print 'Testing population of', len(population), 'people'
 
+    filtered_population = util.filter_by_all(population)
+    print 'Filtered down to', len(filtered_population), 'people'
+    
 if __name__ == "__main__":
     args = initialize_argument_parser()
     data = io.Database(import_data=args['import_data'])
