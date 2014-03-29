@@ -1,6 +1,7 @@
 import argparse
 import io
 import util
+import health
 
 #Define commmand line arguments which can be passed to main.py
 #Currently irrelevant, but could be useful later
@@ -15,6 +16,9 @@ def initialize_argument_parser():
             choices = util.state_names)
     parser.add_argument('-d', '--test-district', dest='test_district', type=str)
     return vars(parser.parse_args())
+
+def avg(x):
+    return float(sum(x)/len(x))
 
 #Put test code here so it doesn't clutter up the main method
 def test(data, args):
@@ -33,10 +37,17 @@ def test(data, args):
 
     mpce = data.session.query(io.Mpce).filter_by(state=test_state.name).first()
     print mpce.mpce_average
-    filter_test = util.FilterPopulation(mpce.mpce_average, 0, 0)
+    filter_test = util.FilterPopulation(mpce.mpce_average*0, 0, 0)
 
-    filtered_population = filter(filter_test.filter_all, population)
-    print 'Filtered down to', len(filtered_population), 'people'
+    #filtered_population = filter(filter_test.filter_all, population)
+    #print 'Filtered down to', len(filtered_population), 'people'
+
+    treatable_symptoms = ['diabetes', 'cardio']
+    hospital = health.Hospital(test_district, treatable_symptoms, None)
+
+    treated_population = [hospital.treat(person) if filter_test.filter_all(person) else person for person in population]
+
+    print 'Average diabetes in treated population', avg([person.diabetes for person in treated_population])
     
 if __name__ == "__main__":
     args = initialize_argument_parser()
