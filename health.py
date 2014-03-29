@@ -37,8 +37,11 @@ class Aravind(object):
 
     def _init_hospitals(self):
         self.hospitals = dict()
+        treatment_cost = 100
+        treatable_symptoms = ['diabetes']
         for district_name in self.district_names:
-            self.hospitals[district_name] = Hospital(district_name, ['diabetes'])
+            self.hospitals[district_name] = Hospital(district_name, 
+                    treatable_symptoms, treatment_cost)
 
     def get_district_names(self):
         return self.district_names
@@ -48,11 +51,13 @@ class Aravind(object):
 
 class Hospital(object):
 
-    def __init__(self, location, treatable_symptoms, equipment_level = None):
+    def __init__(self, location, treatable_symptoms, treatment_cost, 
+            equipment_level = None):
         self.location = location
         #treatable_symptoms is a list of symptoms the hospital can treat
         self.treatable_symptoms = treatable_symptoms
         self.equipment_level = equipment_level #cf. equipment_level index
+        self.treatment_cost = treatment_cost
 
     def treat(self, person):
         for symptom in self.treatable_symptoms:
@@ -62,6 +67,7 @@ class Hospital(object):
             improved_symptom = max(getattr(person, symptom), 0.5)
             #Change the patient's symptom so it is improved by the hospital
             setattr(person, symptom, improved_symptom)
+            person.money -= self.treatment_cost
         return person
 
         """
