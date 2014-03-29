@@ -131,7 +131,7 @@ class Person(Base):
     #the data type may change laters
     diabetes = sqlalchemy.Column(sqlalchemy.Float)
     cardio = sqlalchemy.Column(sqlalchemy.Float)
-    district = sqlalchemy.Column(sqlalchemy.String)
+    district = sqlalchemy.Column(sqlalchemy.String, index=True)
     state = sqlalchemy.Column(sqlalchemy.String)
     #urban or rural
     classification = sqlalchemy.Column(sqlalchemy.String)
