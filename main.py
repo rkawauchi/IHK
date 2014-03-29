@@ -31,7 +31,7 @@ def test(data, args):
     population = data.get_population_district(test_district.name, limit=10000)
     print 'Testing population of', len(population), 'people'
 
-    filtered_population = util.filter_by_all(population)
+    filtered_population = filter(util.filter_population_function, population)
     print 'Filtered down to', len(filtered_population), 'people'
     
 if __name__ == "__main__":
