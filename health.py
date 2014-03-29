@@ -37,9 +37,10 @@ class Hospital:
 
     def treat(self, person):
         for symptom in self.treatable_symptoms:
-            #Any patient treated by this hospital has the symptom set to 0.5
+            #Any patient treated by this hospital has their symptoms increased
+            # to a minimum of 0.5
             #This is obviously a placeholder for a more nuanced approach
-            improved_symptom = 0.5
+            improved_symptom = max(getattr(person, symptom), 0.5)
             #Change the patient's symptom so it is improved by the hospital
             setattr(person, symptom, improved_symptom)
         return person
