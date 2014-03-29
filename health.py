@@ -27,9 +27,28 @@ class Solution(object):
         self.operatingStatus = 'Y'
         """
 
+class Aravind(object):
+
+    def __init__(self):
+        self.district_names = ['Madurai', 'Theni', 'Tirunelveli', 
+                'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiripur', 'Salem',
+                'Tuticorin', 'Udumalaipet']
+        self._init_hospitals()
+
+    def _init_hospitals(self):
+        self.hospitals = dict()
+        for district_name in self.district_names:
+            self.hospitals[district_name] = Hospital(district_name, 'diabetes')
+
+    def get_district_names(self):
+        return self.district_names
+
+    def get_hospitals(self):
+        return self.hospitals
+
 class Hospital(object):
 
-    def __init__(self, location, treatable_symptoms, equipment_level):
+    def __init__(self, location, treatable_symptoms, equipment_level = None):
         self.location = location
         #treatable_symptoms is a list of symptoms the hospital can treat
         self.treatable_symptoms = treatable_symptoms
