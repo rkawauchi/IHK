@@ -10,7 +10,7 @@ Hospital::equipmentLevel information
 5 = Transport arranged for people
 """
 
-class Solution:
+class Solution(object):
     def __init__(self, location, expertise, start_date, end_date, is_operating):
         self.location = location
         self.expertise = expertise
@@ -27,7 +27,7 @@ class Solution:
         self.operatingStatus = 'Y'
         """
 
-class Hospital:
+class Hospital(object):
 
     def __init__(self, location, treatable_symptoms, equipment_level):
         self.location = location
