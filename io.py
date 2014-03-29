@@ -387,6 +387,10 @@ class Database(object):
         self.connection.execute(delete)
         self.session.commit()
 
+    def get_population_district(self, district_name, limit=None):
+        return self.session.query(Person).filter(
+                Person.district == district_name).limit(limit).all()
+
 #given a filename, determine classification and mpce_type
 #filename is assumed to be of a format like "mmrp_rural.csv" 
 #because that's how I named them.
