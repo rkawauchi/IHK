@@ -8,12 +8,13 @@ state_abbreviations = ['AP', 'AR', 'AS', 'BR', 'CT', 'DL', 'GA', 'GJ', 'HR', 'HP
 
 class FilterPopulation(object):
     
-    def __init__(self, diabetes, cardio):
+    def __init__(self, cost, diabetes, cardio):
+        self.cost = cost
         self.diabetes = diabetes
         self.cardio = cardio
 
     def filter_all(self, person):
-        return self.filter_health(person)
+        return self.filter_health(person) and self.filter_money(person)
 
     def filter_health(self, person):
         return self.filter_diabetes(person) or self.filter_cardio(person)
@@ -21,6 +22,8 @@ class FilterPopulation(object):
     def filter_diabetes(self, person):
         return person.diabetes >= self.diabetes
 
-
     def filter_cardio(self, person):
         return person.cardio >= self.cardio
+
+    def filter_money(self, person):
+        return person.money>=self.cost
