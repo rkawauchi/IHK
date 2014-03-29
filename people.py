@@ -60,4 +60,4 @@ if __name__ == '__main__':
     print 'pop_by_state', pop_by_state("Tamil Nadu", "rural")[0][3]
     print 'exp_by_state', exp_by_state("Tamil Nadu", "rural")[0][3]
     print 'exp_percentile', exp_percentile("Goa", "rural")
-    print 'expense', generate_expense("Goa", "rural")
+    print 'expense', generate_expense_log("Goa", "rural")
