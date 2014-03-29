@@ -5,3 +5,26 @@ state_abbreviations = ['AP', 'AR', 'AS', 'BR', 'CT', 'DL', 'GA', 'GJ', 'HR', 'HP
 
 #Other utility methods (that aren't input/output) which multiple 
 #files might need go here
+
+#thresholds is a dict containing relevant thresholds
+def filter_by_all(population, thresholds = None):
+    if thresholds is None:
+        thresholds = default_thresholds()
+    filtered_population = list()
+    for person in population:
+        if health_filter(person, thresholds):
+            filtered_population.append(person)
+    return filtered_population
+
+def default_thresholds():
+    return {'diabetes': 0.1,
+            'cardio': 0.1}
+
+def diabetes_filter(person, thresholds):
+    return person.diabetes >= thresholds['diabetes']
+    
+def cardio_filter(person, thresholds):
+    return person.cardio >= thresholds['cardio']
+
+def health_filter(person, thresholds):
+    return diabetes_filter(person, thresholds) or cardio_filter(person, thresholds)
