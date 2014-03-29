@@ -12,7 +12,7 @@ def generate_person_dict(data, state, district, mpce):
 
 def generate_person(data, state, district, mpce):
     #This is where math and statistics comes in
-    money = mpce.mpce_average
+    money = randomize_money(mpce)
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
     diabetes = random.random()
@@ -21,6 +21,13 @@ def generate_person(data, state, district, mpce):
     person = io.Person(money, diabetes, cardio, district.name, state.name,
             classification)
     return person
+
+#Note that this is merely a demonstration of how to randomly generate money
+# for a Person. This will be rewritten later!
+def randomize_money(mpce):
+    #generate random value between 0 and double the MPCE average
+    #The mean is therefore the MPCE average
+    return random.random()*mpce.mpce_average*2
 
 ######################## below by RieK #########################
 
