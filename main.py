@@ -31,22 +31,27 @@ def test(data, args):
         test_district = data.get_districts_by_state_name(test_state_name)[0]
     print 'test:', test_district.name, 'in', test_state.name
     
+    #Generate the population
     data.populate_district(test_district)
+
+    #Fetch the population from the database
     population = data.get_population_district(test_district.name, limit=10000)
     print 'Testing population of', len(population), 'people'
 
+    #Get the MPCE data for the district for debugging purposes
+    #This will not be done in the final version
     mpce = data.session.query(io.Mpce).filter_by(state=test_state.name).first()
     print mpce.mpce_average
     filter_test = util.FilterPopulation(mpce.mpce_average*0, 0, 0)
 
-    #filtered_population = filter(filter_test.filter_all, population)
-    #print 'Filtered down to', len(filtered_population), 'people'
-
+    #Create a hospital to treat the population
     treatable_symptoms = ['diabetes', 'cardio']
     hospital = health.Hospital(test_district, treatable_symptoms, None)
 
+    #Treat the population using the hospital
     treated_population = [hospital.treat(person) if filter_test.filter_all(person) else person for person in population]
 
+    #Perform analytics on the treated population
     print 'Average diabetes in treated population', avg([person.diabetes for person in treated_population])
     
 if __name__ == "__main__":
