@@ -262,7 +262,7 @@ class Database(object):
         district_directory = 'data/districts/'
         for filename in os.listdir(district_directory):
             if filename.endswith('.CSV'):
-                state_name = clean_state_filename(filename)
+                state_name = util.clean_state_filename(filename)
                 with open(district_directory + filename, 'r') as input_file:
                     self._import_district_file(input_file, state_name)
                 """
@@ -297,7 +297,7 @@ class Database(object):
             #which is mislabeled as GSDP 
             if not row['Sector'] == 'GSDP (2004-05 Prices)':
                 continue
-            state_name = clean_state_name(row['State Name'])
+            state_name = util.clean_state_name(row['State Name'])
             gsp = row[year_span]
             #add the gsp information to the relevant State
             for state in self.states:
@@ -400,26 +400,6 @@ def extract_mpce_info(filename):
     mpce_type = filename_split[0]
     classification = filename_split[1]
     return mpce_type, classification
-
-def clean_state_filename(filename):
-    #The name is the first thing in the filename
-    #it is always followed by a non-word character
-    #sometimes & is in the name, so allow that 
-    state = re.sub(r'\.CSV', '', filename)
-    state = re.sub(r'\([A-Z&]*\)', '', state)
-    state = re.sub(r'[()\d]', '', state)
-    return clean_state_name(state)
-
-def clean_state_name(state):
-    state = re.sub('Nct of Delhi', 'Delhi', state)
-    state = re.sub('JAMMU', 'Jammu', state)
-    state = re.sub('Utter', 'Uttar Pradesh', state)
-    state = re.sub('Himacahl', 'Himachal', state)
-    state = re.sub('&', 'and', state)
-    state = state.strip()
-    if state not in util.state_names:
-        print 'Warning: state name not found while cleaning', state
-    return state
 
 def fetch_session(db_filename):
     engine = sqlalchemy.create_engine('sqlite:///{0}'.format(db_filename))
