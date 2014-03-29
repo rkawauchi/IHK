@@ -29,19 +29,19 @@ class Solution(object):
 
 class Aravind(object):
 
-    def __init__(self):
+    def __init__(self, treatment_cost = 100):
         self.district_names = ['Madurai', 'Theni', 'Tirunelveli', 
                 'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiripur', 'Salem',
                 'Tuticorin', 'Udumalaipet']
+        self.treatment_cost = treatment_cost
         self._init_hospitals()
 
     def _init_hospitals(self):
         self.hospitals = dict()
-        treatment_cost = 100
         treatable_symptoms = ['diabetes']
         for district_name in self.district_names:
             self.hospitals[district_name] = Hospital(district_name, 
-                    treatable_symptoms, treatment_cost)
+                    treatable_symptoms, self.treatment_cost)
 
     def get_district_names(self):
         return self.district_names
