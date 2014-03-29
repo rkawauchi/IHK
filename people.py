@@ -57,7 +57,7 @@ def generate_expense_log(state_name, class_type):
 
 if __name__ == '__main__':
     data = io.Database()
-    print pop_by_state("Tamil Nadu", "Rural")[0][3]
-    print exp_by_state("Tamil Nadu", "rural")[0][3]
-    print exp_percentile("Andhra Pradesh", "rural")
-    print generate_expense_log("Andhra Pradesh", "rural")[1:10]
+    print 'pop_by_state', pop_by_state("Tamil Nadu", "rural")[0][3]
+    print 'exp_by_state', exp_by_state("Tamil Nadu", "rural")[0][3]
+    print 'exp_percentile', exp_percentile("Goa", "rural")
+    print 'expense', generate_expense("Goa", "rural")
