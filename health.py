@@ -38,7 +38,7 @@ class Aravind(object):
     def _init_hospitals(self):
         self.hospitals = dict()
         for district_name in self.district_names:
-            self.hospitals[district_name] = Hospital(district_name, 'diabetes')
+            self.hospitals[district_name] = Hospital(district_name, ['diabetes'])
 
     def get_district_names(self):
         return self.district_names
