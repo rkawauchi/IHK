@@ -53,4 +53,7 @@ def test(data, args):
 if __name__ == "__main__":
     args = initialize_argument_parser()
     data = io.Database(import_data=args['import_data'])
-    test(data, args)
+    #Only run the test if we didn't try to recreate the database
+    # Not strictly necessary, but helps separate workflow
+    if not args['import_data']:
+        test(data, args)
