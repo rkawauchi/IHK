@@ -42,10 +42,10 @@ class FilterPopulation(object):
         return self.filter_diabetes(person) or self.filter_cardio(person)
 
     def filter_diabetes(self, person):
-        return person.diabetes >= self.diabetes
+        return person.diabetes <= self.diabetes
 
     def filter_cardio(self, person):
-        return person.cardio >= self.cardio
+        return person.cardio <= self.cardio
 
     def filter_money(self, person):
         return person.money>=self.cost
