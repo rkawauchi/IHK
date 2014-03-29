@@ -37,7 +37,7 @@ def exp_percentile(state_name, class_type):
 def generate_expense(state_name, class_type):
     # mean = exp_by_state(state_name, class_type)[0][3]
     # For testing, only generating 100,000th of population
-    pop = 0.1 * (pop_by_state(state_name, "Rural")[0][3])/100000
+    pop = 0.1 * (pop_by_state(state_name, "rural")[0][3])/100000
     listPercentile = exp_percentile(state_name, class_type)
     expenseList=[]
     for i in xrange(len(listPercentile)-1):
@@ -47,7 +47,7 @@ def generate_expense(state_name, class_type):
 
 def generate_expense_log(state_name, class_type):
     # For testing, only generating 100,000th of population
-    pop = (pop_by_state(state_name, "Rural")[0][3])/100000
+    pop = (pop_by_state(state_name, "rural")[0][3])/100000
     listPercentile = exp_percentile(state_name, class_type)
     logPercentile = []
     # http://stackoverflow.com/questions/4561113/python-list-conversion
