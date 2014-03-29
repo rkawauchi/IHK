@@ -6,22 +6,21 @@ state_abbreviations = ['AP', 'AR', 'AS', 'BR', 'CT', 'DL', 'GA', 'GJ', 'HR', 'HP
 #Other utility methods (that aren't input/output) which multiple 
 #files might need go here
 
-def filter_population_function(person):
-    thresholds = default_thresholds()
-    if health_filter(person, thresholds):
-        return True
-    return False
-
-def default_thresholds():
-    return {'diabetes': 0.1,
-            'cardio': 0.1}
-
-def diabetes_filter(person, thresholds):
-    return person.diabetes >= thresholds['diabetes']
+class FilterPopulation(object):
     
-def cardio_filter(person, thresholds):
-    return person.cardio >= thresholds['cardio']
+    def __init__(self, diabetes, cardio):
+        self.diabetes = diabetes
+        self.cardio = cardio
 
-def health_filter(person, thresholds):
-    return diabetes_filter(person, thresholds) or cardio_filter(person, thresholds)
+    def filter_all(self, person):
+        return self.filter_health(person)
 
+    def filter_health(self, person):
+        return self.filter_diabetes(person) or self.filter_cardio(person)
+
+    def filter_diabetes(self, person):
+        return person.diabetes >= self.diabetes
+
+
+    def filter_cardio(self, person):
+        return person.cardio >= self.cardio
