@@ -29,11 +29,20 @@ class Solution:
 
 class Hospital:
 
-    def __init__(self, location, expertise, equipment_level):
+    def __init__(self, location, treatable_symptoms, equipment_level):
         self.location = location
-        #expertise is probably a list of things the hospital can do
-        self.expertise = expertise
+        #treatable_symptoms is a list of symptoms the hospital can treat
+        self.treatable_symptoms = treatable_symptoms
         self.equipment_level = equipment_level #cf. equipment_level index
+
+    def treat(self, person):
+        for symptom in self.treatable_symptoms:
+            #Any patient treated by this hospital has the symptom set to 0.5
+            #This is obviously a placeholder for a more nuanced approach
+            improved_symptom = 0.5
+            #Change the patient's symptom so it is improved by the hospital
+            setattr(person, symptom, improved_symptom)
+        return person
 
         """
         self.nbOutpatientsFree
