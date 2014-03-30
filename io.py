@@ -332,6 +332,10 @@ class Database(object):
                 District.name == district_name).filter(
                 District.classification == classification).first()
 
+    def get_mpce_by_state_name(self, state_name, classification = 'total'):
+        return self.session.query(Mpce).filter(Mpce.state == state_name)\
+                .filter(Mpce.classification == classification).first()
+
     #check whether a district already has population data 
     def exist_people_from_district(self, district_name):
         return bool(self.session.query(Person).filter(
