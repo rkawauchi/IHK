@@ -12,7 +12,7 @@ def generate_person_dict(data, state, district, mpce):
 
 def generate_person(data, state, district, mpce):
     #This is where math and statistics comes in
-    money = randomize_money(mpce)
+    money = generate_expense_log(state, district.classification)
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
     diabetes = random.random()
@@ -54,17 +54,25 @@ def generate_expense(state_name, class_type):
 
 def generate_expense_log(state_name, class_type):
     # For testing, only generating 100,000th of population
-    pop = (pop_by_state(state_name, "rural")[0][3])/100000
+    #pop = (pop_by_state(state_name, "rural")[0][3])/100000
     listPercentile = exp_percentile(state_name, class_type)
     logPercentile = []
     # http://stackoverflow.com/questions/4561113/python-list-conversion
     logPercentile[:] = [log(x) for x in listPercentile]
-    expenseList = np.random.lognormal(mean=np.mean(logPercentile), sigma=np.std(logPercentile), size=pop)
-    return expenseList
+    return np.random.lognormal(mean=np.mean(logPercentile), sigma=np.std(logPercentile))   
+
+def test(state_name):
+    return data.session.query(io.Person).filter(io.Person.state == state_name).all()
+
+
+
+
+
+
 
 if __name__ == '__main__':
     data = io.Database()
     print 'pop_by_state', pop_by_state("Tamil Nadu", "rural")[0][3]
     print 'exp_by_state', exp_by_state("Tamil Nadu", "rural")[0][3]
-    print 'exp_percentile', exp_percentile("Goa", "rural")
-    print 'expense', generate_expense_log("Goa", "rural")
+    print 'exp_percentile', exp_percentile("Tamil Nadu", "rural")
+    #print 'expense', generate_expense_log("Tamil Nadu", "rural")
