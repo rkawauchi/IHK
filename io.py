@@ -154,6 +154,9 @@ class Person(Base):
                 'classification': self.classification}
 
     #missing proper __repr__
+    def __repr__(self):
+        return 'Person({0}, {1}, {2})'.format(self.money, self.diabetes, self.cardio).limit(10)
+
 
 class Database(object):
 
