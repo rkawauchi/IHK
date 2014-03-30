@@ -71,7 +71,7 @@ class Mpce(Base):
     classification = sqlalchemy.Column(sqlalchemy.String)
     #those funky mpce acronyms
     mpce_type = sqlalchemy.Column(sqlalchemy.String)
-    state = sqlalchemy.Column(sqlalchemy.String)
+    state = sqlalchemy.Column(sqlalchemy.String, index = True)
     d1 = sqlalchemy.Column(sqlalchemy.Integer)
     d2 = sqlalchemy.Column(sqlalchemy.Integer)
     d3 = sqlalchemy.Column(sqlalchemy.Integer)
@@ -236,6 +236,22 @@ class Database(object):
                 with open(mpce_directory + filename, 'r') as input_file:
                     self._import_mpce_file(input_file, mpce_type,
                             classification)
+        #We need to generate the "total" classification Mpce rows
+        insert = Mpce.__table__.insert()
+        for state_name in util.state_names:
+            both_mpce = self.session.query(Mpce).filter(Mpce.state == state_name).all()
+            #this is hacky, but it works and I can't think of a proper way
+            if not both_mpce:
+                continue
+            a = both_mpce[0]
+            b = both_mpce[1]
+            total_mpce = Mpce(a.mpce_type, 'total', state_name, a.d1+b.d1,
+                    a.d2+b.d2, a.d3+b.d3, a.d4+b.d4, a.d5+b.d5, a.d6+b.d6, 
+                    a.d7+b.d7, a.d8+b.d8, a.d9+b.d9, 
+                    (a.mpce_average+b.mpce_average)/2, 
+                    a.household_total+b.household_total,
+                    a.household_sample+b.household_sample)
+            self.connection.execute(insert, total_mpce.__dict__)
 
     def _import_mpce_file(self, input_file, mpce_type, classification):
         #http://www.blog.pythonlibrary.org/2014/02/26/python-101-reading-and-writing-csv-files/
@@ -289,7 +305,7 @@ class Database(object):
             self.connection.execute(insert, district.__dict__)
 
     #year_span indicates which year of gdp data we want to add to the database
-    def _import_gsp_file(self, input_file, year_span='2012-13'):
+    def _import_gsp_file(self, input_file, year_span='2011-12'):
         reader = csv.DictReader(input_file)
         headers = reader.next()
         for row in reader:
