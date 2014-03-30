@@ -327,9 +327,10 @@ class Database(object):
         return self.session.query(District).filter(
                 District.state == state.name).all()
 
-    def get_district_by_name(self, district_name):
+    def get_district_by_name(self, district_name, classification = 'total'):
         return self.session.query(District).filter(
-                District.name == district_name).first()
+                District.name == district_name).filter(
+                District.classification == classification).first()
 
     #check whether a district already has population data 
     def exist_people_from_district(self, district_name):
@@ -346,16 +347,33 @@ class Database(object):
         for district in data.session.query(District).filter(
                 District.state == state.name).filter(
                 District.classification == 'total'):
-            populate_district(data, district, state, force)
+            populate_district_total(data, district, state, force)
+
+    #Create a population distribution for both the urban and rural populations
+    #of the district
+    def populate_district_total(self, district, force=False):
+        #Don't insert anyone if there are already people there
+        if self.exist_people_from_district(district.name) and not force:
+            return
+        urban_district = self.get_district_by_name(district.name, 'urban')
+        self.populate_district(urban_district, wipe_population = True,
+                force = True)
+        print 'Urban population generated'
+        rural_district = self.get_district_by_name(district.name, 'rural')
+        self.populate_district(rural_district, wipe_population = False,
+                force = True)
+        print 'Rural population generated'
 
     #Create a population distribution for the population of a given district
-    def populate_district(self, district, state = None, force=False):
+    def populate_district(self, district, state = None, wipe_population = True,
+            force=False):
         #If the district already has people in it, don't insert more
         # unless forced to
         if self.exist_people_from_district(district.name) and not force:
             return
         #wipe the existing distribution; don't generate double people 
-        self._delete_population_district(district)
+        if wipe_population:
+            self._delete_population_district(district)
         if state is None:
             state = self.get_state_by_name(district.state)
 
