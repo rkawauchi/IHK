@@ -432,6 +432,18 @@ class Database(object):
         return self.session.query(Person).filter(
                 Person.district == district_name).limit(limit).all()
 
+######################## below by RieK #########################
+
+    def pop_by_state(self, state_name, class_type):
+        from sqlalchemy import func
+        return self.session.query(District.state, District.name, District.classification, func.sum(District.population_total)).filter(District.state == state_name).filter(District.classification == class_type).group_by(District.state).first()[3]
+
+    def meanMpce_by_state(self, state_name, class_type):
+        return self.session.query(Mpce.state, Mpce.mpce_type, Mpce.classification, Mpce.mpce_average).filter(Mpce.state == state_name).filter(Mpce.mpce_type == "mmrp").filter(Mpce.classification == class_type).first()[3]
+
+    def get_gsp(self, state_name, class_type):
+        return self.session.query(State).filter(State.name == state_name).filter(State.classification == class_type).first()
+
 #given a filename, determine classification and mpce_type
 #filename is assumed to be of a format like "mmrp_rural.csv" 
 #because that's how I named them.
