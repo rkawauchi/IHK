@@ -32,7 +32,7 @@ def test(data, args):
     print 'test:', test_district.name, 'in', test_state.name
     
     #Generate the population
-    data.populate_district(test_district)
+    data.populate_district_total(test_district)
 
     #Fetch the population from the database
     population = data.get_population_district(test_district.name, limit=10000)
