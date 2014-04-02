@@ -79,6 +79,34 @@ def parse_page(url):
 				section_dict[j] = tag_list[i+1].string
 	data_dict.update(section_dict)
 	print data_dict
+
+	#Scale
+	span_tags = soup.findAll('div', {'class': 'field field--field-profile-dev-stage'})
+	span_tags1 = span_tags[0].findAll('span', {'class': 'lineage-item lineage-item-level-0'})
+	stage = span_tags1[0].string
+	data_dict['stage'] = stage
+
+	#Client served
+	span_tags = soup.findAll('div', {'class': 'field field--field-profile-clients-served'})
+	span_tags1 = span_tags[0].findAll('span', {'class': 'lineage-item lineage-item-level-0'})
+	client_served = span_tags1[0].string
+	data_dict['clients_served'] = clients_served
+
+
+	#target_geography
+	geography_list = []
+	span_tags = soup.findAll('a')
+	if 'http://healthmarketinnovations.org/target-geography/peri-urban' in soup 
+	country = span_tags[0].li.a.text.strip() #If multiple countries, doesn't handle
+	regions = []
+	for i in span_tags[0].li.ul.findAll('li'):
+		span_tags1 = i.findAll('a')
+		regions.append(span_tags1[0].text.strip())
+	data_dict['geography'] = geography_list
+
+
+
+
 	#for string in span_tags:
 	#	print string.content
 		#print string.get_text()
