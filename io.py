@@ -5,6 +5,7 @@ import util
 import csv
 import os
 import re
+import people
 
 Base = declarative.declarative_base()
 
@@ -40,25 +41,28 @@ class State(Base):
     classification = sqlalchemy.Column(sqlalchemy.String)
     household_total = sqlalchemy.Column(sqlalchemy.Integer)
     population_total = sqlalchemy.Column(sqlalchemy.Integer)
+    gsp = sqlalchemy.Column(sqlalchemy.Integer)
 
     def __init__(self, name, abbreviation, classification, household_total,
-            population_total):
+            population_total, gsp = 0):
         self.name=name
         self.abbreviation=abbreviation
         self.classification=classification
         self.household_total=household_total
         self.population_total=population_total
+        self.gsp=gsp
 
     def __repr__(self):
-        return 'State({0}, {1}, {2}, {3}, {4})'.format(self.name,
+        return 'State({0}, {1}, {2}, {3}, {4}, {5})'.format(self.name,
                 self.abbreviation, self.classification, self.household_total,
-                self.population_total)
+                self.population_total, self.gsp)
 
     def to_dict(self):
         return {'name': self.name, 'abbreviation': self.abbreviation, 
                 'classification': self.classification,
                 'household_total': self.household_total,
-                'population_total': self.population_total}
+                'population_total': self.population_total,
+                'gsp': self.gsp}
 
 class Mpce(Base):
     __tablename__ = 'mpce'
@@ -67,7 +71,7 @@ class Mpce(Base):
     classification = sqlalchemy.Column(sqlalchemy.String)
     #those funky mpce acronyms
     mpce_type = sqlalchemy.Column(sqlalchemy.String)
-    state = sqlalchemy.Column(sqlalchemy.String)
+    state = sqlalchemy.Column(sqlalchemy.String, index = True)
     d1 = sqlalchemy.Column(sqlalchemy.Integer)
     d2 = sqlalchemy.Column(sqlalchemy.Integer)
     d3 = sqlalchemy.Column(sqlalchemy.Integer)
@@ -127,7 +131,7 @@ class Person(Base):
     #the data type may change laters
     diabetes = sqlalchemy.Column(sqlalchemy.Float)
     cardio = sqlalchemy.Column(sqlalchemy.Float)
-    district = sqlalchemy.Column(sqlalchemy.String)
+    district = sqlalchemy.Column(sqlalchemy.String, index=True)
     state = sqlalchemy.Column(sqlalchemy.String)
     #urban or rural
     classification = sqlalchemy.Column(sqlalchemy.String)
@@ -141,6 +145,14 @@ class Person(Base):
         self.state = state
         self.classification = classification
 
+    def to_dict(self):
+        return {'money': self.money, 
+                'diabetes': self.diabetes,
+                'cardio': self.cardio,
+                'district': self.district,
+                'state': self.state,
+                'classification': self.classification}
+
     #missing proper __repr__
 
 class Database(object):
@@ -148,13 +160,27 @@ class Database(object):
     def __init__(self, db_filename = 'database.sqlite3', import_data=False):
         self.engine, self.session = fetch_session(db_filename)
         self.connection = self.session.connection()
+        self.states = list()
         if import_data:
             #Creates tables if they don't exist.
             Base.metadata.create_all(self.engine)
             self._init_mpce()
             self._init_districts()
             self._init_states()
+            self._perform_insertions()
             self.session.commit()
+
+    def _perform_insertions(self):
+        table = State.__table__
+        insert = table.insert()
+        for state in self.states:
+            self.connection.execute(insert, name = state.name,
+                    abbreviation = state.abbreviation, 
+                    classification = state.classification, 
+                    population_total = state.population_total,
+                    household_total = state.household_total,
+                    gsp = state.gsp)
+            
 
     def _init_states(self):
         self._wipe_states()
@@ -175,6 +201,9 @@ class Database(object):
                     population_rural, household_rural)
             self._add_state(state_name, util.state_abbreviations[i], 'total',
                     population_total, household_total)
+        data_directory = 'data/'
+        with open(data_directory+'gsp.csv') as gsp_file:
+            self._import_gsp_file(gsp_file)
 
     def _get_district_population_by_state(self, state_name, classification, population_type):
         query = self.session.query(sqlalchemy.func.sum(population_type)) \
@@ -190,12 +219,8 @@ class Database(object):
 
     def _add_state(self, name, abbreviation, classification,
             population_total, household_total):
-        table = State.__table__
-        insert = table.insert()
-        self.connection.execute(insert, name=name, abbreviation = abbreviation,
-                classification=classification, 
-                population_total=population_total,
-                household_total = household_total)
+        self.states.append(State(name, abbreviation, classification,
+            household_total, population_total))
 
     #import all MPCE data
     #single underscore implies that the method is private
@@ -211,6 +236,22 @@ class Database(object):
                 with open(mpce_directory + filename, 'r') as input_file:
                     self._import_mpce_file(input_file, mpce_type,
                             classification)
+        #We need to generate the "total" classification Mpce rows
+        insert = Mpce.__table__.insert()
+        for state_name in util.state_names:
+            both_mpce = self.session.query(Mpce).filter(Mpce.state == state_name).all()
+            #this is hacky, but it works and I can't think of a proper way
+            if not both_mpce:
+                continue
+            a = both_mpce[0]
+            b = both_mpce[1]
+            total_mpce = Mpce(a.mpce_type, 'total', state_name, a.d1+b.d1,
+                    a.d2+b.d2, a.d3+b.d3, a.d4+b.d4, a.d5+b.d5, a.d6+b.d6, 
+                    a.d7+b.d7, a.d8+b.d8, a.d9+b.d9, 
+                    (a.mpce_average+b.mpce_average)/2, 
+                    a.household_total+b.household_total,
+                    a.household_sample+b.household_sample)
+            self.connection.execute(insert, total_mpce.__dict__)
 
     def _import_mpce_file(self, input_file, mpce_type, classification):
         #http://www.blog.pythonlibrary.org/2014/02/26/python-101-reading-and-writing-csv-files/
@@ -237,7 +278,7 @@ class Database(object):
         district_directory = 'data/districts/'
         for filename in os.listdir(district_directory):
             if filename.endswith('.CSV'):
-                state_name = clean_state_name(filename)
+                state_name = util.clean_state_filename(filename)
                 with open(district_directory + filename, 'r') as input_file:
                     self._import_district_file(input_file, state_name)
                 """
@@ -263,11 +304,32 @@ class Database(object):
                     households, population)
             self.connection.execute(insert, district.__dict__)
 
+    #year_span indicates which year of gdp data we want to add to the database
+    def _import_gsp_file(self, input_file, year_span='2011-12'):
+        reader = csv.DictReader(input_file)
+        headers = reader.next()
+        for row in reader:
+            #we only care about the GSP (Gross State Product)
+            #which is mislabeled as GSDP 
+            if not row['Sector'] == 'GSDP (2004-05 Prices)':
+                continue
+            state_name = util.clean_state_name(row['State Name'])
+            gsp = row[year_span]
+            #add the gsp information to the relevant State
+            for state in self.states:
+                if state.name == state_name and state.classification == 'total':
+                    state.gsp = gsp
+
     def get_all_states(self):
         return self.session.query(State).all()
 
-    def get_state_by_name(self, name):
-        return self.session.query(State).filter(State.name == name).first()
+    #The function specifies that it will return a single state, but
+    #the database contains three states (urban, rural, and total)
+    #Assume that if no other classification is specified, the total
+    #for the whole state is desired
+    def get_state_by_name(self, name, classification = 'total'):
+        return self.session.query(State).filter(State.name == name)\
+                .filter(State.classification == classification).first()
 
     def get_state_by_abbreviation(self, abbreviation):
         return self.session.query(State).filter(
@@ -281,6 +343,92 @@ class Database(object):
         return self.session.query(District).filter(
                 District.state == state.name).all()
 
+    def get_district_by_name(self, district_name, classification = 'total'):
+        return self.session.query(District).filter(
+                District.name == district_name).filter(
+                District.classification == classification).first()
+
+    def get_mpce_by_state_name(self, state_name, classification = 'total'):
+        return self.session.query(Mpce).filter(Mpce.state == state_name)\
+                .filter(Mpce.classification == classification).first()
+
+    #check whether a district already has population data 
+    def exist_people_from_district(self, district_name):
+        return bool(self.session.query(Person).filter(
+                Person.district == district_name).first())
+
+    #This will take a long time
+    def populate_all(self):
+        for state in data.session.query(State):
+            generate_state_population(data, state)
+
+    def populate_state(self, state, force=False):
+        #get only the "total population" entry for each district
+        for district in data.session.query(District).filter(
+                District.state == state.name).filter(
+                District.classification == 'total'):
+            populate_district_total(data, district, state, force)
+
+    #Create a population distribution for both the urban and rural populations
+    #of the district
+    def populate_district_total(self, district, force=False):
+        #Don't insert anyone if there are already people there
+        if self.exist_people_from_district(district.name) and not force:
+            return
+        urban_district = self.get_district_by_name(district.name, 'urban')
+        self.populate_district(urban_district, wipe_population = True,
+                force = True)
+        print 'Urban population generated'
+        rural_district = self.get_district_by_name(district.name, 'rural')
+        self.populate_district(rural_district, wipe_population = False,
+                force = True)
+        print 'Rural population generated'
+
+    #Create a population distribution for the population of a given district
+    def populate_district(self, district, state = None, wipe_population = True,
+            force=False):
+        #If the district already has people in it, don't insert more
+        # unless forced to
+        if self.exist_people_from_district(district.name) and not force:
+            return
+        #wipe the existing distribution; don't generate double people 
+        if wipe_population:
+            self._delete_population_district(district)
+        if state is None:
+            state = self.get_state_by_name(district.state)
+
+        mpce = self.session.query(Mpce).filter_by(state=state.name).first()
+        #Bulk insert as per http://docs.sqlalchemy.org/en/rel_0_8/faq.html
+        #split into multiple insertion waves due to memory limitations
+        insertions_per_wave = 1000000
+        #insert the population in waves of 1000000 people 
+        for i in xrange(district.population_total/insertions_per_wave):
+            self._insert_population_wave(state, district, mpce,
+                    insertions_per_wave)
+            print 'wave inserted'
+        #insert the last few people
+        self._insert_population_wave(state, district, mpce, district.population_total % insertions_per_wave)
+        #commit the changes; otherwise, they will be wasted!
+        self.session.commit()
+        print 'Population of', district.name, 'inserted'
+
+    def _insert_population_wave(self, state, district, mpce, insertion_count):
+        insert = Person.__table__.insert()
+        self.engine.execute(insert, 
+                [people.generate_person_dict(self, state, district, mpce)
+                for j in xrange(insertion_count)])
+
+    def _delete_population_district(self, district):
+        table = Person.__table__
+        delete = table.delete().where(
+                table.c.district == district.name)
+        self.connection.execute(delete)
+        self.session.commit()
+
+    def get_population_district(self, district_name, limit=None):
+        return self.session.query(Person).filter(
+                Person.district == district_name).limit(limit).all()
+
 #given a filename, determine classification and mpce_type
 #filename is assumed to be of a format like "mmrp_rural.csv" 
 #because that's how I named them.
@@ -291,25 +439,27 @@ def extract_mpce_info(filename):
     classification = filename_split[1]
     return mpce_type, classification
 
-def clean_state_name(filename):
-    #The name is the first thing in the filename
-    #it is always followed by a non-word character
-    #sometimes & is in the name, so allow that 
-    state = re.sub(r'\.CSV', '', filename)
-    state = re.sub(r'\([A-Z&]*\)', '', state)
-    state = re.sub(r'[()\d]', '', state)
-    state = re.sub('Nct of Delhi', 'Delhi', state)
-    state = re.sub('JAMMU', 'Jammu', state)
-    state = re.sub('Utter', 'Uttar Pradesh', state)
-    state = re.sub('Himacahl', 'Himachal', state)
-    state = re.sub('&', 'and', state)
-    state = state.strip()
-    return state
-
 def fetch_session(db_filename):
     engine = sqlalchemy.create_engine('sqlite:///{0}'.format(db_filename))
     session = orm.sessionmaker(bind=engine)
     return engine, orm.scoped_session(session)
+
+def demonstrate_queries(data):
+    mizoram = data.get_state_by_name('Mizoram')
+    karnataka = data.get_state_by_abbreviation('KA')
+
+    print mizoram
+    print karnataka
+
+    mizoram_districts = data.get_districts_by_state_name('Mizoram')
+    same_mizoram_districts = data.get_districts_by_state_name(mizoram.name)
+    also_same_mizoram_districts = data.get_districts_by_state(mizoram)
+    
+    print mizoram_districts
+    print mizoram_districts == also_same_mizoram_districts
+
+    #for state in data.get_all_states():
+    #    print state.to_dict()
 
 if __name__ == '__main__':
     data = Database()
