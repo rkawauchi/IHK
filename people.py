@@ -12,7 +12,7 @@ def generate_person_dict(data, state, district, mpce):
 
 def generate_person(data, state, district, mpce):
     #This is where math and statistics comes in
-    money = generate_expense_log(mpce, district.classification)
+    money = generate_income(mpce, district.classification) - generate_expense_log(mpce, district.classification)
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
     diabetes = random.random()
@@ -60,19 +60,45 @@ def generate_income(mpce, class_type):
     meanMPCE = (ruralMPCE + urbanMPCE)/2
     classMPCE = data.meanMpce_by_state(mpce, class_type)
     classPercent = float(classMPCE) / meanMPCE
-    # multiply GSP (in Rs.10M) by % to get GSP for given class
+    # multiply GSP (in Rs.10M) by % to get modified GSP for given class
     meanGSP = data.get_gsp(mpce, "total").gsp * 10000000
     classGSP = int(classPercent * meanGSP)
     classPop = data.pop_by_state(mpce, class_type)
     # get mean
     meanIncome_person = classGSP / classPop / 10000
-    # get sd (I manufally calculated from raw data)
+    # get sd (I manufally calculated from raw data, and made adj)
     if classGSP < (60000 * 10000000):
-        sdIncome_person = 15097.05 * 10000000 / data.pop_by_state(mpce, "total")/ 10000
+        sdIncome_person = (17097.05 - 2000) * 10000000 / data.pop_by_state(mpce, "total")/ 10000
     else:
-        sdIncome_person = 101282.9 * 10000000 / data.pop_by_state(mpce, "total")/ 10000
-    # for now, it only generate 10 rv
-    return np.random.lognormal(log(meanIncome_person),log(sdIncome_person), 5) * 10000
+        sdIncome_person = (171282.9 - 7000) * 10000000 / data.pop_by_state(mpce, "total")/ 10000
+    return np.random.lognormal(log(meanIncome_person),log(sdIncome_person)) * 10000 / 12
+
+def generate_gender():
+    # mean prob of M = 0.5117376, F = 0.4882624
+    if random.random() >= 0.4882624:
+        return "M"
+    else:
+        return "F"
+
+def generate_age(mpce, class_type):
+    # age distribution at last tab "17.Population by Age-Group"
+    # http://rural.nic.in/sites/downloads/IRDR/1.%20Demographic%20Profile.xls
+    # does this need to go to database? or shall we use the average
+    # but this needs to have the total number: pop ***!!!
+    # my current idea idea is to simulate age dist and bootstrap
+    if class_type == "rural":
+        ageDistList = [19.1, 20.7, 33.1, 18.8, 7.6, 0.8] / 100
+    elif class_type == "urban":
+        ageDistList = [16.4, 18.3, 35.9, 21.5, 7.3, 0.7]
+    pop = data.pop_by_state(mpce, class_type)
+    to9 = np.random.uniform(1,9,pop * (ageDistList[0]/100.0))
+    to19 = np.random.uniform(10,19,pop * (ageDistList[1]/100.0))
+    to39 = np.random.uniform(20,39,pop * (ageDistList[2]/100.0))
+    to59 = np.random.uniform(40,59,pop * (ageDistList[3]/100.0))
+    to79 = np.random.uniform(60,79,pop * (ageDistList[4]/100.0))
+    to102 = np.random.uniform(80,102,pop * (ageDistList[5]/100.0))
+    ageList = np.concatenate((to9,to19,to39,to59,to79,to102), axis=0)
+    return random.sample(ageList,1)
 
 if __name__ == '__main__':
     data = io.Database()
@@ -84,4 +110,6 @@ if __name__ == '__main__':
     print 'meanMpce_by_state', data.meanMpce_by_state(mpce, test_classif)
     print 'exp_percentile', exp_percentile(mpce, test_classif)
     print 'Income: urban', generate_income(mpce, test_classif)
-    print 'Income: rural', generate_income(mpce, "rural")
+    print 'Income: rural', generate_income(mpce, test_classif)
+    print 'Gender:', generate_gender()
+    print 'Age:', generate_age(mpce, test_classif)
