@@ -4,6 +4,7 @@ import numpy as np
 from array import *
 from math import log10, log
 import random
+import util
 
 #generate a dict of values corresponding to the attributes of a Person
 def generate_person_dict(data, state, district, mpce):
@@ -97,8 +98,8 @@ def generate_gender():
         return "F"
 
 age_ranges = [[1,9], [10,19], [20,39], [40,59], [60,79], [80,102]]
-age_weights = {'urban': [16.4, 18.3, 35.9, 21.5, 7.3, 0.7] / 100,
-        'rural': [19.1, 20.7, 33.1, 18.8, 7.6, 0.8] / 100}
+age_weights = {'urban': [x/100 for x in [16.4, 18.3, 35.9, 21.5, 7.3, 0.7]],
+        'rural': [x/100 for x in [19.1, 20.7, 33.1, 18.8, 7.6, 0.8]]}
 def generate_age(classification):
     # age distribution at last tab "17.Population by Age-Group"
     # http://rural.nic.in/sites/downloads/IRDR/1.%20Demographic%20Profile.xls
