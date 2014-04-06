@@ -18,7 +18,7 @@ def generate_person(data, state, district, mpce):
     money = generate_money(age, state, district.classification)
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
-    eye_health = random.random()
+    eye_health = generate_eye_health()
     cardio = random.random()
     classification = district.classification
     person = io.Person(money, gender, age, eye_health, cardio, district.name,
@@ -112,7 +112,6 @@ def generate_age(classification):
 def generate_life_exp(gender, age):
     # life-expectancy data from 
     # http://www.worldlifeexpectancy.com/country-health-profile/india
-    # we could make database or make dicitonary
     MaleLifeExp = {"0":63.8, "5":62.7, "10":58.1, "15":53.4, "20":52.9, "25":44.2, "30":39.7, "35":35.3, "40":31.1, "45":26.9, "50":23, "55":19.3, "60":15.7, "65":12.7, "70":10.2, "75":8.3, "80":6.7,"85":5.2, "90":3.9, "95":2.8, "100":2.0}
     FemaleLifeExp = {"0":67.3, "5":66.8, "10":62.2, "15":57.5, "20":52.9, "25":48.4, "30":43.8, "35":39.2, "40":34.7, "45":30.2, "50":25.8, "55":25.8, "60":17.7, "65":14.3, "70":11.3, "75":9.0, "80":7.0,"85":5.3, "90":3.9, "95":2.8, "100":2.0}
     if gender == 'F':
@@ -120,7 +119,7 @@ def generate_life_exp(gender, age):
     else:
         return MaleLifeExp(age)
 
-def generate_eye_health(age):
+def generate_eye_health():
     return random.random()
 
 def generate_2ndHealth(state_name, class_type, gender, age):
