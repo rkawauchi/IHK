@@ -13,13 +13,15 @@ def generate_person_dict(data, state, district, mpce):
 def generate_person(data, state, district, mpce):
     #This is where math and statistics comes in
     money = generate_expense_log(mpce, district.classification)
+    gender = 'fish'
+    age = 0
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
     diabetes = random.random()
     cardio = random.random()
     classification = district.classification
-    person = io.Person(money, diabetes, cardio, district.name, state.name,
-            classification)
+    person = io.Person(money, gender, age, diabetes, cardio, district.name,
+            state.name, classification)
     return person
 
 #Note that this is merely a demonstration of how to randomly generate money
