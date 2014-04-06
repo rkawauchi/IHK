@@ -127,6 +127,8 @@ class Person(Base):
     __tablename__ = 'people'
     id = sqlalchemy.Column('rowid', sqlalchemy.Integer, primary_key = True)
     money = sqlalchemy.Column(sqlalchemy.Integer)
+    gender = sqlalchemy.Column(sqlalchemy.String) 
+    age = sqlalchemy.Column(sqlalchemy.Integer)
     #currently assuming 0-1 ranking for health measures
     #the data type may change laters
     diabetes = sqlalchemy.Column(sqlalchemy.Float)
@@ -136,9 +138,11 @@ class Person(Base):
     #urban or rural
     classification = sqlalchemy.Column(sqlalchemy.String)
 
-    def __init__(self, money, diabetes, cardio, district, state,
+    def __init__(self, money, gender, age, diabetes, cardio, district, state,
             classification):
         self.money = money
+        self.gender = gender
+        self.age = age
         self.diabetes = diabetes
         self.cardio = cardio
         self.district = district
@@ -147,16 +151,16 @@ class Person(Base):
 
     def to_dict(self):
         return {'money': self.money, 
+                'gender': self.gender,
+                'age': self.age,
                 'diabetes': self.diabetes,
                 'cardio': self.cardio,
                 'district': self.district,
                 'state': self.state,
                 'classification': self.classification}
 
-    #missing proper __repr__
     def __repr__(self):
         return 'Person({0}, {1}, {2})'.format(self.money, self.diabetes, self.cardio).limit(10)
-
 
 class Database(object):
 
@@ -434,15 +438,15 @@ class Database(object):
 
 ######################## below by RieK #########################
 
-    def pop_by_state(self, state_name, class_type):
+    def pop_by_state(self, state_name, classification):
         from sqlalchemy import func
-        return self.session.query(District.state, District.name, District.classification, func.sum(District.population_total)).filter(District.state == state_name).filter(District.classification == class_type).group_by(District.state).first()[3]
+        return self.session.query(District.state, District.name, District.classification, func.sum(District.population_total)).filter(District.state == state_name).filter(District.classification == classification).group_by(District.state).first()[3]
 
-    def meanMpce_by_state(self, state_name, class_type):
-        return self.session.query(Mpce.state, Mpce.mpce_type, Mpce.classification, Mpce.mpce_average).filter(Mpce.state == state_name).filter(Mpce.mpce_type == "mmrp").filter(Mpce.classification == class_type).first()[3]
+    def meanMpce_by_state(self, state_name, classification):
+        return self.session.query(Mpce.state, Mpce.mpce_type, Mpce.classification, Mpce.mpce_average).filter(Mpce.state == state_name).filter(Mpce.mpce_type == "mmrp").filter(Mpce.classification == classification).first()[3]
 
-    def get_gsp(self, state_name, class_type):
-        return self.session.query(State).filter(State.name == state_name).filter(State.classification == class_type).first()
+    def get_gsp(self, state_name, classification):
+        return self.session.query(State).filter(State.name == state_name).filter(State.classification == classification).first()
 
 #given a filename, determine classification and mpce_type
 #filename is assumed to be of a format like "mmrp_rural.csv" 

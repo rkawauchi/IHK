@@ -13,13 +13,15 @@ def generate_person_dict(data, state, district, mpce):
 def generate_person(data, state, district, mpce):
     #This is where math and statistics comes in
     money = generate_income(mpce, district.classification) - generate_expense_log(mpce, district.classification)
+    gender = 'fish'
+    age = 0
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
     diabetes = random.random()
     cardio = random.random()
     classification = district.classification
-    person = io.Person(money, diabetes, cardio, district.name, state.name,
-            classification)
+    person = io.Person(money, gender, age, diabetes, cardio, district.name,
+            state.name, classification)
     return person
 
 #Note that this is merely a demonstration of how to randomly generate money
@@ -41,8 +43,9 @@ def generate_expense(mpce, class_type):
     pop = 0.1 * (data.pop_by_state(mpce, "rural"))/100000
     listPercentile = exp_percentile(mpce, class_type)
     expenseList=[]
-    for i in xrange(len(listPercentile)-1):
-        genUniform = np.random.uniform(listPercentile[i], listPercentile[i+1], pop)
+    for i in xrange(len(li  stPercentile)-1):
+        genUniform = np.random.uniform(listPercentile[i], listPercentile[i+1],
+                pop)
         expenseList.append(genUniform)
     return expenseList
 
@@ -123,7 +126,25 @@ def generate_eye(mpce, class_type, gender, age):
 def generate_2ndHealth(mpce, class_type, gender, age):
     return random.random()
 
-
+def generate_age(mpce, class_type):
+    # age distribution at last tab "17.Population by Age-Group"
+    # http://rural.nic.in/sites/downloads/IRDR/1.%20Demographic%20Profile.xls
+    # does this need to go to database? or shall we use the average
+    # but this needs to have the total number: pop ***!!!
+    # my current idea idea is to simulate age dist and bootstrap
+    if class_type == "rural":
+        ageDistList = [19.1, 20.7, 33.1, 18.8, 7.6, 0.8] / 100
+    elif class_type == "urban":
+        ageDistList = [16.4, 18.3, 35.9, 21.5, 7.3, 0.7]
+    pop = data.pop_by_state(mpce, class_type)
+    to9 = np.random.uniform(1,9,pop * (ageDistList[0]/100.0))
+    to19 = np.random.uniform(10,19,pop * (ageDistList[1]/100.0))
+    to39 = np.random.uniform(20,39,pop * (ageDistList[2]/100.0))
+    to59 = np.random.uniform(40,59,pop * (ageDistList[3]/100.0))
+    to79 = np.random.uniform(60,79,pop * (ageDistList[4]/100.0))
+    to102 = np.random.uniform(80,102,pop * (ageDistList[5]/100.0))
+    ageList = np.concatenate((to9,to19,to39,to59,to79,to102), axis=0)
+    return random.sample(ageList,1)
 
 if __name__ == '__main__':
     data = io.Database()
