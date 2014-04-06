@@ -10,6 +10,44 @@ Hospital::equipmentLevel information
 5 = Transport arranged for people
 """
 
+import math
+
+#worry_threshold calculation: Given that an estimated 9% of the population is considered hypocondriac,
+#we calculate in the hypothesis of a Gaussian distribution of worry level in the population that these 9%
+#match a -inverse_erf(1-9/50) threshold = -0.95. worry_level of each person is simulated given a Normal distribution N(0,1)
+worry_threshold = -0.95
+
+
+
+#General area variables 
+TN_area = 130058 #state.area
+TN_urban_area = 4703 #state.urban_area
+city_CN_urban_area = 1200
+city_CN_urban_radius = 19.55
+
+def eval_urban_radius(urban_area):
+    #check urban_area is in sq km, return in km
+    return (city_CN_urban_radius*urban_area)/city_CN_urban_area #we use Chennai data, with a 1200 sqkm metro area and a city radius of 19.55km
+
+urban_radius = eval_urban_radius(TN_urban_area)
+max_radius = sqrt(Tamil_Nadu_area/math.pi) #calculation: total Tamil Nadu area is 
+
+#Init_split
+urb_split, rur_split = 91.5%, 39.7%
+
+#geo_scale calculation:
+def generate_person():
+    #To add to person generation, after classification
+    if classification = 'Urban':
+        city_center_distance = urban_radius*random.random()
+    if classification = 'Rural':
+        city_center_distance = (random.random()*(max_radius-urban_radius)+urban_radius
+    
+    person = io.Person(classification, )
+
+    return person
+
+
 class Solution(object):
     def __init__(self, location, expertise, start_date, end_date, is_operating):
         self.location = location
@@ -69,6 +107,26 @@ class Hospital(object):
             setattr(person, symptom, improved_symptom)
             person.money -= self.treatment_cost
         return person
+
+    def testAwareness(self, person):
+        if city_center_distance in range(0, urb_split*urban_radius):
+
+        if city_center_distance in range(urb_split*urban_radius, urban_radius):
+        if city_center_distance in range(urban_radius, urban_radius*rur_split):
+        if city_center_distance in range(urban_radius*rur_split, max_radius):
+
+
+
+    def testWorryLevel(self, person):
+        if person.worry_level > worry_threshold:
+            return 1
+        else:
+            return 0
+
+
+
+
+
 
         """
         self.nbOutpatientsFree
