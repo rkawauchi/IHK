@@ -13,14 +13,14 @@ def generate_person_dict(data, state, district, mpce):
 def generate_person(data, state, district, mpce):
     #This is where math and statistics comes in
     money = generate_income(mpce, district.classification) - generate_expense_log(mpce, district.classification)
-    gender = 'fish'
-    age = 0
+    gender = generate_gender()
+    age = generate_age(mpce, district.classification)
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
-    diabetes = random.random()
+    eye_health = random.random()
     cardio = random.random()
     classification = district.classification
-    person = io.Person(money, gender, age, diabetes, cardio, district.name,
+    person = io.Person(money, gender, age, eye_health, cardio, district.name,
             state.name, classification)
     return person
 
@@ -120,7 +120,8 @@ def generate_life_exp(gender, age):
     else:
         return MaleLifeExp(age)
 
-def generate_eye(mpce, class_type, gender, age):
+def generate_eye_health(age):
+   
     return random.random()
 
 def generate_2ndHealth(mpce, class_type, gender, age):
