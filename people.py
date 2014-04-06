@@ -66,15 +66,20 @@ def generate_income(mpce, class_type):
     classPop = data.pop_by_state(mpce, class_type)
     # get mean
     meanIncome_person = classGSP / classPop / 10000
-    # get sd (I manufally calculated from raw data, and made adj)
+    # get sd (I manually calculated from raw data, and made adj,
+    # calculation refer to R3.r file: "2. Distribution of Income")
+    poorMean = 17097.05 - 2000
+    richMean = 171282.9 - 7000
     if classGSP < (60000 * 10000000):
-        sdIncome_person = (17097.05 - 2000) * 10000000 / data.pop_by_state(mpce, "total")/ 10000
+        sdIncome_person = poorMean * 10000000 / data.pop_by_state(mpce, "total")/ 10000
     else:
-        sdIncome_person = (171282.9 - 7000) * 10000000 / data.pop_by_state(mpce, "total")/ 10000
+        sdIncome_person = richMean * 10000000 / data.pop_by_state(mpce, "total")/ 10000
     return np.random.lognormal(log(meanIncome_person),log(sdIncome_person)) * 10000 / 12
 
 def generate_gender():
     # mean prob of M = 0.5117376, F = 0.4882624
+    # (I manually calculated from raw data,
+    # calculation refer to R3.r file: "3. Distribution of Age")
     if random.random() >= 0.4882624:
         return "M"
     else:
@@ -89,7 +94,7 @@ def generate_age(mpce, class_type):
     if class_type == "rural":
         ageDistList = [19.1, 20.7, 33.1, 18.8, 7.6, 0.8] / 100
     elif class_type == "urban":
-        ageDistList = [16.4, 18.3, 35.9, 21.5, 7.3, 0.7]
+        ageDistList = [16.4, 18.3, 35.9, 21.5, 7.3, 0.7] / 100
     pop = data.pop_by_state(mpce, class_type)
     to9 = np.random.uniform(1,9,pop * (ageDistList[0]/100.0))
     to19 = np.random.uniform(10,19,pop * (ageDistList[1]/100.0))
@@ -99,6 +104,26 @@ def generate_age(mpce, class_type):
     to102 = np.random.uniform(80,102,pop * (ageDistList[5]/100.0))
     ageList = np.concatenate((to9,to19,to39,to59,to79,to102), axis=0)
     return random.sample(ageList,1)
+
+def generate_life_exp(gender, age):
+    # life-expectancy data from 
+    # http://www.worldlifeexpectancy.com/country-health-profile/india
+    # we could make database or make dicitonary
+    MaleLifeExp = {"0":63.8, "5":62.7, "10":58.1, "15":53.4, "20":52.9, "25":44.2, "30":39.7, "35":35.3, "40":31.1, "45":26.9, "50":23, "55":19.3, "60":15.7, "65":12.7, "70":10.2, "75":8.3, "80":6.7,"85":5.2, "90":3.9, "95":2.8, "100":2.0}
+    FemaleLifeExp = {"0":67.3, "5":66.8, "10":62.2, "15":57.5, "20":52.9, "25":48.4, "30":43.8, "35":39.2, "40":34.7, "45":30.2, "50":25.8, "55":25.8, "60":17.7, "65":14.3, "70":11.3, "75":9.0, "80":7.0,"85":5.3, "90":3.9, "95":2.8, "100":2.0}
+
+    if gender == 'F':
+        return FemaleLifeExp(age)
+    else:
+        return MaleLifeExp(age)
+
+def generate_eye(mpce, class_type, gender, age):
+    return random.random()
+
+def generate_2ndHealth(mpce, class_type, gender, age):
+    return random.random()
+
+
 
 if __name__ == '__main__':
     data = io.Database()
