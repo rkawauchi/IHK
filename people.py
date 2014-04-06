@@ -4,6 +4,7 @@ import numpy as np
 from array import *
 from math import log10, log
 import random
+import util
 
 #generate a dict of values corresponding to the attributes of a Person
 def generate_person_dict(data, state, district, mpce):
