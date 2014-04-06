@@ -77,6 +77,6 @@ def weighted_choice(choices, weights):
         total += weight
         cumulative_weights.append(total)
     #total should 1 if weights is a proper distribution
-    rnd = random() * total
-    i = bisect(cumulative_weights, rnd)
-    return values[i]
+    rnd = random.random() * total
+    i = bisect.bisect(cumulative_weights, rnd)
+    return choices[i]
