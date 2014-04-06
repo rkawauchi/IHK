@@ -20,8 +20,8 @@ def generate_person(data, state, district, mpce):
     diabetes = random.random()
     cardio = random.random()
     classification = district.classification
-    person = io.Person(money, gender, age, diabetes, cardio, district.name, state.name,
-            classification)
+    person = io.Person(money, gender, age, diabetes, cardio, district.name,
+            state.name, classification)
     return person
 
 #Note that this is merely a demonstration of how to randomly generate money
@@ -35,7 +35,8 @@ def randomize_money(mpce):
 
 def exp_percentile(mpce, class_type):
     #return mpce.get_d_all(add_zero = False)
-    return data.get_mpce_by_state_name(mpce, class_type).get_d_all(add_zero = False)
+    return data.get_mpce_by_state_name(mpce, class_type).get_d_all(
+            add_zero = False)
 
 def generate_expense(mpce, class_type):
     # Currently not in use
@@ -44,7 +45,8 @@ def generate_expense(mpce, class_type):
     listPercentile = exp_percentile(mpce, class_type)
     expenseList=[]
     for i in xrange(len(listPercentile)-1):
-        genUniform = np.random.uniform(listPercentile[i], listPercentile[i+1], pop)
+        genUniform = np.random.uniform(listPercentile[i], listPercentile[i+1],
+                pop)
         expenseList.append(genUniform)
     return expenseList
 
