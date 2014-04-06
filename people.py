@@ -97,7 +97,7 @@ def generate_gender():
     else:
         return "F"
 
-age_ranges = [[1,9], [10,19], [20,39], [40,59], [60,79], [80,102]]
+age_ranges = [[0,9], [10,19], [20,39], [40,59], [60,79], [80,102]]
 age_weights = {'urban': [x/100 for x in [16.4, 18.3, 35.9, 21.5, 7.3, 0.7]],
         'rural': [x/100 for x in [19.1, 20.7, 33.1, 18.8, 7.6, 0.8]]}
 def generate_age(classification):
