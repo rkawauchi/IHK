@@ -44,7 +44,7 @@ def generate_expense(state_name, class_type):
     pop = 0.1 * (data.pop_by_state(state_name, "rural"))/100000
     listPercentile = exp_percentile(state_name, class_type)
     expenseList=[]
-    for i in xrange(len(li  stPercentile)-1):
+    for i in xrange(len(listPercentile)-1):
         genUniform = np.random.uniform(listPercentile[i], listPercentile[i+1],
                 pop)
         expenseList.append(genUniform)
