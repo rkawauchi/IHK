@@ -1,4 +1,6 @@
 import re
+import random
+import bisect
 
 #http://www.gefeg.com/edifact/d03a/s3/codes/cl1h.htm
 #This is a terrible method, but it works for now
@@ -64,4 +66,17 @@ class Location(object):
         if location.classification == 'total' or self.classification == location.classification:
             return True
 
-
+#http://stackoverflow.com/questions/3679694/a-weighted-version-of-random-choice
+#Given a set of choices and corresponding weights, choose a random option
+#using the appropriate weight
+def weighted_choice(choices, weights):
+    #Convert the weights into cumulative weights
+    cumulative_weights = []
+    total = 0
+    for weight in weights:
+        total += weight
+        cumulative_weights.append(total)
+    #total should 1 if weights is a proper distribution
+    rnd = random() * total
+    i = bisect(cumulative_weights, rnd)
+    return values[i]
