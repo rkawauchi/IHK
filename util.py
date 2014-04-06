@@ -49,3 +49,19 @@ class FilterPopulation(object):
 
     def filter_money(self, person):
         return person.money>=self.cost
+
+class Location(object):
+    def __init__(self, state_name, district_name, classification):
+        self.state_name = state_name
+        self.district_name = district_name
+        self.classification = classification
+
+    def is_in(self, location):
+        if not self.district_name == location.district_name:
+            return False
+        if not self.state_name == location.state:
+            return False
+        if location.classification == 'total' or self.classification == location.classification:
+            return True
+
+
