@@ -127,6 +127,8 @@ class Person(Base):
     __tablename__ = 'people'
     id = sqlalchemy.Column('rowid', sqlalchemy.Integer, primary_key = True)
     money = sqlalchemy.Column(sqlalchemy.Integer)
+    gender = sqlalchemy.Column(sqlalchemy.String) 
+    age = sqlalchemy.Column(sqlalchemy.Integer)
     #currently assuming 0-1 ranking for health measures
     #the data type may change laters
     diabetes = sqlalchemy.Column(sqlalchemy.Float)
@@ -136,9 +138,11 @@ class Person(Base):
     #urban or rural
     classification = sqlalchemy.Column(sqlalchemy.String)
 
-    def __init__(self, money, diabetes, cardio, district, state,
+    def __init__(self, money, gender, age, diabetes, cardio, district, state,
             classification):
         self.money = money
+        self.gender = gender
+        self.age = age
         self.diabetes = diabetes
         self.cardio = cardio
         self.district = district
@@ -147,6 +151,8 @@ class Person(Base):
 
     def to_dict(self):
         return {'money': self.money, 
+                'gender': self.gender,
+                'age': self.age,
                 'diabetes': self.diabetes,
                 'cardio': self.cardio,
                 'district': self.district,
