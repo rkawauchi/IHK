@@ -271,36 +271,12 @@ def people_change(person): # called only if filter True
 
 
 class Aravind(object):
-    #Use this to assign each hospital to cover surrounding districts
-    #Based on Aravind's data
-    #A more robust approach would be to define adjacencies for all districts
-    covered_district_mapping = {
-                'Coimbatore': ['Coimbatore', 'Nilgiris', 'Kollam'],
-                'Dindigul': ['Dindigul'],
-                'Madurai': ['Ariyalur', 'Dharmapuri', 'Karur', 'Madurai', 
-                    'Nagapattinam', 'Namakkal', 'Perambalur', 'Pudukkottai',
-                    'Ramanathapuram', 'Siviganga', 'Thanjavur', 'Thiruvarur',
-                    'Tiruchirappalli', 'Virudhunagar'],
-                'Pondicherry': ['Chennai', 'Cuddalore', 'Kanchipuram',
-                    'Krishnagiri', 'Thiruvallur', 'Tiruvannamalai',
-                    'Vellore', 'Villupuram'],
-                'Salem': ['Erode', 'Salem'],
-                'Theni': ['Theni', 'Kottayam', 'Iduki'],
-                'Tirunelveli': ['Kanniyakumari', 'Thoothukudi', 'Tirunelveli'],
-                'Tiruppur': ['Tiruppur'],
-                #These are not from the google drive
-                'Tuticorin': ['Tuticorin'],
-                'Udumalaipet': ['Udumalaipet']}
 
-    def __init__(self):
+    def __init__(self, treatment_cost = 100):
         self.hospital_district_names = ['Madurai', 'Theni', 'Tirunelveli', 
                 'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiruppur', 'Salem',
                 'Tuticorin', 'Udumalaipet']
-<<<<<<< HEAD
         self.treatment_cost = treatment_cost
-=======
-        self.treatment_cost = 100
->>>>>>> upstream/master
         self._init_hospitals()
 
     def _init_hospitals(self):
@@ -308,7 +284,6 @@ class Aravind(object):
         treatable_symptoms = ['eye_health']
         for district_name in self.hospital_district_names:
             self.hospitals.append(Hospital(district_name, 
-<<<<<<< HEAD
                     treatable_symptoms, self.treatment_cost))
 
 
@@ -319,18 +294,14 @@ class Aravind(object):
 """
     def get_covered_district_names(self):
         return self.covered_district_names
-=======
-                    self.treatment_cost, treatable_symptoms))
->>>>>>> upstream/master
 
     def treat(self, person):
         for hospital in self.hospitals:
             if hospital.covers_district_name(person.district):
-                hospital.treat(person)
-        #If patient is not covered, the patient is unchanged
+                return hospital.treat(person)
+        #If patient is not covered, return the untreated patient
         return person
 
-<<<<<<< HEAD
     def get_structure(self):
         return self.hospitals
 
@@ -359,29 +330,18 @@ class Hospital(object):
 
     def __init__(self, district_name, treatable_symptoms, treatment_cost, 
             equipment_level = None):
-=======
-#Generic class which includes Hospital, EyeClinic, and VisionCamp
-class AravindFacility(object):
-    def __init__(self, district_name, treatment_cost, treatable_symptoms):
->>>>>>> upstream/master
         self.district_name = district_name
-        self.treatment_cost = treatment_cost
-<<<<<<< HEAD
-=======
+        #treatable_symptoms is a list of symptoms the hospital can treat
         self.treatable_symptoms = treatable_symptoms
->>>>>>> upstream/master
+        self.equipment_level = equipment_level #cf. equipment_level index
+        self.treatment_cost = treatment_cost
         self._init_covered_districts()
 
     def _init_covered_districts(self):
         #Use Python version of "switch statement"
-<<<<<<< HEAD
         self.covered_districts = Hospital.covered_district_mapping[
                 self.district_name]
             
-=======
-        self.covered_districts = Aravind.covered_district_mapping[
-                self.district_name]
->>>>>>> upstream/master
 
     #True if the district is in the list of districts this hospital covers
     def covers_district_name(self, district_name):
@@ -389,18 +349,6 @@ class AravindFacility(object):
 
     def treat(self, person):
         for symptom in self.treatable_symptoms:
-            self.treat_symptom(symptom, person)
-
-    #symptom is a string containing the name of the
-    # attribute: "eye_health", for example
-    def treat_symptom(self, symptom, person):
-        #This is overwritten by each of the subclasses
-        pass 
-
-class Hospital(AravindFacility):
-
-    def treat_symptom(self, symptom, person):
-        if symptom=='eye_health':
             #Any patient treated by this hospital has their symptoms increased
             # to a minimum of 0.5
             #This is obviously a placeholder for a more nuanced approach
@@ -408,8 +356,8 @@ class Hospital(AravindFacility):
             #Change the patient's symptom so it is improved by the hospital
             setattr(person, symptom, improved_symptom)
             person.money -= self.treatment_cost
+        return person
 
-<<<<<<< HEAD
     def get_transit_cost(person)
         distance = abs(person.city_center_distance - 
 
@@ -440,15 +388,6 @@ class Solution(object):
 
 
         """
-=======
-class Clinic(object):
-    pass    
-
-class VisionCenter(object):
-    pass
-
-"""
->>>>>>> upstream/master
         self.nbOutpatientsFree
         self.nbOutpatientPaying = nbPopPaying
         self.nbSurgeryFree =
@@ -458,7 +397,7 @@ class VisionCenter(object):
         self.priceSurgerySubsidized = 900 #750*88%+2000*12% (balance between ICCE and ECCE)
         self.priceSurgeryFree = 0
         self.nbPopFree = nbPopFree #check sum free + paid = Screened
-"""
+        """
 
 """
 #possible merge 

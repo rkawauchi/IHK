@@ -50,14 +50,16 @@ def test(data, args):
     print 'Testing population of', len(population), 'people'
 
     #Create a solution to treat the population
-    solution = health.Aravind(treatment_cost = 500)
+    solution = health.Aravind()
     #districts = [data.get_district_by_name(district_name) for district_name in solution.get_covered_district_names()] 
     filter_test = util.FilterPopulation(solution.treatment_cost, 1, 1)
+    
 
     #Treat the population using the solution
     treated_population = [solution.treat(person) if filter_test.filter_all(person) else person for person in population]
 
     #Perform analytics on the treated population
+    print 'Average eye health in original population', avg([person.eye_health for person in population])
     print 'Average eye health in treated population', avg([person.eye_health for person in treated_population])
     
 if __name__ == "__main__":

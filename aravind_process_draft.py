@@ -89,11 +89,6 @@ import random
 # 		return False
 
 
-
-
-
-
-
 """ MATCH + CHANGE_PEOPLE --> ONLY ACTIVATED IF FILTER TRUE"""
 
 '''VARIABLES AND INITIALIZATION to put outside of functions '''
@@ -113,6 +108,7 @@ rate_camp = 0.60 # for rural : percentage of people treated who attend camps vs 
 # number of structures of the four types in each hospital_district (ex: 4 vision centers in Madurai)
 
 # Health improvements for each treatment category (1 and 2 only, nothing for 0)
+# Treatment categories: 0 is none, 1 is glasses, 2 is surgery
 health_improvement_1 = 0.7 # ASSUMPTION --> TO DEFINE (QALY/10)?
 health_improvement_2 = 0.2 # ASSUMPTION --> TO DEFINE
 
@@ -121,8 +117,6 @@ health_improvement_2 = 0.2 # ASSUMPTION --> TO DEFINE
 # Also some high-level surgeries are 20000Rs--> make weighted average for paying surgery?
 # Also we didn"t have the consultation price for eye_clinic and took the same as vision center
 prices = {"consultation": {"vision_center": 20, "eye_clinic": 20, "hospital": 50}, "surgery": {"subsidized": 750, "paying": 4750, "free": 0}, "glasses": 120}
-
-
 
 def attach_structure(person): 
 # attach a structure type to people (among 4 types) according to their area (rural/urban) and effective proportion
@@ -198,7 +192,6 @@ def change_consultation(person):
 def change_surgery(person): # called if capacity_check True
 	person.money-= prices[person.type_visit][person.pricing_cat] # will remove amount related to pricing cat (0, 750 or 4750)
 	person.eye_health+=health_improvement_2 # improvement related to surgery benefits
-
 
 
 """PEOPLE CHANGE"""
