@@ -438,7 +438,7 @@ class Database(object):
 
 ######################## below by RieK #########################
 
-    def pop_by_state(self, state_name, classification):
+    def pop_by_state_name(self, state_name, classification):
         from sqlalchemy import func
         return self.session.query(District.state, District.name, District.classification, func.sum(District.population_total)).filter(District.state == state_name).filter(District.classification == classification).group_by(District.state).first()[3]
 

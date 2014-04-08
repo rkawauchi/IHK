@@ -15,7 +15,7 @@ def generate_person(data, state, district, mpce):
     #This is where math and statistics comes in
     gender = generate_gender()
     age = generate_age(district.classification)
-    money = generate_money(age, state, district.classification)
+    money = generate_money(data, age, state, mpce)
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
     eye_health = generate_eye_health()
@@ -34,15 +34,15 @@ def randomize_money(mpce):
 
 ######################## below by RieK #########################
 
-def exp_percentile(mpce, class_type):
+def exp_percentile(mpce):
     #return mpce.get_d_all(add_zero = False)
-    return data.get_mpce_by_state_name(mpce, class_type).get_d_all(add_zero = False)
+    return mpce.get_d_all(add_zero = False)
 
-def generate_expense(state_name, class_type):
+def generate_expense(state, mpce):
     # Currently not in use
     # For testing, only generating 100,000th of population
-    pop = 0.1 * (data.pop_by_state(state_name, "rural"))/100000
-    listPercentile = exp_percentile(state_name, class_type)
+    pop = 0.1 * (state.population_total)/100000
+    listPercentile = exp_percentile(mpce)
     expenseList=[]
     for i in xrange(len(listPercentile)-1):
         genUniform = np.random.uniform(listPercentile[i], listPercentile[i+1],
@@ -50,14 +50,14 @@ def generate_expense(state_name, class_type):
         expenseList.append(genUniform)
     return expenseList
 
-def generate_expense_log(state_name, class_type):
-    listPercentile = exp_percentile(state_name, class_type)
+def generate_expense_log(state, mpce):
+    listPercentile = exp_percentile(mpce)
     logPercentile = []
     # http://stackoverflow.com/questions/4561113/python-list-conversion
     logPercentile[:] = [log(x) for x in listPercentile]
     return np.random.lognormal(mean=np.mean(logPercentile), sigma=np.std(logPercentile))
 
-def generate_income(state_name, class_type):
+def generate_income(data, state_name, class_type):
     # get meanMPCE and % of classMPCE in meanMPCE
     ruralMPCE = data.meanMpce_by_state(state_name, "rural")
     urbanMPCE = data.meanMpce_by_state(state_name, "urban")
@@ -67,7 +67,7 @@ def generate_income(state_name, class_type):
     # multiply GSP (in Rs.10M) by % to get modified GSP for given class
     meanGSP = data.get_gsp(state_name, "total").gsp * 10000000
     classGSP = int(classPercent * meanGSP)
-    classPop = data.pop_by_state(state_name, class_type)
+    classPop = data.pop_by_state_name(state_name, class_type)
     # get mean
     meanIncome_person = classGSP / classPop / 10000
     # get sd (I manually calculated from raw data, and made adj,
@@ -75,14 +75,15 @@ def generate_income(state_name, class_type):
     poorMean = 17097.05 - 2000
     richMean = 171282.9 - 7000
     if classGSP < (60000 * 10000000):
-        sdIncome_person = poorMean * 10000000 / data.pop_by_state(state_name, "total")/ 10000
+        sdIncome_person = poorMean * 10000000 / data.pop_by_state_name(state_name, "total")/ 10000
     else:
-        sdIncome_person = richMean * 10000000 / data.pop_by_state(state_name, "total")/ 10000
+        sdIncome_person = richMean * 10000000 / data.pop_by_state_name(state_name, "total")/ 10000
     return np.random.lognormal(log(meanIncome_person),log(sdIncome_person)) * 10000 / 12
 
-def generate_money(age, state_name, class_type):
-    income = generate_income(state_name, class_type)
-    expense = generate_exp(state_name, class_type)
+def generate_money(data, age, state, mpce):
+    state_name = state.name
+    income = generate_income(data, state_name, state.classification)
+    expense = generate_expense_log(state, mpce)
     if age <= 20:
         return (income / 5) - (expense / 2)
     money = income - expense
@@ -131,7 +132,7 @@ if __name__ == '__main__':
     test_classif = "urban"
     state_name = data.get_mpce_by_state_name(test_state_name, test_classif).state
     print state_name, test_classif
-    print 'pop_by_state', data.pop_by_state(state_name, test_classif)
+    print 'pop_by_state_name', data.pop_by_state_name(state_name, test_classif)
     print 'meanMpce_by_state', data.meanMpce_by_state(state_name, test_classif)
     print 'exp_percentile', exp_percentile(state_name, test_classif)
     print 'Income: urban', generate_income(state_name, test_classif)
