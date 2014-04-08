@@ -17,6 +17,8 @@ def initialize_argument_parser():
     parser.add_argument('-s', '--test-state', dest='test_state', type=str,
             choices = util.state_names)
     parser.add_argument('-d', '--test-district', dest='test_district', type=str)
+    parser.add_argument('--district-index', dest='district_index', type=int,
+            default = 0, help='Select a district in a state by its index')
     parser.add_argument('--pop-gen-limit-dist', dest='pop_gen_limit_dist',
             type=int, default=None, 
             help='Limit the population inserted into each district for speed')
@@ -38,7 +40,8 @@ def test(data, args):
     if args['test_district']:
         test_district = data.get_district_by_name(args['test_district'])
     else:
-        test_district = data.get_districts_by_state_name(test_state_name)[0]
+        test_district = data.get_districts_by_state_name(
+                test_state_name)[args['district_index']]
     print 'test:', test_district.name, 'in', test_state.name
     
     #Generate the population
