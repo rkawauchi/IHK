@@ -25,6 +25,8 @@ def generate_person(data, state, district, mpce):
     worry_level = generate_worry_level() ### to create
     pricing_class = None
     structure = None
+    type_visit = None
+    area = None #area following Aravind's cut where the person is attached to
     if classification = 'Urban':
         city_center_distance = urban_radius*random.random()
     if classification = 'Rural':
