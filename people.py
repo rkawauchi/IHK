@@ -46,7 +46,7 @@ def exp_percentile(mpce):
     #return mpce.get_d_all(add_zero = False)
     return mpce.get_d_all(add_zero = False)
 
-def generate_expense_log(state, mpce):
+def generate_expense_log(mpce):
     listPercentile = exp_percentile(mpce)
     logPercentile = []
     # http://stackoverflow.com/questions/4561113/python-list-conversion
@@ -74,7 +74,7 @@ def generate_income(state, state_total, mpce, mpce_total):
 
 def generate_money(age, state, state_total, mpce, mpce_total):
     income = generate_income(state, state_total, mpce, mpce_total)
-    expense = generate_expense_log(state, mpce)
+    expense = generate_expense_log(mpce)
     if age <= 20:
         return (income / 5) - (expense / 2)
     money = income - expense
@@ -122,5 +122,5 @@ def generate_2ndHealth(state_name, class_type, gender, age):
 
 if __name__ == '__main__':
     print generate_eye_health
-    print generate_expense_log("Tamil Nadu", mpce)
+    print generate_expense_log(mpce)
 
