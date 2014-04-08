@@ -1,5 +1,5 @@
 import argparse
-import data_io
+import io_data
 import util
 import health
 
@@ -51,7 +51,7 @@ def test(data, args):
     
 if __name__ == "__main__":
     args = initialize_argument_parser()
-    data = data_io.Database(import_data=args['import_data'])
+    data = io_data.Database(import_data=args['import_data'])
     #Only run the test if we didn't try to recreate the database
     # Not strictly necessary, but helps separate workflow
     if not args['import_data']:

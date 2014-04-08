@@ -1,4 +1,4 @@
-import data_io
+import io_data
 from sqlalchemy import func
 import scipy.stats as stats
 import numpy as np
@@ -22,7 +22,7 @@ def generate_person(data, state, state_total, district, mpce, mpce_total):
     eye_health = generate_eye_health()
     cardio = random.random()
     classification = district.classification
-    person = data_io.Person(money, gender, age, eye_health, cardio, district.name,
+    person = io_data.Person(money, gender, age, eye_health, cardio, district.name,
             state.name, classification)
     return person
 
@@ -101,7 +101,7 @@ def generate_eye_health():
     lower, upper = 0, 1
     mu, sigma = 0.8, 0.35
     eye_health = stats.truncnorm((lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma)
-    return eye_health.rvs
+    return eye_health.rvs()
 
 def generate_2ndHealth(state_name, class_type, gender, age):
     return random.random(1)

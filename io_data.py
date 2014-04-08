@@ -160,7 +160,7 @@ class Person(Base):
                 'classification': self.classification}
 
     def __repr__(self):
-        return 'Person({0}, {1}, {2})'.format(self.money, self.eye_health, self.cardio).limit(10)
+        return 'Person({0}, {1}, {2})'.format(self.money, self.eye_health, self.cardio)
 
 class Database(object):
 
