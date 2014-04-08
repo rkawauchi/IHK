@@ -445,7 +445,7 @@ class Database(object):
     def meanMpce_by_state_name(self, state_name, classification):
         return self.session.query(Mpce.state, Mpce.mpce_type, Mpce.classification, Mpce.mpce_average).filter(Mpce.state == state_name).filter(Mpce.mpce_type == "mmrp").filter(Mpce.classification == classification).first()[3]
 
-    def get_gsp(self, state_name, classification):
+    def get_gsp_by_state_name(self, state_name, classification):
         return self.session.query(State).filter(State.name == state_name).filter(State.classification == classification).first()
 
 #given a filename, determine classification and mpce_type
