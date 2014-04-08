@@ -54,7 +54,7 @@ class Aravind(object):
         self.hospital_district_names = ['Madurai', 'Theni', 'Tirunelveli', 
                 'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiruppur', 'Salem',
                 'Tuticorin', 'Udumalaipet']
-        self.treatment_cost = treatment_cost
+        self.treatment_cost = 100
         self._init_hospitals()
 
     def _init_hospitals(self):
@@ -62,7 +62,7 @@ class Aravind(object):
         treatable_symptoms = ['eye_health']
         for district_name in self.hospital_district_names:
             self.hospitals.append(Hospital(district_name, 
-                    treatable_symptoms, self.treatment_cost))
+                    self.treatment_cost, treatable_symptoms))
 
     def treat(self, person):
         for hospital in self.hospitals:
