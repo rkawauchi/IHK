@@ -58,7 +58,7 @@ def test(data, args):
     treated_population = [solution.treat(person) if filter_test.filter_all(person) else person for person in population]
 
     #Perform analytics on the treated population
-    print 'Average diabetes in treated population', avg([person.diabetes for person in treated_population])
+    print 'Average eye health in treated population', avg([person.eye_health for person in treated_population])
     
 if __name__ == "__main__":
     args = initialize_argument_parser()

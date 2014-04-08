@@ -32,19 +32,19 @@ def clean_state_name(state):
 
 class FilterPopulation(object):
     
-    def __init__(self, cost, diabetes, cardio):
+    def __init__(self, cost, eye_health, cardio):
         self.cost = cost
-        self.diabetes = diabetes
+        self.eye_health = eye_health
         self.cardio = cardio
 
     def filter_all(self, person):
         return self.filter_health(person) and self.filter_money(person)
 
     def filter_health(self, person):
-        return self.filter_diabetes(person) or self.filter_cardio(person)
+        return self.filter_eye_health(person) or self.filter_cardio(person)
 
-    def filter_diabetes(self, person):
-        return person.diabetes <= self.diabetes
+    def filter_eye_health(self, person):
+        return person.eye_health <= self.eye_health
 
     def filter_cardio(self, person):
         return person.cardio <= self.cardio

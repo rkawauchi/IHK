@@ -39,7 +39,7 @@ class Aravind(object):
 
     def _init_hospitals(self):
         self.hospitals = list()
-        treatable_symptoms = ['diabetes']
+        treatable_symptoms = ['eye_health']
         for district_name in self.hospital_district_names:
             self.hospitals.append(Hospital(district_name, 
                     treatable_symptoms, self.treatment_cost))
