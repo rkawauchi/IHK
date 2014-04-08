@@ -2,6 +2,7 @@ import argparse
 import io_data
 import util
 import health
+import cProfile
 
 #Define commmand line arguments which can be passed to main.py
 #Currently irrelevant, but could be useful later
@@ -15,6 +16,14 @@ def initialize_argument_parser():
     parser.add_argument('-s', '--test-state', dest='test_state', type=str,
             choices = util.state_names)
     parser.add_argument('-d', '--test-district', dest='test_district', type=str)
+    parser.add_argument('--pop-gen-limit-dist', dest='pop_gen_limit_dist',
+            type=int, default=None, 
+            help='Limit the population inserted into each district for speed')
+    parser.add_argument('--pop-fetch-limit-dist', dest='pop_fetch_limit_dist',
+            type=int, default = None,
+            help='Limit the population fetched from each district for speed')
+    parser.add_argument('--profile', dest='profile', action='store_true',
+            default=False, help='Profile running time')
     return vars(parser.parse_args())
 
 def avg(x):
@@ -32,10 +41,12 @@ def test(data, args):
     print 'test:', test_district.name, 'in', test_state.name
     
     #Generate the population
-    data.populate_district_total(test_district)
+    data.populate_district_total(test_district,
+            limit = args['pop_gen_limit_dist'])
 
     #Fetch the population from the database
-    population = data.get_population_district(test_district.name, limit=10000)
+    population = data.get_population_district(test_district.name,
+            limit=args['pop_fetch_limit_dist'])
     print 'Testing population of', len(population), 'people'
 
     #Create a solution to treat the population
@@ -55,4 +66,7 @@ if __name__ == "__main__":
     #Only run the test if we didn't try to recreate the database
     # Not strictly necessary, but helps separate workflow
     if not args['import_data']:
-        test(data, args)
+        if args['profile']:
+            cProfile.run('test(data, args)')
+        else:
+            test(data, args)
