@@ -51,6 +51,14 @@ class Aravind(object):
         #If patient is not covered, return the untreated patient
         return person
 
+#Generic class which includes Hospital, EyeClinic, and VisionCamp
+class AravindCareCenter(object):
+    def __init__(self, treatment_cost, health_improvement):
+        self.treatment_cost = treatment_cost
+        self.health_improvement = health_improvement
+
+    def treat(self, person):
+        pass
 
 class Hospital(object):
     #Use this to assign each hospital to cover surrounding districts
@@ -104,6 +112,12 @@ class Hospital(object):
             setattr(person, symptom, improved_symptom)
             person.money -= self.treatment_cost
         return person
+
+class Clinic(object):
+    pass    
+
+class VisionCenter(object):
+    pass
 
         """
         self.nbOutpatientsFree
