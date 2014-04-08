@@ -54,9 +54,11 @@ class Aravind(object):
         self.district_names = ['Madurai', 'Theni', 'Tirunelveli', 
                 'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiruppur', 'Salem',
                 'Tuticorin', 'Udumalaipet']
-        self.hospital_treatment_cost = 500
-        self.clinic_treatment_cost = 200
-        self.camp_treatment_cost = 50
+        self.treatment_costs = {
+                'hospital': 500,
+                'clinic': 200,
+                'vision_center': 100,
+                'camp': 20}
         self._init_facilities()
 
     def _init_facilities(self):
@@ -70,28 +72,28 @@ class Aravind(object):
         self._init_camps()
 
     def _init_hospitals(self):
-        treatment_cost = 500
+        treatment_cost = self.treatment_costs['hospital']
         treatable_symptoms = ['eye_health']
         for district_name in self.district_names:
             self.hospitals.append(Hospital(district_name, 
                 treatment_cost, treatable_symptoms))
 
     def _init_clinics(self):
-        treatment_cost = 200
+        treatment_cost = self.treatment_costs['clinic']
         treatable_symptoms = ['eye_health']
         for district_name in self.district_names:
             self.clinics.append(Clinic(district_name,
                 treatment_cost, treatable_symptoms))
 
     def _init_vision_centers(self):
-        treatment_cost = 100
+        treatment_cost = self.treatment_costs['vision_center']
         treatable_symptoms = ['eye_health']
         for district_name in self.district_names:
             self.vision_centers.append(VisionCenter(district_name,
                 treatment_cost, treatable_symptoms))
 
     def _init_camps(self):
-        treatment_cost = 50
+        treatment_cost = self.treatment_costs['camp']
         treatable_symptoms = ['eye_health']
         for district_name in self.district_names:
             self.vision_centers.append(Camp(district_name,
