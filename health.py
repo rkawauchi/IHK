@@ -126,12 +126,17 @@ class AravindFacility(object):
     def treat(self, person):
         for symptom in self.treatable_symptoms:
             self.treat_symptom(symptom, person)
+        self.charge_fee(person)
 
     #symptom is a string containing the name of the
     # attribute: "eye_health", for example
     def treat_symptom(self, symptom, person):
         #This is overwritten by each of the subclasses
         pass 
+
+    #Also overwritten by subclasses
+    def charge_fee(self, person):
+        pass
 
 class Hospital(AravindFacility):
 
@@ -143,7 +148,9 @@ class Hospital(AravindFacility):
             improved_symptom = max(getattr(person, symptom), 0.5)
             #Change the patient's symptom so it is improved by the hospital
             setattr(person, symptom, improved_symptom)
-            person.money -= self.treatment_cost
+
+    def charge_fee(self, person):
+        person.money -= self.treatment_cost
 
 class Clinic(AravindFacility):
     
@@ -155,6 +162,9 @@ class Clinic(AravindFacility):
             setattr(person, symptom, improved_symptom)
             person.money -= self.treatment_cost
 
+    def charge_fee(self, person):
+        person.money -= self.treatment_cost
+
 class VisionCenter(AravindFacility):
     def treat_symptom(self, symptom, person):
         if symptom=='eye_health':
@@ -164,6 +174,9 @@ class VisionCenter(AravindFacility):
             setattr(person, symptom, improved_symptom)
             person.money -= self.treatment_cost
 
+    def charge_fee(self, person):
+        person.money -= self.treatment_cost
+
 class Camp(AravindFacility):
     def treat_symptom(self, symptom, person):
         if symptom=='eye_health':
@@ -172,6 +185,9 @@ class Camp(AravindFacility):
             #Change the patient's symptom so it is improved by the camp
             setattr(person, symptom, improved_symptom)
             person.money -= self.treatment_cost
+
+    def charge_fee(self, person):
+        person.money -= self.treatment_cost
 
 """
         self.nbOutpatientsFree
