@@ -1,5 +1,6 @@
-import io
+import io_data
 from sqlalchemy import func
+import scipy.stats as stats
 import numpy as np
 from array import *
 from math import log10, log
@@ -7,21 +8,21 @@ import random
 import util
 
 #generate a dict of values corresponding to the attributes of a Person
-def generate_person_dict(data, state, district, mpce):
-    person = generate_person(data, state, district, mpce)
+def generate_person_dict(data, state, state_total, district, mpce, mpce_total):
+    person = generate_person(data, state, state_total, district, mpce, mpce_total)
     return person.to_dict()
 
-def generate_person(data, state, district, mpce):
+def generate_person(data, state, state_total, district, mpce, mpce_total):
     #This is where math and statistics comes in
     gender = generate_gender()
     age = generate_age(district.classification)
-    money = generate_money(data, age, state, mpce)
+    money = generate_money(data, age, state, state_total, mpce, mpce_total)
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
     eye_health = generate_eye_health()
     cardio = random.random()
     classification = district.classification
-    person = io.Person(money, gender, age, eye_health, cardio, district.name,
+    person = io_data.Person(money, gender, age, eye_health, cardio, district.name,
             state.name, classification)
     return person
 
@@ -38,18 +39,13 @@ def generate_expense_log(state, mpce):
     logPercentile[:] = [log(x) for x in listPercentile]
     return np.random.lognormal(mean=np.mean(logPercentile), sigma=np.std(logPercentile))
 
-def generate_income(state_name, class_type):
+def generate_income(data, state, state_total, mpce, mpce_total):
     # get meanMPCE and % of classMPCE in meanMPCE
-    data = io.Database
-    ruralMPCE = data.meanMpce_by_state_name(state_name, "rural")
-    urbanMPCE = data.meanMpce_by_state_name(state_name, "urban")
-    meanMPCE = (ruralMPCE + urbanMPCE)/2
-    classMPCE = data.meanMpce_by_state_name(state_name, class_type)
-    classPercent = float(classMPCE) / meanMPCE
+    classPercent = float(mpce.mpce_average) / mpce_total.mpce_average
     # multiply GSP (in Rs.10M) by % to get modified GSP for given class
-    meanGSP = data.get_gsp_by_state_name(state_name, "total").gsp * 10000000
+    meanGSP = state_total.gsp * 10000000
     classGSP = int(classPercent * meanGSP)
-    classPop = data.pop_by_state_name(state_name, class_type)
+    classPop = state.population_total
     # get mean
     meanIncome_person = classGSP / classPop / 10000
     # get sd (I manually calculated from raw data, and made adj,
@@ -57,14 +53,13 @@ def generate_income(state_name, class_type):
     poorMean = 17097.05 - 2000
     richMean = 171282.9 - 7000
     if classGSP < (60000 * 10000000):
-        sdIncome_person = poorMean * 10000000 / data.pop_by_state_name(state_name, "total")/ 10000
+        sdIncome_person = poorMean * 10000000 / state.population_total / 10000
     else:
-        sdIncome_person = richMean * 10000000 / data.pop_by_state_name(state_name, "total")/ 10000
+        sdIncome_person = richMean * 10000000 / state.population_total / 10000
     return np.random.lognormal(log(meanIncome_person),log(sdIncome_person)) * 10000 / 12
 
-def generate_money(data, age, state, mpce):
-    state_name = state.name
-    income = generate_income(data, state_name, state.classification)
+def generate_money(data, age, state, state_total, mpce, mpce_total):
+    income = generate_income(data, state, state_total, mpce, mpce_total)
     expense = generate_expense_log(state, mpce)
     if age <= 20:
         return (income / 5) - (expense / 2)
@@ -103,11 +98,10 @@ def generate_life_exp(gender, age):
         return MaleLifeExp(age)
 
 def generate_eye_health():
-    import scipy.stats as stats
     lower, upper = 0, 1
     mu, sigma = 0.8, 0.35
     eye_health = stats.truncnorm((lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma)
-    return eye_health.rvs
+    return eye_health.rvs()
 
 def generate_2ndHealth(state_name, class_type, gender, age):
     return random.random(1)
