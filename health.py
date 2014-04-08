@@ -12,11 +12,22 @@ Hospital::equipmentLevel information
 
 import math
 
+#geo_scale calculation:
+"""
+def generate_person():
+    #To add to person generation, after classification
+    if classification = 'Urban':
+        city_center_distance = urban_radius*random.random()
+    if classification = 'Rural':
+        city_center_distance = (random.random()*(max_radius-urban_radius)+urban_radius
+    person = io.Person(classification, )
+    return person
+"""
+
 #worry_threshold calculation: Given that an estimated 9% of the population is considered hypocondriac,
 #we calculate in the hypothesis of a Gaussian distribution of worry level in the population that these 9%
 #match a -inverse_erf(1-9/50) threshold = -0.95. worry_level of each person is simulated given a Normal distribution N(0,1)
 worry_threshold = -0.95
-
 
 
 #General area variables 
@@ -35,18 +46,8 @@ max_radius = sqrt(Tamil_Nadu_area/math.pi) #calculation: total Tamil Nadu area i
 #Init_split
 urb_split, rur_split = 91.5%, 39.7%
 
-#geo_scale calculation:
-def generate_person():
-    #To add to person generation, after classification
-    if classification = 'Urban':
-        city_center_distance = urban_radius*random.random()
-    if classification = 'Rural':
-        city_center_distance = (random.random()*(max_radius-urban_radius)+urban_radius
-    
-    person = io.Person(classification, )
-
-    return person
-
+#Init Health Structure Dictionnary
+dict_structure = {"hospital" = 1, "clinic" = 2, "center" = 3, "camp" = 4}
 
 class Solution(object):
     def __init__(self, location, expertise, start_date, end_date, is_operating):
@@ -84,7 +85,7 @@ class Aravind(object):
     def get_district_names(self):
         return self.district_names
 
-    def get_hospitals(self):
+    def get_structure(self):
         return self.hospitals
 
 class Hospital(object):
@@ -109,19 +110,26 @@ class Hospital(object):
         return person
 
     def testAwareness(self, person):
-        if city_center_distance in range(0, urb_split*urban_radius):
+        if person.city_center_distance in range(0, urb_split*urban_radius):
+            return dict_structure["hospital"]
+        if person.city_center_distance in range(urb_split*urban_radius, urban_radius):
+            return dict_structure["clinic"]
+        if person.city_center_distance in range(urban_radius, urban_radius*rur_split):
+            return dict_structure["center"]
+        if person.city_center_distance in range(urban_radius*rur_split, max_radius):
+            return dict_structure["camp"]
 
-        if city_center_distance in range(urb_split*urban_radius, urban_radius):
-        if city_center_distance in range(urban_radius, urban_radius*rur_split):
-        if city_center_distance in range(urban_radius*rur_split, max_radius):
-
-
+    def get_transit_cost(person)
+        distance = abs(person.city_center_distance - 
 
     def testWorryLevel(self, person):
         if person.worry_level > worry_threshold:
             return 1
         else:
             return 0
+
+    def WillingnessScore
+
 
 
 
