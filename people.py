@@ -7,15 +7,15 @@ import random
 import util
 
 #generate a dict of values corresponding to the attributes of a Person
-def generate_person_dict(data, state, district, mpce):
-    person = generate_person(data, state, district, mpce)
+def generate_person_dict(data, state, district, mpce, mpce_total):
+    person = generate_person(data, state, district, mpce, mpce_total)
     return person.to_dict()
 
-def generate_person(data, state, district, mpce):
+def generate_person(data, state, district, mpce, mpce_total):
     #This is where math and statistics comes in
     gender = generate_gender()
     age = generate_age(district.classification)
-    money = generate_money(data, age, state, mpce)
+    money = generate_money(data, age, state, mpce, mpce_total)
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
     eye_health = generate_eye_health()
@@ -38,18 +38,13 @@ def generate_expense_log(state, mpce):
     logPercentile[:] = [log(x) for x in listPercentile]
     return np.random.lognormal(mean=np.mean(logPercentile), sigma=np.std(logPercentile))
 
-def generate_income(state_name, class_type):
+def generate_income(data, state, mpce, mpce_total):
     # get meanMPCE and % of classMPCE in meanMPCE
-    data = io.Database
-    ruralMPCE = data.meanMpce_by_state_name(state_name, "rural")
-    urbanMPCE = data.meanMpce_by_state_name(state_name, "urban")
-    meanMPCE = (ruralMPCE + urbanMPCE)/2
-    classMPCE = data.meanMpce_by_state_name(state_name, class_type)
-    classPercent = float(classMPCE) / meanMPCE
+    classPercent = float(mpce.mpce_average) / mpce_total.mpce_average
     # multiply GSP (in Rs.10M) by % to get modified GSP for given class
     meanGSP = data.get_gsp_by_state_name(state_name, "total").gsp * 10000000
     classGSP = int(classPercent * meanGSP)
-    classPop = data.pop_by_state_name(state_name, class_type)
+    classPop = state.population_total
     # get mean
     meanIncome_person = classGSP / classPop / 10000
     # get sd (I manually calculated from raw data, and made adj,
@@ -62,9 +57,8 @@ def generate_income(state_name, class_type):
         sdIncome_person = richMean * 10000000 / data.pop_by_state_name(state_name, "total")/ 10000
     return np.random.lognormal(log(meanIncome_person),log(sdIncome_person)) * 10000 / 12
 
-def generate_money(data, age, state, mpce):
-    state_name = state.name
-    income = generate_income(data, state_name, state.classification)
+def generate_money(data, age, state, mpce, mpce_total):
+    income = generate_income(data, state, mpce, mpce_total)
     expense = generate_expense_log(state, mpce)
     if age <= 20:
         return (income / 5) - (expense / 2)
