@@ -22,8 +22,16 @@ def generate_person(data, state, state_total, district, mpce, mpce_total):
     eye_health = generate_eye_health()
     cardio = random.random()
     classification = district.classification
+    # worry_level = generate_worry_level() ### to create
+    """
+    if classification = 'Urban':
+        city_center_distance = urban_radius*random.random()
+    if classification = 'Rural':
+        city_center_distance = (random.random()*(max_radius-urban_radius)+urban_radius
+    """
     person = io_data.Person(money, gender, age, eye_health, cardio, district.name,
             state.name, classification)
+    #Other variables to potentially add: worry_level, pricing_class, structure, city_center_distance
     return person
 
 ######################## below by RieK #########################
