@@ -131,19 +131,19 @@ class Person(Base):
     age = sqlalchemy.Column(sqlalchemy.Integer)
     #currently assuming 0-1 ranking for health measures
     #the data type may change laters
-    diabetes = sqlalchemy.Column(sqlalchemy.Float)
+    eye_health = sqlalchemy.Column(sqlalchemy.Float)
     cardio = sqlalchemy.Column(sqlalchemy.Float)
     district = sqlalchemy.Column(sqlalchemy.String, index=True)
     state = sqlalchemy.Column(sqlalchemy.String)
     #urban or rural
     classification = sqlalchemy.Column(sqlalchemy.String)
 
-    def __init__(self, money, gender, age, diabetes, cardio, district, state,
+    def __init__(self, money, gender, age, eye_health, cardio, district, state,
             classification):
         self.money = money
         self.gender = gender
         self.age = age
-        self.diabetes = diabetes
+        self.eye_health = eye_health
         self.cardio = cardio
         self.district = district
         self.state = state
@@ -153,14 +153,14 @@ class Person(Base):
         return {'money': self.money, 
                 'gender': self.gender,
                 'age': self.age,
-                'diabetes': self.diabetes,
+                'eye_health': self.eye_health,
                 'cardio': self.cardio,
                 'district': self.district,
                 'state': self.state,
                 'classification': self.classification}
 
     def __repr__(self):
-        return 'Person({0}, {1}, {2})'.format(self.money, self.diabetes, self.cardio).limit(10)
+        return 'Person({0}, {1}, {2})'.format(self.money, self.eye_health, self.cardio)
 
 class Database(object):
 
@@ -187,7 +187,6 @@ class Database(object):
                     population_total = state.population_total,
                     household_total = state.household_total,
                     gsp = state.gsp)
-            
 
     def _init_states(self):
         self._wipe_states()
@@ -246,18 +245,35 @@ class Database(object):
         #We need to generate the "total" classification Mpce rows
         insert = Mpce.__table__.insert()
         for state_name in util.state_names:
-            both_mpce = self.session.query(Mpce).filter(Mpce.state == state_name).all()
-            #this is hacky, but it works and I can't think of a proper way
-            if not both_mpce:
+            urban_mpce = self.session.query(Mpce).filter(
+                    Mpce.state == state_name).filter(
+                    Mpce.classification == 'urban').first()
+            rural_mpce = self.session.query(Mpce).filter(
+                    Mpce.state == state_name).filter(
+                    Mpce.classification == 'rural').first()
+            #We have some Mpce data on states that don't exist elsewhere
+            if urban_mpce is None:
                 continue
-            a = both_mpce[0]
-            b = both_mpce[1]
-            total_mpce = Mpce(a.mpce_type, 'total', state_name, a.d1+b.d1,
-                    a.d2+b.d2, a.d3+b.d3, a.d4+b.d4, a.d5+b.d5, a.d6+b.d6, 
-                    a.d7+b.d7, a.d8+b.d8, a.d9+b.d9, 
-                    (a.mpce_average+b.mpce_average)/2, 
-                    a.household_total+b.household_total,
-                    a.household_sample+b.household_sample)
+            urban_households = urban_mpce.household_total
+            rural_households = rural_mpce.household_total
+            household_total = urban_households + rural_households
+            def wavg(d_urban, d_rural):
+                return (d_urban * urban_households + d_rural * rural_households)/household_total
+            d1 = wavg(urban_mpce.d1, rural_mpce.d1)
+            d2 = wavg(urban_mpce.d2, rural_mpce.d2)
+            d3 = wavg(urban_mpce.d3, rural_mpce.d3)
+            d4 = wavg(urban_mpce.d4, rural_mpce.d4)
+            d5 = wavg(urban_mpce.d5, rural_mpce.d5)
+            d6 = wavg(urban_mpce.d6, rural_mpce.d6)
+            d7 = wavg(urban_mpce.d7, rural_mpce.d7)
+            d8 = wavg(urban_mpce.d8, rural_mpce.d8)
+            d9 = wavg(urban_mpce.d9, rural_mpce.d9)
+            mpce_average = wavg(urban_mpce.mpce_average, rural_mpce.mpce_average)
+            household_sample = urban_mpce.mpce_average + rural_mpce.mpce_average
+
+            total_mpce = Mpce(urban_mpce.mpce_type, 'total', state_name, 
+                    d1, d2, d3, d4, d5, d6, d7, d8, d9, mpce_average,
+                    household_total, household_sample)
             self.connection.execute(insert, total_mpce.__dict__)
 
     def _import_mpce_file(self, input_file, mpce_type, classification):
@@ -269,6 +285,7 @@ class Database(object):
                 continue
             #remove extra spaces around each element in the row
             row = [value.strip() for value in row]
+            row[0] = util.clean_state_name(row[0])
             #Create a Mpce object - makes things easier to insert
             #This is not a very efficient method, but it works
             mpce = Mpce(mpce_type, classification, *row)
@@ -378,22 +395,22 @@ class Database(object):
 
     #Create a population distribution for both the urban and rural populations
     #of the district
-    def populate_district_total(self, district, force=False):
+    def populate_district_total(self, district, force=False, limit = None):
         #Don't insert anyone if there are already people there
         if self.exist_people_from_district(district.name) and not force:
             return
         urban_district = self.get_district_by_name(district.name, 'urban')
         self.populate_district(urban_district, wipe_population = True,
-                force = True)
+                force = True, limit = limit)
         print 'Urban population generated'
         rural_district = self.get_district_by_name(district.name, 'rural')
         self.populate_district(rural_district, wipe_population = False,
-                force = True)
+                force = True, limit = limit)
         print 'Rural population generated'
 
     #Create a population distribution for the population of a given district
     def populate_district(self, district, state = None, wipe_population = True,
-            force=False):
+            force=False, limit = None):
         #If the district already has people in it, don't insert more
         # unless forced to
         if self.exist_people_from_district(district.name) and not force:
@@ -402,28 +419,45 @@ class Database(object):
         if wipe_population:
             self._delete_population_district(district)
         if state is None:
-            state = self.get_state_by_name(district.state)
+            state = self.get_state_by_name(district.state, 
+                    district.classification)
+        state_total = self.get_state_by_name(district.state, 'total')
 
-        mpce = self.session.query(Mpce).filter_by(state=state.name).first()
+        mpce = self.session.query(Mpce).filter_by(state=state.name).filter_by(
+                classification=district.classification).filter_by(
+                mpce_type='mmrp').first()
+        mpce_total = self.session.query(Mpce).filter_by(
+                state=state.name).filter_by(classification='total').filter_by(
+                mpce_type='mmrp').first()
         #Bulk insert as per http://docs.sqlalchemy.org/en/rel_0_8/faq.html
         #split into multiple insertion waves due to memory limitations
+        if limit is None:
+            population_size = district.population_total
+        else:
+            population_size = limit
         insertions_per_wave = 1000000
+        
         #insert the population in waves of 1000000 people 
-        for i in xrange(district.population_total/insertions_per_wave):
-            self._insert_population_wave(state, district, mpce,
+        #Note that if population_size < insertions_per_wave, this never runs
+        for i in xrange(population_size/insertions_per_wave):
+            self._insert_population_wave(state, state_total, district, mpce, mpce_total,
                     insertions_per_wave)
             print 'wave inserted'
         #insert the last few people
-        self._insert_population_wave(state, district, mpce, district.population_total % insertions_per_wave)
+        #Or if population_size < insertion_per_wave, insert all the people
+        self._insert_population_wave(state, state_total, district, mpce,
+                mpce_total, population_size % insertions_per_wave)
         #commit the changes; otherwise, they will be wasted!
         self.session.commit()
         print 'Population of', district.name, 'inserted'
 
-    def _insert_population_wave(self, state, district, mpce, insertion_count):
+    def _insert_population_wave(self, state, state_total, district, mpce,
+            mpce_total, insertion_count):
         insert = Person.__table__.insert()
         self.engine.execute(insert, 
-                [people.generate_person_dict(self, state, district, mpce)
-                for j in xrange(insertion_count)])
+                [people.generate_person_dict(self, state, state_total,
+                    district, mpce, mpce_total) 
+                    for j in xrange(insertion_count)])
 
     def _delete_population_district(self, district):
         table = Person.__table__
@@ -433,8 +467,12 @@ class Database(object):
         self.session.commit()
 
     def get_population_district(self, district_name, limit=None):
-        return self.session.query(Person).filter(
-                Person.district == district_name).limit(limit).all()
+        query = self.session.query(Person).filter(
+                Person.district == district_name)
+        if limit is not None:
+            query.limit(limit)
+        return query.all()
+                
 
 ######################## below by RieK #########################
 
