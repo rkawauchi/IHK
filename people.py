@@ -15,7 +15,7 @@ def generate_person(data, state, district, mpce):
     #This is where math and statistics comes in
     gender = generate_gender()
     age = generate_age(district.classification)
-    money = generate_money(age, state, district.classification)
+    money = generate_money(data, age, state, district.classification)
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
     eye_health = random.random()
@@ -57,7 +57,7 @@ def generate_expense_log(state_name, class_type):
     logPercentile[:] = [log(x) for x in listPercentile]
     return np.random.lognormal(mean=np.mean(logPercentile), sigma=np.std(logPercentile))
 
-def generate_income(state_name, class_type):
+def generate_income(data, state_name, class_type):
     # get meanMPCE and % of classMPCE in meanMPCE
     ruralMPCE = data.meanMpce_by_state(state_name, "rural")
     urbanMPCE = data.meanMpce_by_state(state_name, "urban")
@@ -80,8 +80,8 @@ def generate_income(state_name, class_type):
         sdIncome_person = richMean * 10000000 / data.pop_by_state(state_name, "total")/ 10000
     return np.random.lognormal(log(meanIncome_person),log(sdIncome_person)) * 10000 / 12
 
-def generate_money(age, state_name, class_type):
-    income = generate_income(state_name, class_type)
+def generate_money(data, age, state_name, class_type):
+    income = generate_income(data, state_name, class_type)
     expense = generate_exp(state_name, class_type)
     if age <= 20:
         return (income / 5) - (expense / 2)
