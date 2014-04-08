@@ -52,9 +52,9 @@ def test(data, args):
     #Create a solution to treat the population
     solution = health.Aravind()
     #districts = [data.get_district_by_name(district_name) for district_name in solution.get_covered_district_names()] 
-    filter_test = util.FilterPopulation(solution.treatment_cost, 1, 1)
+    #Need to use all treatment costs for more intelligent filtering
+    filter_test = util.FilterPopulation(max(solution.treatment_costs.values()), 1, 1)
     
-
     #Treat the population using the solution
     treated_population = [solution.treat(person) if filter_test.filter_all(person) else person for person in population]
 
