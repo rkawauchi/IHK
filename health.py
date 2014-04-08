@@ -9,7 +9,7 @@ Hospital::equipmentLevel information
 4 = Transport arranged for people
 5 = Transport arranged for people
 """
-
+"""
 class Solution(object):
     def __init__(self, location, expertise, start_date, end_date, is_operating):
         self.location = location
@@ -17,47 +17,59 @@ class Solution(object):
         self.start_date = start_date
         self.end_date = end_date
         self.is_operating = is_operating
+"""
 
-        """
+"""
         self.location = "KA" #modify to match: reach only Karnataka state
         self.treatmentRatePerYear = 2646000 #number of people treated per year by the whole system. Treatment definition = "went into Aravind System and met with one personel"
         self.expertise = "Eyecare" #Aravind System will only treat the patients that have problem related to Eyecare
         self.beginDate = 01-01-1976 #convert in the most common date format. By default if no month/day, first january
         self.endDate = "N/A" #system is still operating
         self.operatingStatus = 'Y'
-        """
+"""
 
 class Aravind(object):
 
     def __init__(self, treatment_cost = 100):
-        self.district_names = ['Madurai', 'Theni', 'Tirunelveli', 
+        self.hospital_district_names = ['Madurai', 'Theni', 'Tirunelveli', 
                 'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiripur', 'Salem',
                 'Tuticorin', 'Udumalaipet']
+        self.covered_district_names = self.hospital_district_names
         self.treatment_cost = treatment_cost
         self._init_hospitals()
 
     def _init_hospitals(self):
-        self.hospitals = dict()
+        self.hospitals = list()
         treatable_symptoms = ['diabetes']
-        for district_name in self.district_names:
-            self.hospitals[district_name] = Hospital(district_name, 
-                    treatable_symptoms, self.treatment_cost)
+        for district_name in self.hospital_district_names:
+            self.hospitals.append(Hospital(district_name, 
+                    treatable_symptoms, self.treatment_cost))
 
-    def get_district_names(self):
-        return self.district_names
+    def get_covered_district_names(self):
+        return self.covered_district_names
 
-    def get_hospitals(self):
-        return self.hospitals
+    def treat(self, person):
+        for hospital in self.hospitals:
+            if hospital.covers_district_name(person.district):
+                return hospital.treat(person)
+        #If patient is not covered, return the untreated patient
+        return person
+
 
 class Hospital(object):
 
-    def __init__(self, location, treatable_symptoms, treatment_cost, 
+    def __init__(self, district_name, treatable_symptoms, treatment_cost, 
             equipment_level = None):
-        self.location = location
+        self.district_name = district_name
         #treatable_symptoms is a list of symptoms the hospital can treat
         self.treatable_symptoms = treatable_symptoms
         self.equipment_level = equipment_level #cf. equipment_level index
         self.treatment_cost = treatment_cost
+
+    def covers_district_name(self, district_name):
+        #This is where we add the "adjacent districts"
+        #For now, just check if 
+        return self.district_name == district_name
 
     def treat(self, person):
         for symptom in self.treatable_symptoms:
