@@ -246,18 +246,35 @@ class Database(object):
         #We need to generate the "total" classification Mpce rows
         insert = Mpce.__table__.insert()
         for state_name in util.state_names:
-            both_mpce = self.session.query(Mpce).filter(Mpce.state == state_name).all()
-            #this is hacky, but it works and I can't think of a proper way
-            if not both_mpce:
+            urban_mpce = self.session.query(Mpce).filter(
+                    Mpce.state == state_name).filter(
+                    Mpce.classification == 'urban').first()
+            rural_mpce = self.session.query(Mpce).filter(
+                    Mpce.state == state_name).filter(
+                    Mpce.classification == 'rural').first()
+            #We have some Mpce data on states that don't exist elsewhere
+            if urban_mpce is None:
                 continue
-            a = both_mpce[0]
-            b = both_mpce[1]
-            total_mpce = Mpce(a.mpce_type, 'total', state_name, a.d1+b.d1,
-                    a.d2+b.d2, a.d3+b.d3, a.d4+b.d4, a.d5+b.d5, a.d6+b.d6, 
-                    a.d7+b.d7, a.d8+b.d8, a.d9+b.d9, 
-                    (a.mpce_average+b.mpce_average)/2, 
-                    a.household_total+b.household_total,
-                    a.household_sample+b.household_sample)
+            urban_households = urban_mpce.household_total
+            rural_households = rural_mpce.household_total
+            household_total = urban_households + rural_households
+            def wavg(d_urban, d_rural):
+                return (d_urban * urban_households + d_rural * rural_households)/household_total
+            d1 = wavg(urban_mpce.d1, rural_mpce.d1)
+            d2 = wavg(urban_mpce.d2, rural_mpce.d2)
+            d3 = wavg(urban_mpce.d3, rural_mpce.d3)
+            d4 = wavg(urban_mpce.d4, rural_mpce.d4)
+            d5 = wavg(urban_mpce.d5, rural_mpce.d5)
+            d6 = wavg(urban_mpce.d6, rural_mpce.d6)
+            d7 = wavg(urban_mpce.d7, rural_mpce.d7)
+            d8 = wavg(urban_mpce.d8, rural_mpce.d8)
+            d9 = wavg(urban_mpce.d9, rural_mpce.d9)
+            mpce_average = wavg(urban_mpce.mpce_average, rural_mpce.mpce_average)
+            household_sample = urban_mpce.mpce_average + rural_mpce.mpce_average
+
+            total_mpce = Mpce(urban_mpce.mpce_type, 'total', state_name, 
+                    d1, d2, d3, d4, d5, d6, d7, d8, d9, mpce_average,
+                    household_total, household_sample)
             self.connection.execute(insert, total_mpce.__dict__)
 
     def _import_mpce_file(self, input_file, mpce_type, classification):
@@ -269,6 +286,7 @@ class Database(object):
                 continue
             #remove extra spaces around each element in the row
             row = [value.strip() for value in row]
+            row[0] = util.clean_state_name(row[0])
             #Create a Mpce object - makes things easier to insert
             #This is not a very efficient method, but it works
             mpce = Mpce(mpce_type, classification, *row)
