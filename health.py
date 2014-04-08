@@ -1,58 +1,4 @@
-"""
-REFERENCE
-
-Hospital::equipmentLevel information
-0 = Transport arranged for people
-1 = Transport arranged for people
-2 = Transport arranged for people
-3 = Transport arranged for people
-4 = Transport arranged for people
-5 = Transport arranged for people
-"""
-"""
-class Solution(object):
-    def __init__(self, location, expertise, start_date, end_date, is_operating):
-        self.location = location
-        self.expertise = expertise
-        self.start_date = start_date
-        self.end_date = end_date
-        self.is_operating = is_operating
-"""
-
-"""
-        self.location = "KA" #modify to match: reach only Karnataka state
-        self.treatmentRatePerYear = 2646000 #number of people treated per year by the whole system. Treatment definition = "went into Aravind System and met with one personel"
-        self.expertise = "Eyecare" #Aravind System will only treat the patients that have problem related to Eyecare
-        self.beginDate = 01-01-1976 #convert in the most common date format. By default if no month/day, first january
-        self.endDate = "N/A" #system is still operating
-        self.operatingStatus = 'Y'
-"""
-
 class Aravind(object):
-
-    def __init__(self, treatment_cost = 100):
-        self.hospital_district_names = ['Madurai', 'Theni', 'Tirunelveli', 
-                'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiruppur', 'Salem',
-                'Tuticorin', 'Udumalaipet']
-        self.treatment_cost = treatment_cost
-        self._init_hospitals()
-
-    def _init_hospitals(self):
-        self.hospitals = list()
-        treatable_symptoms = ['eye_health']
-        for district_name in self.hospital_district_names:
-            self.hospitals.append(Hospital(district_name, 
-                    treatable_symptoms, self.treatment_cost))
-
-    def treat(self, person):
-        for hospital in self.hospitals:
-            if hospital.covers_district_name(person.district):
-                return hospital.treat(person)
-        #If patient is not covered, return the untreated patient
-        return person
-
-
-class Hospital(object):
     #Use this to assign each hospital to cover surrounding districts
     #Based on Aravind's data
     #A more robust approach would be to define adjacencies for all districts
@@ -73,22 +19,75 @@ class Hospital(object):
                 #These are not from the google drive
                 'Tuticorin': ['Tuticorin'],
                 'Udumalaipet': ['Udumalaipet']}
-                
 
-    def __init__(self, district_name, treatable_symptoms, treatment_cost, 
-            equipment_level = None):
+    def __init__(self):
+        self.district_names = ['Madurai', 'Theni', 'Tirunelveli', 
+                'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiruppur', 'Salem',
+                'Tuticorin', 'Udumalaipet']
+        self.treatment_costs = {
+                'hospital': 500,
+                'clinic': 200,
+                'vision_center': 100,
+                'camp': 20}
+        self._init_facilities()
+
+    def _init_facilities(self):
+        self.hospitals = list()
+        self.clinics = list()
+        self.vision_centers = list()
+        self.camps = list()
+        self._init_hospitals()
+        self._init_clinics()
+        self._init_vision_centers()
+        self._init_camps()
+
+    def _init_hospitals(self):
+        treatment_cost = self.treatment_costs['hospital']
+        treatable_symptoms = ['eye_health']
+        for district_name in self.district_names:
+            self.hospitals.append(Hospital(district_name, 
+                treatment_cost, treatable_symptoms))
+
+    def _init_clinics(self):
+        treatment_cost = self.treatment_costs['clinic']
+        treatable_symptoms = ['eye_health']
+        for district_name in self.district_names:
+            self.clinics.append(Clinic(district_name,
+                treatment_cost, treatable_symptoms))
+
+    def _init_vision_centers(self):
+        treatment_cost = self.treatment_costs['vision_center']
+        treatable_symptoms = ['eye_health']
+        for district_name in self.district_names:
+            self.vision_centers.append(VisionCenter(district_name,
+                treatment_cost, treatable_symptoms))
+
+    def _init_camps(self):
+        treatment_cost = self.treatment_costs['camp']
+        treatable_symptoms = ['eye_health']
+        for district_name in self.district_names:
+            self.vision_centers.append(Camp(district_name,
+                treatment_cost, treatable_symptoms))
+
+    def treat(self, person):
+        for hospital in self.hospitals:
+            if hospital.covers_district_name(person.district):
+                hospital.treat(person)
+        #If patient is not covered, the patient is unchanged
+        return person
+
+#Generic class which includes Hospital, EyeClinic, and VisionCamp
+class AravindFacility(object):
+    def __init__(self, district_name, treatment_cost, treatable_symptoms):
         self.district_name = district_name
-        #treatable_symptoms is a list of symptoms the hospital can treat
-        self.treatable_symptoms = treatable_symptoms
-        self.equipment_level = equipment_level #cf. equipment_level index
         self.treatment_cost = treatment_cost
+        self.treatable_symptoms = treatable_symptoms
         self._init_covered_districts()
 
     def _init_covered_districts(self):
         #Use Python version of "switch statement"
-        self.covered_districts = Hospital.covered_district_mapping[
+        self.covered_districts = Aravind.covered_district_mapping[
                 self.district_name]
-            
 
     #True if the district is in the list of districts this hospital covers
     def covers_district_name(self, district_name):
@@ -96,16 +95,71 @@ class Hospital(object):
 
     def treat(self, person):
         for symptom in self.treatable_symptoms:
+            self.treat_symptom(symptom, person)
+        self.charge_fee(person)
+
+    #symptom is a string containing the name of the
+    # attribute: "eye_health", for example
+    def treat_symptom(self, symptom, person):
+        #This is overwritten by each of the subclasses
+        pass 
+
+    #Also overwritten by subclasses
+    def charge_fee(self, person):
+        pass
+
+class Hospital(AravindFacility):
+
+    def treat_symptom(self, symptom, person):
+        if symptom=='eye_health':
             #Any patient treated by this hospital has their symptoms increased
             # to a minimum of 0.5
             #This is obviously a placeholder for a more nuanced approach
             improved_symptom = max(getattr(person, symptom), 0.5)
             #Change the patient's symptom so it is improved by the hospital
             setattr(person, symptom, improved_symptom)
-            person.money -= self.treatment_cost
-        return person
 
-        """
+    def charge_fee(self, person):
+        person.money -= self.treatment_cost
+
+class Clinic(AravindFacility):
+    
+    def treat_symptom(self, symptom, person):
+        if symptom=='eye_health':
+            #Any patient treated by this clinic has eye health improved to 0.4
+            improved_symptom = max(getattr(person, symptom), 0.4)
+            #Change the patient's symptom so it is improved by the clinic
+            setattr(person, symptom, improved_symptom)
+            person.money -= self.treatment_cost
+
+    def charge_fee(self, person):
+        person.money -= self.treatment_cost
+
+class VisionCenter(AravindFacility):
+    def treat_symptom(self, symptom, person):
+        if symptom=='eye_health':
+            #Any patient treated by this clinic has eye health improved to 0.3
+            improved_symptom = max(getattr(person, symptom), 0.3)
+            #Change the patient's symptom so it is improved by the vision center
+            setattr(person, symptom, improved_symptom)
+            person.money -= self.treatment_cost
+
+    def charge_fee(self, person):
+        person.money -= self.treatment_cost
+
+class Camp(AravindFacility):
+    def treat_symptom(self, symptom, person):
+        if symptom=='eye_health':
+            #Any patient treated by this clinic has eye health improved to 0.2
+            improved_symptom = max(getattr(person, symptom), 0.2)
+            #Change the patient's symptom so it is improved by the camp
+            setattr(person, symptom, improved_symptom)
+            person.money -= self.treatment_cost
+
+    def charge_fee(self, person):
+        person.money -= self.treatment_cost
+
+"""
         self.nbOutpatientsFree
         self.nbOutpatientPaying = nbPopPaying
         self.nbSurgeryFree =
@@ -115,7 +169,7 @@ class Hospital(object):
         self.priceSurgerySubsidized = 900 #750*88%+2000*12% (balance between ICCE and ECCE)
         self.priceSurgeryFree = 0
         self.nbPopFree = nbPopFree #check sum free + paid = Screened
-        """
+"""
 
 '''
 #possible merge 

@@ -3,6 +3,7 @@ import io_data
 import util
 import health
 import cProfile
+import copy
 
 #Define commmand line arguments which can be passed to main.py
 #Currently irrelevant, but could be useful later
@@ -16,6 +17,8 @@ def initialize_argument_parser():
     parser.add_argument('-s', '--test-state', dest='test_state', type=str,
             choices = util.state_names)
     parser.add_argument('-d', '--test-district', dest='test_district', type=str)
+    parser.add_argument('--district-index', dest='district_index', type=int,
+            default = 0, help='Select a district in a state by its index')
     parser.add_argument('--pop-gen-limit-dist', dest='pop_gen_limit_dist',
             type=int, default=None, 
             help='Limit the population inserted into each district for speed')
@@ -37,7 +40,8 @@ def test(data, args):
     if args['test_district']:
         test_district = data.get_district_by_name(args['test_district'])
     else:
-        test_district = data.get_districts_by_state_name(test_state_name)[0]
+        test_district = data.get_districts_by_state_name(
+                test_state_name)[args['district_index']]
     print 'test:', test_district.name, 'in', test_state.name
     
     #Generate the population
@@ -50,14 +54,19 @@ def test(data, args):
     print 'Testing population of', len(population), 'people'
 
     #Create a solution to treat the population
-    solution = health.Aravind(treatment_cost = 500)
+    solution = health.Aravind()
     #districts = [data.get_district_by_name(district_name) for district_name in solution.get_covered_district_names()] 
-    filter_test = util.FilterPopulation(solution.treatment_cost, 1, 1)
+    #Need to use all treatment costs for more intelligent filtering
+    filter_test = util.FilterPopulation(max(solution.treatment_costs.values()),
+            1, 1)
 
     #Treat the population using the solution
-    treated_population = [solution.treat(person) if filter_test.filter_all(person) else person for person in population]
+    treated_population = list()
+    for person in population:
+        treated_population.append(solution.treat(copy.copy(person)))
 
     #Perform analytics on the treated population
+    print 'Average eye health in original population', avg([person.eye_health for person in population])
     print 'Average eye health in treated population', avg([person.eye_health for person in treated_population])
     
 if __name__ == "__main__":
