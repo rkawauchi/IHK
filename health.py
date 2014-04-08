@@ -54,7 +54,8 @@ class Aravind(object):
         self.hospital_district_names = ['Madurai', 'Theni', 'Tirunelveli', 
                 'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiruppur', 'Salem',
                 'Tuticorin', 'Udumalaipet']
-        self.treatment_cost = 100
+        self.hospital_treatment_cost = 500
+        self.clinic_treatment_cost = 100
         self._init_hospitals()
 
     def _init_hospitals(self):
@@ -63,6 +64,11 @@ class Aravind(object):
         for district_name in self.hospital_district_names:
             self.hospitals.append(Hospital(district_name, 
                     self.treatment_cost, treatable_symptoms))
+
+    def _init_clinics(self):
+        self.clinics = list()
+        treatable_symptoms =['eye_health']
+
 
     def treat(self, person):
         for hospital in self.hospitals:
@@ -110,11 +116,24 @@ class Hospital(AravindFacility):
             setattr(person, symptom, improved_symptom)
             person.money -= self.treatment_cost
 
-class Clinic(object):
-    pass    
+class Clinic(AravindFacility):
+    
+    def treat_symptom(self, symptom, person):
+        if symptom=='eye_health':
+            #Any patient treated by this clinic has eye health improved to 0.4
+            improved_symptom = max(getattr(person, symptom), 0.4)
+            #Change the patient's symptom so it is improved by the hospital
+            setattr(person, symptom, improved_symptom)
+            person.money -= self.treatment_cost
 
-class VisionCenter(object):
-    pass
+class VisionCenter(AravindFacility):
+    def treat_symptom(self, symptom, person):
+        if symptom=='eye_health':
+            #Any patient treated by this clinic has eye health improved to 0.3
+            improved_symptom = max(getattr(person, symptom), 0.3)
+            #Change the patient's symptom so it is improved by the hospital
+            setattr(person, symptom, improved_symptom)
+            person.money -= self.treatment_cost
 
 """
         self.nbOutpatientsFree
