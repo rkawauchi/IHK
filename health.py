@@ -1,33 +1,3 @@
-"""
-REFERENCE
-
-Hospital::equipmentLevel information
-0 = Transport arranged for people
-1 = Transport arranged for people
-2 = Transport arranged for people
-3 = Transport arranged for people
-4 = Transport arranged for people
-5 = Transport arranged for people
-"""
-"""
-class Solution(object):
-    def __init__(self, location, expertise, start_date, end_date, is_operating):
-        self.location = location
-        self.expertise = expertise
-        self.start_date = start_date
-        self.end_date = end_date
-        self.is_operating = is_operating
-"""
-
-"""
-        self.location = "KA" #modify to match: reach only Karnataka state
-        self.treatmentRatePerYear = 2646000 #number of people treated per year by the whole system. Treatment definition = "went into Aravind System and met with one personel"
-        self.expertise = "Eyecare" #Aravind System will only treat the patients that have problem related to Eyecare
-        self.beginDate = 01-01-1976 #convert in the most common date format. By default if no month/day, first january
-        self.endDate = "N/A" #system is still operating
-        self.operatingStatus = 'Y'
-"""
-
 class Aravind(object):
     #Use this to assign each hospital to cover surrounding districts
     #Based on Aravind's data
