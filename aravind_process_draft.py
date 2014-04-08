@@ -113,6 +113,7 @@ rate_camp = 0.60 # for rural : percentage of people treated who attend camps vs 
 # number of structures of the four types in each hospital_district (ex: 4 vision centers in Madurai)
 
 # Health improvements for each treatment category (1 and 2 only, nothing for 0)
+# Treatment categories: 0 is none, 1 is glasses, 2 is surgery
 health_improvement_1 = 0.7 # ASSUMPTION --> TO DEFINE (QALY/10)?
 health_improvement_2 = 0.2 # ASSUMPTION --> TO DEFINE
 
