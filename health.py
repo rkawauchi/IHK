@@ -51,24 +51,51 @@ class Aravind(object):
                 'Udumalaipet': ['Udumalaipet']}
 
     def __init__(self):
-        self.hospital_district_names = ['Madurai', 'Theni', 'Tirunelveli', 
+        self.district_names = ['Madurai', 'Theni', 'Tirunelveli', 
                 'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiruppur', 'Salem',
                 'Tuticorin', 'Udumalaipet']
         self.hospital_treatment_cost = 500
-        self.clinic_treatment_cost = 100
+        self.clinic_treatment_cost = 200
+        self.camp_treatment_cost = 50
+        self._init_facilities()
+
+    def _init_facilities(self):
+        self.hospitals = list()
+        self.clinics = list()
+        self.vision_centers = list()
+        self.camps = list()
         self._init_hospitals()
+        self._init_clinics()
+        self._init_vision_centers()
+        self._init_camps()
 
     def _init_hospitals(self):
-        self.hospitals = list()
+        treatment_cost = 500
         treatable_symptoms = ['eye_health']
-        for district_name in self.hospital_district_names:
+        for district_name in self.district_names:
             self.hospitals.append(Hospital(district_name, 
-                    self.treatment_cost, treatable_symptoms))
+                treatment_cost, treatable_symptoms))
 
     def _init_clinics(self):
-        self.clinics = list()
-        treatable_symptoms =['eye_health']
+        treatment_cost = 200
+        treatable_symptoms = ['eye_health']
+        for district_name in self.district_names:
+            self.clinics.append(Clinic(district_name,
+                treatment_cost, treatable_symptoms))
 
+    def _init_vision_centers(self):
+        treatment_cost = 100
+        treatable_symptoms = ['eye_health']
+        for district_name in self.district_names:
+            self.vision_centers.append(VisionCenter(district_name,
+                treatment_cost, treatable_symptoms))
+
+    def _init_camps(self):
+        treatment_cost = 50
+        treatable_symptoms = ['eye_health']
+        for district_name in self.district_names:
+            self.vision_centers.append(Camp(district_name,
+                treatment_cost, treatable_symptoms))
 
     def treat(self, person):
         for hospital in self.hospitals:
@@ -122,7 +149,7 @@ class Clinic(AravindFacility):
         if symptom=='eye_health':
             #Any patient treated by this clinic has eye health improved to 0.4
             improved_symptom = max(getattr(person, symptom), 0.4)
-            #Change the patient's symptom so it is improved by the hospital
+            #Change the patient's symptom so it is improved by the clinic
             setattr(person, symptom, improved_symptom)
             person.money -= self.treatment_cost
 
@@ -131,7 +158,16 @@ class VisionCenter(AravindFacility):
         if symptom=='eye_health':
             #Any patient treated by this clinic has eye health improved to 0.3
             improved_symptom = max(getattr(person, symptom), 0.3)
-            #Change the patient's symptom so it is improved by the hospital
+            #Change the patient's symptom so it is improved by the vision center
+            setattr(person, symptom, improved_symptom)
+            person.money -= self.treatment_cost
+
+class Camp(AravindFacility):
+    def treat_symptom(self, symptom, person):
+        if symptom=='eye_health':
+            #Any patient treated by this clinic has eye health improved to 0.2
+            improved_symptom = max(getattr(person, symptom), 0.2)
+            #Change the patient's symptom so it is improved by the camp
             setattr(person, symptom, improved_symptom)
             person.money -= self.treatment_cost
 
