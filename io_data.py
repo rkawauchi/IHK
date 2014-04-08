@@ -434,7 +434,7 @@ class Database(object):
         insertions_per_wave = 1000000
         #insert the population in waves of 1000000 people 
         for i in xrange(district.population_total/insertions_per_wave):
-            self._insert_population_wave(state, district, mpce, mpce_total,
+            self._insert_population_wave(state, state_total, district, mpce, mpce_total,
                     insertions_per_wave)
             print 'wave inserted'
         #insert the last few people
