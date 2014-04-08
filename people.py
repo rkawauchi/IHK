@@ -25,30 +25,11 @@ def generate_person(data, state, district, mpce):
             state.name, classification)
     return person
 
-#Note that this is merely a demonstration of how to randomly generate money
-# for a Person. This will be rewritten later!
-def randomize_money(mpce):
-    #generate random value between 0 and double the MPCE average
-    #The mean is therefore the MPCE average
-    return random.random()*mpce.mpce_average*2
-
 ######################## below by RieK #########################
 
 def exp_percentile(mpce):
     #return mpce.get_d_all(add_zero = False)
     return mpce.get_d_all(add_zero = False)
-
-def generate_expense(state, mpce):
-    # Currently not in use
-    # For testing, only generating 100,000th of population
-    pop = 0.1 * (state.population_total)/100000
-    listPercentile = exp_percentile(mpce)
-    expenseList=[]
-    for i in xrange(len(listPercentile)-1):
-        genUniform = np.random.uniform(listPercentile[i], listPercentile[i+1],
-                pop)
-        expenseList.append(genUniform)
-    return expenseList
 
 def generate_expense_log(state, mpce):
     listPercentile = exp_percentile(mpce)
@@ -57,8 +38,9 @@ def generate_expense_log(state, mpce):
     logPercentile[:] = [log(x) for x in listPercentile]
     return np.random.lognormal(mean=np.mean(logPercentile), sigma=np.std(logPercentile))
 
-def generate_income(data, state_name, class_type):
+def generate_income(state_name, class_type):
     # get meanMPCE and % of classMPCE in meanMPCE
+    data = io.Database
     ruralMPCE = data.meanMpce_by_state_name(state_name, "rural")
     urbanMPCE = data.meanMpce_by_state_name(state_name, "urban")
     meanMPCE = (ruralMPCE + urbanMPCE)/2
@@ -121,21 +103,16 @@ def generate_life_exp(gender, age):
         return MaleLifeExp(age)
 
 def generate_eye_health():
-    return random.random()
+    import scipy.stats as stats
+    lower, upper = 0, 1
+    mu, sigma = 0.8, 0.35
+    eye_health = stats.truncnorm((lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma)
+    return eye_health.rvs
 
 def generate_2ndHealth(state_name, class_type, gender, age):
-    return random.random()
+    return random.random(1)
 
 if __name__ == '__main__':
-    data = io.Database()
-    test_state_name = "Tamil Nadu"
-    test_classif = "urban"
-    state_name = data.get_mpce_by_state_name(test_state_name, test_classif).state
-    print state_name, test_classif
-    print 'pop_by_state_name', data.pop_by_state_name(state_name, test_classif)
-    print 'meanMpce_by_state_name', data.meanMpce_by_state_name(state_name, test_classif)
-    print 'exp_percentile', exp_percentile(state_name, test_classif)
-    print 'Income: urban', generate_income(state_name, test_classif)
-    print 'Income: rural', generate_income(state_name, test_classif)
-    print 'Gender:', generate_gender()
-    print 'Age:', generate_age(test_classif)
+    print generate_eye_health
+    print generate_expense_log("Tamil Nadu", mpce)
+
