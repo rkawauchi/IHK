@@ -67,7 +67,7 @@ def generate_income(data, state_name, class_type):
     # multiply GSP (in Rs.10M) by % to get modified GSP for given class
     meanGSP = data.get_gsp(state_name, "total").gsp * 10000000
     classGSP = int(classPercent * meanGSP)
-    classPop = data.pop_by_state(state_name, class_type)
+    classPop = data.pop_by_state_name(state_name, class_type)
     # get mean
     meanIncome_person = classGSP / classPop / 10000
     # get sd (I manually calculated from raw data, and made adj,
@@ -75,9 +75,9 @@ def generate_income(data, state_name, class_type):
     poorMean = 17097.05 - 2000
     richMean = 171282.9 - 7000
     if classGSP < (60000 * 10000000):
-        sdIncome_person = poorMean * 10000000 / data.pop_by_state(state_name, "total")/ 10000
+        sdIncome_person = poorMean * 10000000 / data.pop_by_state_name(state_name, "total")/ 10000
     else:
-        sdIncome_person = richMean * 10000000 / data.pop_by_state(state_name, "total")/ 10000
+        sdIncome_person = richMean * 10000000 / data.pop_by_state_name(state_name, "total")/ 10000
     return np.random.lognormal(log(meanIncome_person),log(sdIncome_person)) * 10000 / 12
 
 def generate_money(data, age, state, mpce):
@@ -133,7 +133,7 @@ if __name__ == '__main__':
     test_classif = "urban"
     state_name = data.get_mpce_by_state_name(test_state_name, test_classif).state
     print state_name, test_classif
-    print 'pop_by_state', data.pop_by_state(state_name, test_classif)
+    print 'pop_by_state_name', data.pop_by_state_name(state_name, test_classif)
     print 'meanMpce_by_state', data.meanMpce_by_state(state_name, test_classif)
     print 'exp_percentile', exp_percentile(state_name, test_classif)
     print 'Income: urban', generate_income(state_name, test_classif)
