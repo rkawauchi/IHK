@@ -18,37 +18,18 @@ def generate_person(data, state, district, mpce):
     money = generate_money(data, age, state, mpce)
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
-    eye_health = random.random()
+    eye_health = generate_eye_health()
     cardio = random.random()
     classification = district.classification
     person = io.Person(money, gender, age, eye_health, cardio, district.name,
             state.name, classification)
     return person
 
-#Note that this is merely a demonstration of how to randomly generate money
-# for a Person. This will be rewritten later!
-def randomize_money(mpce):
-    #generate random value between 0 and double the MPCE average
-    #The mean is therefore the MPCE average
-    return random.random()*mpce.mpce_average*2
-
 ######################## below by RieK #########################
 
 def exp_percentile(mpce):
     #return mpce.get_d_all(add_zero = False)
     return mpce.get_d_all(add_zero = False)
-
-def generate_expense(state, mpce):
-    # Currently not in use
-    # For testing, only generating 100,000th of population
-    pop = 0.1 * (state.population_total)/100000
-    listPercentile = exp_percentile(mpce)
-    expenseList=[]
-    for i in xrange(len(listPercentile)-1):
-        genUniform = np.random.uniform(listPercentile[i], listPercentile[i+1],
-                pop)
-        expenseList.append(genUniform)
-    return expenseList
 
 def generate_expense_log(state, mpce):
     listPercentile = exp_percentile(mpce)
@@ -57,8 +38,9 @@ def generate_expense_log(state, mpce):
     logPercentile[:] = [log(x) for x in listPercentile]
     return np.random.lognormal(mean=np.mean(logPercentile), sigma=np.std(logPercentile))
 
-def generate_income(data, state_name, class_type):
+def generate_income(state_name, class_type):
     # get meanMPCE and % of classMPCE in meanMPCE
+    data = io.Database
     ruralMPCE = data.meanMpce_by_state_name(state_name, "rural")
     urbanMPCE = data.meanMpce_by_state_name(state_name, "urban")
     meanMPCE = (ruralMPCE + urbanMPCE)/2
@@ -113,7 +95,6 @@ def generate_age(classification):
 def generate_life_exp(gender, age):
     # life-expectancy data from 
     # http://www.worldlifeexpectancy.com/country-health-profile/india
-    # we could make database or make dicitonary
     MaleLifeExp = {"0":63.8, "5":62.7, "10":58.1, "15":53.4, "20":52.9, "25":44.2, "30":39.7, "35":35.3, "40":31.1, "45":26.9, "50":23, "55":19.3, "60":15.7, "65":12.7, "70":10.2, "75":8.3, "80":6.7,"85":5.2, "90":3.9, "95":2.8, "100":2.0}
     FemaleLifeExp = {"0":67.3, "5":66.8, "10":62.2, "15":57.5, "20":52.9, "25":48.4, "30":43.8, "35":39.2, "40":34.7, "45":30.2, "50":25.8, "55":25.8, "60":17.7, "65":14.3, "70":11.3, "75":9.0, "80":7.0,"85":5.3, "90":3.9, "95":2.8, "100":2.0}
     if gender == 'F':
@@ -121,22 +102,17 @@ def generate_life_exp(gender, age):
     else:
         return MaleLifeExp(age)
 
-def generate_eye_health(age):
-    return random.random()
+def generate_eye_health():
+    import scipy.stats as stats
+    lower, upper = 0, 1
+    mu, sigma = 0.8, 0.35
+    eye_health = stats.truncnorm((lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma)
+    return eye_health.rvs
 
 def generate_2ndHealth(state_name, class_type, gender, age):
-    return random.random()
+    return random.random(1)
 
 if __name__ == '__main__':
-    data = io.Database()
-    test_state_name = "Tamil Nadu"
-    test_classif = "urban"
-    state_name = data.get_mpce_by_state_name(test_state_name, test_classif).state
-    print state_name, test_classif
-    print 'pop_by_state_name', data.pop_by_state_name(state_name, test_classif)
-    print 'meanMpce_by_state_name', data.meanMpce_by_state_name(state_name, test_classif)
-    print 'exp_percentile', exp_percentile(state_name, test_classif)
-    print 'Income: urban', generate_income(state_name, test_classif)
-    print 'Income: rural', generate_income(state_name, test_classif)
-    print 'Gender:', generate_gender()
-    print 'Age:', generate_age(test_classif)
+    print generate_eye_health
+    print generate_expense_log("Tamil Nadu", mpce)
+
