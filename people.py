@@ -1,5 +1,6 @@
-import io
+import data_io
 from sqlalchemy import func
+import scipy.stats as stats
 import numpy as np
 from array import *
 from math import log10, log
@@ -21,7 +22,7 @@ def generate_person(data, state, state_total, district, mpce, mpce_total):
     eye_health = generate_eye_health()
     cardio = random.random()
     classification = district.classification
-    person = io.Person(money, gender, age, eye_health, cardio, district.name,
+    person = data_io.Person(money, gender, age, eye_health, cardio, district.name,
             state.name, classification)
     return person
 
@@ -97,7 +98,6 @@ def generate_life_exp(gender, age):
         return MaleLifeExp(age)
 
 def generate_eye_health():
-    import scipy.stats as stats
     lower, upper = 0, 1
     mu, sigma = 0.8, 0.35
     eye_health = stats.truncnorm((lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma)

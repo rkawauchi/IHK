@@ -426,7 +426,6 @@ class Database(object):
         mpce = self.session.query(Mpce).filter_by(state=state.name).filter_by(
                 classification=district.classification).filter_by(
                 mpce_type='mmrp').first()
-        print 'DERP', mpce
         mpce_total = self.session.query(Mpce).filter_by(
                 state=state.name).filter_by(classification='total').filter_by(
                 mpce_type='mmrp').first()
