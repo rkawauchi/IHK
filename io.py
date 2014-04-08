@@ -187,7 +187,6 @@ class Database(object):
                     population_total = state.population_total,
                     household_total = state.household_total,
                     gsp = state.gsp)
-            
 
     def _init_states(self):
         self._wipe_states()
@@ -422,26 +421,31 @@ class Database(object):
         if state is None:
             state = self.get_state_by_name(district.state)
 
-        mpce = self.session.query(Mpce).filter_by(state=state.name).first()
+        mpce = self.session.query(Mpce).filter_by(state=state.name).filter_by(
+                mpce_type=district.classification).first()
+        mpce_total = self.session.query(Mpce).filter_by(
+                state=state.name).filter_by(mpce_type='total').first()
         #Bulk insert as per http://docs.sqlalchemy.org/en/rel_0_8/faq.html
         #split into multiple insertion waves due to memory limitations
         insertions_per_wave = 1000000
         #insert the population in waves of 1000000 people 
         for i in xrange(district.population_total/insertions_per_wave):
-            self._insert_population_wave(state, district, mpce,
+            self._insert_population_wave(state, district, mpce, mpce_total,
                     insertions_per_wave)
             print 'wave inserted'
         #insert the last few people
-        self._insert_population_wave(state, district, mpce, district.population_total % insertions_per_wave)
+        self._insert_population_wave(state, district, mpce, mpce_total,
+                district.population_total % insertions_per_wave)
         #commit the changes; otherwise, they will be wasted!
         self.session.commit()
         print 'Population of', district.name, 'inserted'
 
-    def _insert_population_wave(self, state, district, mpce, insertion_count):
+    def _insert_population_wave(self, state, district, mpce, mpce_total,
+            insertion_count):
         insert = Person.__table__.insert()
         self.engine.execute(insert, 
-                [people.generate_person_dict(self, state, district, mpce)
-                for j in xrange(insertion_count)])
+                [people.generate_person_dict(self, state, district, mpce, 
+                    mpce_total) for j in xrange(insertion_count)])
 
     def _delete_population_district(self, district):
         table = Person.__table__
