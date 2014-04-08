@@ -32,14 +32,14 @@ class Aravind(object):
 
     def __init__(self, treatment_cost = 100):
         self.hospital_district_names = ['Madurai', 'Theni', 'Tirunelveli', 
-                'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiripur', 'Salem',
+                'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiruppur', 'Salem',
                 'Tuticorin', 'Udumalaipet']
         self.treatment_cost = treatment_cost
         self._init_hospitals()
 
     def _init_hospitals(self):
         self.hospitals = list()
-        treatable_symptoms = ['diabetes']
+        treatable_symptoms = ['eye_health']
         for district_name in self.hospital_district_names:
             self.hospitals.append(Hospital(district_name, 
                     treatable_symptoms, self.treatment_cost))
@@ -63,13 +63,16 @@ class Hospital(object):
                     'Nagapattinam', 'Namakkal', 'Perambalur', 'Pudukkottai',
                     'Ramanathapuram', 'Siviganga', 'Thanjavur', 'Thiruvarur',
                     'Tiruchirappalli', 'Virudhunagar'],
-                'Pundicherry': ['Chennai', 'Cuddalore', 'Kanchipuram',
+                'Pondicherry': ['Chennai', 'Cuddalore', 'Kanchipuram',
                     'Krishnagiri', 'Thiruvallur', 'Tiruvannamalai',
                     'Vellore', 'Villupuram'],
                 'Salem': ['Erode', 'Salem'],
                 'Theni': ['Theni', 'Kottayam', 'Iduki'],
-                'Tiruneleveli': ['Kanniyakumari', 'Thoothukudi', 'Thirunelveli'],
-                'Tiruppur': ['Tiruppur']}
+                'Tirunelveli': ['Kanniyakumari', 'Thoothukudi', 'Tirunelveli'],
+                'Tiruppur': ['Tiruppur'],
+                #These are not from the google drive
+                'Tuticorin': ['Tuticorin'],
+                'Udumalaipet': ['Udumalaipet']}
                 
 
     def __init__(self, district_name, treatable_symptoms, treatment_cost, 
@@ -79,12 +82,13 @@ class Hospital(object):
         self.treatable_symptoms = treatable_symptoms
         self.equipment_level = equipment_level #cf. equipment_level index
         self.treatment_cost = treatment_cost
-        _init_covered_districts()
+        self._init_covered_districts()
 
     def _init_covered_districts(self):
         #Use Python version of "switch statement"
         self.covered_districts = Hospital.covered_district_mapping[
                 self.district_name]
+            
 
     #True if the district is in the list of districts this hospital covers
     def covers_district_name(self, district_name):

@@ -395,22 +395,22 @@ class Database(object):
 
     #Create a population distribution for both the urban and rural populations
     #of the district
-    def populate_district_total(self, district, force=False):
+    def populate_district_total(self, district, force=False, limit = None):
         #Don't insert anyone if there are already people there
         if self.exist_people_from_district(district.name) and not force:
             return
         urban_district = self.get_district_by_name(district.name, 'urban')
         self.populate_district(urban_district, wipe_population = True,
-                force = True)
+                force = True, limit = limit)
         print 'Urban population generated'
         rural_district = self.get_district_by_name(district.name, 'rural')
         self.populate_district(rural_district, wipe_population = False,
-                force = True)
+                force = True, limit = limit)
         print 'Rural population generated'
 
     #Create a population distribution for the population of a given district
     def populate_district(self, district, state = None, wipe_population = True,
-            force=False):
+            force=False, limit = None):
         #If the district already has people in it, don't insert more
         # unless forced to
         if self.exist_people_from_district(district.name) and not force:
@@ -431,15 +431,22 @@ class Database(object):
                 mpce_type='mmrp').first()
         #Bulk insert as per http://docs.sqlalchemy.org/en/rel_0_8/faq.html
         #split into multiple insertion waves due to memory limitations
+        if limit is None:
+            population_size = district.population_total
+        else:
+            population_size = limit
         insertions_per_wave = 1000000
+        
         #insert the population in waves of 1000000 people 
-        for i in xrange(district.population_total/insertions_per_wave):
-            self._insert_population_wave(state, district, mpce, mpce_total,
+        #Note that if population_size < insertions_per_wave, this never runs
+        for i in xrange(population_size/insertions_per_wave):
+            self._insert_population_wave(state, state_total, district, mpce, mpce_total,
                     insertions_per_wave)
             print 'wave inserted'
         #insert the last few people
+        #Or if population_size < insertion_per_wave, insert all the people
         self._insert_population_wave(state, state_total, district, mpce,
-                mpce_total, district.population_total % insertions_per_wave)
+                mpce_total, population_size % insertions_per_wave)
         #commit the changes; otherwise, they will be wasted!
         self.session.commit()
         print 'Population of', district.name, 'inserted'
@@ -460,8 +467,12 @@ class Database(object):
         self.session.commit()
 
     def get_population_district(self, district_name, limit=None):
-        return self.session.query(Person).filter(
-                Person.district == district_name).limit(limit).all()
+        query = self.session.query(Person).filter(
+                Person.district == district_name)
+        if limit is not None:
+            query.limit(limit)
+        return query.all()
+                
 
 ######################## below by RieK #########################
 
