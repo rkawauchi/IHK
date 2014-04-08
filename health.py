@@ -34,7 +34,6 @@ class Aravind(object):
         self.hospital_district_names = ['Madurai', 'Theni', 'Tirunelveli', 
                 'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiripur', 'Salem',
                 'Tuticorin', 'Udumalaipet']
-        self.covered_district_names = self.hospital_district_names
         self.treatment_cost = treatment_cost
         self._init_hospitals()
 
@@ -45,9 +44,6 @@ class Aravind(object):
             self.hospitals.append(Hospital(district_name, 
                     treatable_symptoms, self.treatment_cost))
 
-    def get_covered_district_names(self):
-        return self.covered_district_names
-
     def treat(self, person):
         for hospital in self.hospitals:
             if hospital.covers_district_name(person.district):
@@ -57,6 +53,24 @@ class Aravind(object):
 
 
 class Hospital(object):
+    #Use this to assign each hospital to cover surrounding districts
+    #Based on Aravind's data
+    #A more robust approach would be to define adjacencies for all districts
+    covered_district_mapping = {
+                'Coimbatore': ['Coimbatore', 'Nilgiris', 'Kollam'],
+                'Dindigul': ['Dindigul'],
+                'Madurai': ['Ariyalur', 'Dharmapuri', 'Karur', 'Madurai', 
+                    'Nagapattinam', 'Namakkal', 'Perambalur', 'Pudukkottai',
+                    'Ramanathapuram', 'Siviganga', 'Thanjavur', 'Thiruvarur',
+                    'Tiruchirappalli', 'Virudhunagar'],
+                'Pundicherry': ['Chennai', 'Cuddalore', 'Kanchipuram',
+                    'Krishnagiri', 'Thiruvallur', 'Tiruvannamalai',
+                    'Vellore', 'Villupuram'],
+                'Salem': ['Erode', 'Salem'],
+                'Theni': ['Theni', 'Kottayam', 'Iduki'],
+                'Tiruneleveli': ['Kanniyakumari', 'Thoothukudi', 'Thirunelveli'],
+                'Tiruppur': ['Tiruppur']}
+                
 
     def __init__(self, district_name, treatable_symptoms, treatment_cost, 
             equipment_level = None):
@@ -65,11 +79,16 @@ class Hospital(object):
         self.treatable_symptoms = treatable_symptoms
         self.equipment_level = equipment_level #cf. equipment_level index
         self.treatment_cost = treatment_cost
+        _init_covered_districts()
 
+    def _init_covered_districts(self):
+        #Use Python version of "switch statement"
+        self.covered_districts = Hospital.covered_district_mapping[
+                self.district_name]
+
+    #True if the district is in the list of districts this hospital covers
     def covers_district_name(self, district_name):
-        #This is where we add the "adjacent districts"
-        #For now, just check if 
-        return self.district_name == district_name
+        return district_name in self.covered_districts
 
     def treat(self, person):
         for symptom in self.treatable_symptoms:
