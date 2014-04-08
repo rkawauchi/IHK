@@ -119,7 +119,7 @@ class Clinic(object):
 class VisionCenter(object):
     pass
 
-        """
+"""
         self.nbOutpatientsFree
         self.nbOutpatientPaying = nbPopPaying
         self.nbSurgeryFree =
@@ -129,7 +129,7 @@ class VisionCenter(object):
         self.priceSurgerySubsidized = 900 #750*88%+2000*12% (balance between ICCE and ECCE)
         self.priceSurgeryFree = 0
         self.nbPopFree = nbPopFree #check sum free + paid = Screened
-        """
+"""
 
 '''
 #possible merge 
