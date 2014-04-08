@@ -34,6 +34,12 @@ def generate_person(data, state, state_total, district, mpce, mpce_total):
     #Other variables to potentially add: worry_level, pricing_class, structure, city_center_distance
     return person
 
+    #We need to find a way to store those variables to person
+    #pricing_class = None
+    #structure = None
+    #type_visit = None
+    #area = None #area following Aravind's cut where the person is attached to
+
 ######################## below by RieK #########################
 
 def exp_percentile(mpce):
