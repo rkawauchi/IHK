@@ -15,7 +15,7 @@ def generate_person(data, state, district, mpce):
     #This is where math and statistics comes in
     gender = generate_gender()
     age = generate_age(district.classification)
-    money = generate_money(data, age, state, district.classification)
+    money = generate_money(data, age, state, mpce)
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
     eye_health = random.random()
@@ -34,15 +34,15 @@ def randomize_money(mpce):
 
 ######################## below by RieK #########################
 
-def exp_percentile(mpce, class_type):
+def exp_percentile(mpce):
     #return mpce.get_d_all(add_zero = False)
-    return data.get_mpce_by_state_name(mpce, class_type).get_d_all(add_zero = False)
+    return mpce.get_d_all(add_zero = False)
 
-def generate_expense(state_name, class_type):
+def generate_expense(state, mpce):
     # Currently not in use
     # For testing, only generating 100,000th of population
-    pop = 0.1 * (data.pop_by_state(state_name, "rural"))/100000
-    listPercentile = exp_percentile(state_name, class_type)
+    pop = 0.1 * (state.population_total)/100000
+    listPercentile = exp_percentile(mpce)
     expenseList=[]
     for i in xrange(len(listPercentile)-1):
         genUniform = np.random.uniform(listPercentile[i], listPercentile[i+1],
@@ -50,8 +50,8 @@ def generate_expense(state_name, class_type):
         expenseList.append(genUniform)
     return expenseList
 
-def generate_expense_log(state_name, class_type):
-    listPercentile = exp_percentile(state_name, class_type)
+def generate_expense_log(state, mpce):
+    listPercentile = exp_percentile(mpce)
     logPercentile = []
     # http://stackoverflow.com/questions/4561113/python-list-conversion
     logPercentile[:] = [log(x) for x in listPercentile]
@@ -80,9 +80,10 @@ def generate_income(data, state_name, class_type):
         sdIncome_person = richMean * 10000000 / data.pop_by_state(state_name, "total")/ 10000
     return np.random.lognormal(log(meanIncome_person),log(sdIncome_person)) * 10000 / 12
 
-def generate_money(data, age, state_name, class_type):
-    income = generate_income(data, state_name, class_type)
-    expense = generate_exp(state_name, class_type)
+def generate_money(data, age, state, mpce):
+    state_name = state.name
+    income = generate_income(data, state_name, state.classification)
+    expense = generate_expense_log(state, mpce)
     if age <= 20:
         return (income / 5) - (expense / 2)
     money = income - expense
