@@ -59,13 +59,13 @@ def generate_expense_log(state, mpce):
 
 def generate_income(data, state_name, class_type):
     # get meanMPCE and % of classMPCE in meanMPCE
-    ruralMPCE = data.meanMpce_by_state(state_name, "rural")
-    urbanMPCE = data.meanMpce_by_state(state_name, "urban")
+    ruralMPCE = data.meanMpce_by_state_name(state_name, "rural")
+    urbanMPCE = data.meanMpce_by_state_name(state_name, "urban")
     meanMPCE = (ruralMPCE + urbanMPCE)/2
-    classMPCE = data.meanMpce_by_state(state_name, class_type)
+    classMPCE = data.meanMpce_by_state_name(state_name, class_type)
     classPercent = float(classMPCE) / meanMPCE
     # multiply GSP (in Rs.10M) by % to get modified GSP for given class
-    meanGSP = data.get_gsp(state_name, "total").gsp * 10000000
+    meanGSP = data.get_gsp_by_state_name(state_name, "total").gsp * 10000000
     classGSP = int(classPercent * meanGSP)
     classPop = data.pop_by_state_name(state_name, class_type)
     # get mean
@@ -133,7 +133,7 @@ if __name__ == '__main__':
     state_name = data.get_mpce_by_state_name(test_state_name, test_classif).state
     print state_name, test_classif
     print 'pop_by_state_name', data.pop_by_state_name(state_name, test_classif)
-    print 'meanMpce_by_state', data.meanMpce_by_state(state_name, test_classif)
+    print 'meanMpce_by_state_name', data.meanMpce_by_state_name(state_name, test_classif)
     print 'exp_percentile', exp_percentile(state_name, test_classif)
     print 'Income: urban', generate_income(state_name, test_classif)
     print 'Income: rural', generate_income(state_name, test_classif)
