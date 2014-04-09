@@ -118,6 +118,20 @@ def analyze_populations(population, treated_population):
  
 def calc_qaly_before(population):
 
+class Problem(object):
+    def __init__(self, problem_name, health_utility, cost_full, cost_subsidized):
+        self.name = problem_name
+        self.health_utility = health_utility
+        self.cost_full = cost_full
+        self.cost_subsidized = cost_subsidized
+       
+    @classmethod
+    def from_problem_name(cls, problem_name):
+        attributes  = {
+                'cataracts': [0.14, 4750, 750],
+                'glasses': [0.05, 120, 120]
+                }[problem_name]
+        return cls(problem_name, attributes[0], attributes[1], attributes[2])
     
 if __name__ == "__main__":
     args = initialize_argument_parser()
@@ -129,3 +143,5 @@ if __name__ == "__main__":
             cProfile.run('test(data, args)')
         else:
             test(data, args)
+
+        

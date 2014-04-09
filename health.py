@@ -1,4 +1,5 @@
 import random
+import util
 
 class Aravind(object):
     #Use this to assign each hospital to cover surrounding districts
@@ -51,30 +52,42 @@ class Aravind(object):
     def _init_hospitals(self):
         treatment_cost = self.treatment_costs['hospital']
         treatable_problems = ['cataracts', 'glasses']
+        capacity = 1000000
+        #FROM DATA
+        visit_fee = 50
         for district_name in self.district_names:
             self.hospitals.append(Hospital(district_name, 
-                treatment_cost, treatable_problems))
+                treatment_cost, treatable_problems, capacity, visit_fee))
 
     def _init_clinics(self):
         treatment_cost = self.treatment_costs['clinic']
         treatable_problems = ['glasses']
+        capacity = 1000000
+        #FROM DATA
+        visit_fee = 20
         for district_name in self.district_names:
             self.clinics.append(Clinic(district_name,
-                treatment_cost, treatable_problems))
+                treatment_cost, treatable_problems, capacity, visit_fee))
 
     def _init_vision_centers(self):
         treatment_cost = self.treatment_costs['vision_center']
         treatable_problems = ['glasses']
+        capacity = 1000000
+        #FROM DATA
+        visit_fee = 20
         for district_name in self.district_names:
             self.vision_centers.append(VisionCenter(district_name,
-                treatment_cost, treatable_problems))
+                treatment_cost, treatable_problems, capacity, visit_fee))
 
     def _init_camps(self):
         treatment_cost = self.treatment_costs['camp']
         treatable_problems = ['glasses']
+        capacity = 1000000
+        #FROM DATA
+        visit_fee = 0
         for district_name in self.district_names:
             self.vision_centers.append(Camp(district_name,
-                treatment_cost, treatable_problems))
+                treatment_cost, treatable_problems, capacity, visit_fee))
 
     #True if treatment was done, False otherwise
     def treat(self, person):
@@ -98,16 +111,37 @@ class Aravind(object):
         #Find a facility that can cover the patient and have it treat them
         facility_list = getattr(self, treatment_facility)
         for facility in facility_list:
-            if facility.can_treat(person):
+            if facility.can_see(person):
                 return facility.treat(person)
         return False
 
 #Generic class which includes Hospital, EyeClinic, and VisionCamp
 class AravindFacility(object):
-    def __init__(self, district_name, treatment_cost, treatable_problems):
+
+    #Paying, subsidized, free
+    #FROM DATA
+    surgery_fee_proportions = {
+            'Madurai': [69298, 41637, 25647],
+            'Thenia': [6507, 3292, 3360],
+            'Tirunelveli': [26956, 12227, 13470],
+            'Coimbatore': [41418, 25566, 19071],
+            'Pundicherry': [25478, 12974, 16943],
+            'Tirupur': [1934, 381, 87],
+            'Dingipul': [2952, 0, 0],
+            'Salem': [7763, 8, 1423]}
+    #Turn those numbers into actual proportions
+    for state_name, proportions in surgery_fee_proportions.items():
+        total = float(sum(proportions))
+        surgery_fee_proportions[state_name] = [x/total for x in proportions]
+
+    def __init__(self, district_name, treatment_cost, treatable_problems,
+            capacity, visit_fee):
         self.district_name = district_name
         self.treatment_cost = treatment_cost
         self.treatable_problems = treatable_problems
+        self.capacity = capacity
+        self.visit_fee = visit_fee
+        self.treated_patient_count = 0
         self._init_covered_districts()
 
     def _init_covered_districts(self):
@@ -116,56 +150,58 @@ class AravindFacility(object):
                 self.district_name]
 
     #True if the district is in the list of districts this hospital covers
-    def can_treat(self, person):
-        #First check whether the person is in the right district 
+    def can_see(self, person):
+        #First, check whether this facility is already at capacity
+        if self.treated_patient_count > self.capacity:
+            return False
+        #Next, check whether the person is in the right district 
         if not person.district in self.covered_districts:
             return False
-        #Check whether the facility can treat the patient's symptoms
-        for problem in person.get_health_problem_list():
-            if problem in self.treatable_problems:
-                return True
-        #If we get here, none of the patient's problems matched the problems
-        # this facility can treat
-        return False
-
-    def treat(self, person):
-        for problem in self.treatable_problems:
-            self.treat_problem(problem, person)
-        self.charge_fee(person)
         return True
 
-    #problem is a string containing the name of the
-    # problem: "", for example
-    def treat_problem(self, problem, person):
-        health_utility_improvement = {
-                'cataracts': 0.14,    #FROM DATA
-                'glasses': 0.05     #ASSUMPTION
-                }[problem]
-        person.health_utility += health_utility_improvement
+    def treat(self, person):
+        self.charge_visit_fee(person)
+        for problem in person.get_health_problem_list():
+            treatment_performed = self.treat_problem(problem, person)
+            if treatment_performed:
+                self.charge_problem_fee(problem, person)
+        self.treated_patient_count += 1
+        return True
 
-    #Overwritten by subclasses
-    def charge_fee(self, person):
-        pass
+    #problem is a util.Problem
+    def treat_problem(self, problem, person):
+        person.health_utility += problem.health_utility
+        return True
+
+    def charge_visit_fee(self, person):
+        person.money -= self.visit_fee
+
+    def charge_problem_fee(self, problem, person):
+        if problem.name == 'cataracts':
+            fee_options = [problem.cost_full, problem.cost_subsidized, 0]
+            fee = util.weighted_choice(fee_options, 
+                    Hospital.surgery_fee_proportions[self.state_name])
+        elif problem.name == 'glasses':
+            #FROM DATA
+            fee = 120
+        else:
+            print 'Warning: unrecognized problem', problem.name
+        person.money -= fee
 
 class Hospital(AravindFacility):
-
-    def charge_fee(self, person):
-        person.money -= self.treatment_cost
+    pass
 
 class Clinic(AravindFacility):
-
-    def charge_fee(self, person):
-        person.money -= self.treatment_cost
+    pass
 
 class VisionCenter(AravindFacility):
-
-    def charge_fee(self, person):
-        person.money -= self.treatment_cost
+    pass
 
 class Camp(AravindFacility):
 
-    def charge_fee(self, person):
-        person.money -= self.treatment_cost
+    #Camps are free
+    def charge_problem_fee(self, person):
+        pass
 
 '''
 #possible merge 
