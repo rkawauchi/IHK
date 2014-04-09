@@ -58,7 +58,7 @@ def test(data, args):
     #districts = [data.get_district_by_name(district_name) for district_name in solution.get_covered_district_names()] 
     #Need to use all treatment costs for more intelligent filtering
     filter_test = util.FilterPopulation(max(solution.treatment_costs.values()),
-            1, 1)
+            1, population)
 
     #Treat the population using the solution
     treated_population = list()

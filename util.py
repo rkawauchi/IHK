@@ -28,29 +28,29 @@ def clean_state_name(state):
     state = state.strip()
     if state not in state_names:
         print 'Warning: state name not found while cleaning:', state
+
+def avg(x):
+    return float(sum(x)/len(x))
     return state
 
 class FilterPopulation(object):
     
-    def __init__(self, cost, eye_health, cardio):
-        self.cost = cost
-        self.eye_health = eye_health
-        self.cardio = cardio
+    def __init__(self, cost_threshold, eye_health_threshold, population):
+        self.cost_threshold = cost_threshold
+        self.eye_health_threshold = avg([person.eye_health for person in population])
+        print 'calculated dummy threshold', self.eye_health_threshold
 
     def filter_all(self, person):
         return self.filter_health(person) and self.filter_money(person)
 
     def filter_health(self, person):
-        return self.filter_eye_health(person) or self.filter_cardio(person)
+        return self.filter_eye_health(person)
 
     def filter_eye_health(self, person):
-        return person.eye_health <= self.eye_health
-
-    def filter_cardio(self, person):
-        return person.cardio <= self.cardio
+        return person.eye_health <= self.eye_health_threshold
 
     def filter_money(self, person):
-        return person.money>=self.cost
+        return person.money>=self.cost_threshold
 
 class Location(object):
     def __init__(self, state_name, district_name, classification):
