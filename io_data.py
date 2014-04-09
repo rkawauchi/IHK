@@ -156,7 +156,13 @@ class Person(Base):
         try:
             return self.health_problem_list
         except:
-            self.health_problem_list = self.health_problems.split(',')
+            #If there are no problems, return an empty list
+            if self.health_problems == '':
+                return []
+            health_problem_names = self.health_problems.split(',')
+            self.health_problem_list = [
+                    util.Problem.from_problem_name(problem_name)
+                    for problem_name in health_problem_names]
             return self.health_problem_list
         
 
