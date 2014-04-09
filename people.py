@@ -101,15 +101,37 @@ def generate_age(classification):
     age_range = util.weighted_choice(age_ranges, age_weights[classification])
     return random.randint(age_range[0], age_range[1])
 
+def init_life_expectancy_distribution():
+    #One per five years of life
+    life_expectancy = dict()
+    life_expectancy_anchor_points_male = [63.8, 62.7, 58.1, 53.4, 52.9, 44.2,
+            39.7, 35.3, 31.1, 26.9, 23, 19.3, 15.7, 12.7, 10.2, 8.3, 6.7,5.2,
+            3.9, 2.8, 2.0]
+    life_expectancy['M'] = list()
+    for i in xrange(20):
+        current_spread = np.linspace(life_expectancy_anchor_points_male[i],
+                life_expectancy_anchor_points_male[i+1], num=5)
+        for life_expectancy_at_age in current_spread:
+            life_expectancy['M'].append(life_expectancy_at_age)
+
+    life_expectancy_anchor_points_female = [67.3, 66.8, 62.2, 57.5, 52.9, 48.4,
+            43.8, 39.2, 34.7, 30.2, 25.8, 25.8, 17.7, 14.3, 11.3, 9.0, 7.0, 5.3,
+            3.9, 2.8, 2.0]
+    life_expectancy['F'] = list()
+    for i in xrange(20):
+        current_spread = np.linspace(life_expectancy_anchor_points_female[i],
+                life_expectancy_anchor_points_female[i+1], num=5)
+        for life_expectancy_at_age in current_spread:
+            life_expectancy['F'].append(life_expectancy_at_age)
+
+    return life_expectancy
+
+life_expectancy = init_life_expectancy_distribution()
+
 def generate_life_exp(gender, age):
     # life-expectancy data from 
     # http://www.worldlifeexpectancy.com/country-health-profile/india
-    MaleLifeExp = {"0":63.8, "5":62.7, "10":58.1, "15":53.4, "20":52.9, "25":44.2, "30":39.7, "35":35.3, "40":31.1, "45":26.9, "50":23, "55":19.3, "60":15.7, "65":12.7, "70":10.2, "75":8.3, "80":6.7,"85":5.2, "90":3.9, "95":2.8, "100":2.0}
-    FemaleLifeExp = {"0":67.3, "5":66.8, "10":62.2, "15":57.5, "20":52.9, "25":48.4, "30":43.8, "35":39.2, "40":34.7, "45":30.2, "50":25.8, "55":25.8, "60":17.7, "65":14.3, "70":11.3, "75":9.0, "80":7.0,"85":5.3, "90":3.9, "95":2.8, "100":2.0}
-    if gender == 'F':
-        return FemaleLifeExp(age)
-    else:
-        return MaleLifeExp(age)
+    return life_expectancy[gender][age]
 
 def generate_health_utility(age):
     # to generate mean closer to 0.851886 calulated based on the paper from
@@ -157,6 +179,7 @@ def generate_perceived_health(state):
     return health.rvs()
 
 if __name__ == '__main__':
-    print generate_health()
-    print generate_expense_log(mpce)
+    #print generate_health()
+    #print generate_expense_log(mpce)
+    print generate_life_exp('M', 10)
 
