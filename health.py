@@ -48,44 +48,40 @@ class Aravind(object):
         self._init_camps()
 
     def _init_hospitals(self):
-        treatment_cost = self.treatment_costs['hospital']
         treatable_problems = ['cataracts', 'glasses']
         capacity = 1000000
         #FROM DATA
         visit_fee = 50
         for district_name in self.district_names:
-            self.hospitals.append(Hospital(district_name, 
-                treatment_cost, treatable_problems, capacity, visit_fee))
+            self.hospitals.append(Hospital(district_name, treatable_problems,
+                capacity, visit_fee))
 
     def _init_clinics(self):
-        treatment_cost = self.treatment_costs['clinic']
         treatable_problems = ['glasses']
         capacity = 1000000
         #FROM DATA
         visit_fee = 20
         for district_name in self.district_names:
-            self.clinics.append(Clinic(district_name,
-                treatment_cost, treatable_problems, capacity, visit_fee))
+            self.clinics.append(Clinic(district_name, treatable_problems,
+                capacity, visit_fee))
 
     def _init_vision_centers(self):
-        treatment_cost = self.treatment_costs['vision_center']
         treatable_problems = ['glasses']
         capacity = 1000000
         #FROM DATA
         visit_fee = 20
         for district_name in self.district_names:
             self.vision_centers.append(VisionCenter(district_name,
-                treatment_cost, treatable_problems, capacity, visit_fee))
+                treatable_problems, capacity, visit_fee))
 
     def _init_camps(self):
-        treatment_cost = self.treatment_costs['camp']
         treatable_problems = ['glasses']
         capacity = 1000000
         #FROM DATA
         visit_fee = 0
         for district_name in self.district_names:
-            self.camps.append(Camp(district_name,
-                treatment_cost, treatable_problems, capacity, visit_fee))
+            self.camps.append(Camp(district_name, treatable_problems,
+                capacity, visit_fee))
 
     #True if treatment was done, False otherwise
     def treat(self, person):
@@ -132,10 +128,9 @@ class AravindFacility(object):
         total = float(sum(proportions))
         surgery_fee_proportions_by_state[state_name] = [x/total for x in proportions]
 
-    def __init__(self, district_name, treatment_cost, treatable_problems,
+    def __init__(self, district_name, treatable_problems,
             capacity, visit_fee):
         self.district_name = district_name
-        self.treatment_cost = treatment_cost
         self.treatable_problems = treatable_problems
         self.capacity = capacity
         self.visit_fee = visit_fee
@@ -187,10 +182,10 @@ class AravindFacility(object):
         person.money -= fee
 
 class Hospital(AravindFacility):
-    def __init__(self, district_name, treatment_cost, treatable_problems,
+    def __init__(self, district_name, treatable_problems,
             capacity, visit_fee):
-        super(Hospital, self).__init__(district_name, treatment_cost,
-                treatable_problems, capacity, visit_fee)
+        super(Hospital, self).__init__(district_name, treatable_problems,
+                capacity, visit_fee)
     pass
 
 class Clinic(AravindFacility):
