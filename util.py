@@ -41,6 +41,8 @@ class FilterPopulation(object):
         # thresholds for surgery and glasses in filtering the people
         self.eye_health_threshold_surgery = np.percentile([person.eye_health for person in population], 10)
         self.eye_health_threshold_glasses = np.percentile([person.eye_health for person in population], 30)
+        print 'surgery', self.eye_health_threshold_surgery
+        print 'glasses', self.eye_health_threshold_glasses
 
     def filter_all(self, person):
         return self.filter_health(person) and self.filter_money(person)
