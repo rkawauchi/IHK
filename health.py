@@ -24,9 +24,7 @@ class Aravind(object):
                 'Udumalaipet': ['Udumalaipet']}
 
     def __init__(self):
-        self.district_names = ['Madurai', 'Theni', 'Tirunelveli', 
-                'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiruppur', 'Salem',
-                'Tuticorin', 'Udumalaipet']
+        self.district_names = Aravind.covered_district_mapping.keys()
         self.treatment_costs = {
                 'hospital': 500,
                 'clinic': 200,
@@ -86,7 +84,7 @@ class Aravind(object):
         #FROM DATA
         visit_fee = 0
         for district_name in self.district_names:
-            self.vision_centers.append(Camp(district_name,
+            self.camps.append(Camp(district_name,
                 treatment_cost, treatable_problems, capacity, visit_fee))
 
     #True if treatment was done, False otherwise
@@ -120,7 +118,7 @@ class AravindFacility(object):
 
     #Paying, subsidized, free
     #FROM DATA
-    surgery_fee_proportions = {
+    surgery_fee_proportions_by_state = {
             'Madurai': [69298, 41637, 25647],
             'Thenia': [6507, 3292, 3360],
             'Tirunelveli': [26956, 12227, 13470],
@@ -130,9 +128,9 @@ class AravindFacility(object):
             'Dingipul': [2952, 0, 0],
             'Salem': [7763, 8, 1423]}
     #Turn those numbers into actual proportions
-    for state_name, proportions in surgery_fee_proportions.items():
+    for state_name, proportions in surgery_fee_proportions_by_state.items():
         total = float(sum(proportions))
-        surgery_fee_proportions[state_name] = [x/total for x in proportions]
+        surgery_fee_proportions_by_state[state_name] = [x/total for x in proportions]
 
     def __init__(self, district_name, treatment_cost, treatable_problems,
             capacity, visit_fee):
@@ -180,7 +178,7 @@ class AravindFacility(object):
         if problem.name == 'cataracts':
             fee_options = [problem.cost_full, problem.cost_subsidized, 0]
             fee = util.weighted_choice(fee_options, 
-                    Hospital.surgery_fee_proportions[self.state_name])
+                    Hospital.surgery_fee_proportions_by_state[self.state_name])
         elif problem.name == 'glasses':
             #FROM DATA
             fee = 120
@@ -189,6 +187,10 @@ class AravindFacility(object):
         person.money -= fee
 
 class Hospital(AravindFacility):
+    def __init__(self, district_name, treatment_cost, treatable_problems,
+            capacity, visit_fee):
+        super(Hospital, self).__init__(district_name, treatment_cost,
+                treatable_problems, capacity, visit_fee)
     pass
 
 class Clinic(AravindFacility):
@@ -200,7 +202,7 @@ class VisionCenter(AravindFacility):
 class Camp(AravindFacility):
 
     #Camps are free
-    def charge_problem_fee(self, person):
+    def charge_problem_fee(self, problem, person):
         pass
 
 '''
