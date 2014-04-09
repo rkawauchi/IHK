@@ -22,7 +22,7 @@ class Aravind(object):
                 'Tuticorin': ['Tuticorin'],
                 'Udumalaipet': ['Udumalaipet']}
 
-    def __init__(self, eye_health_treatment_thresholds):
+    def __init__(self):
         self.district_names = ['Madurai', 'Theni', 'Tirunelveli', 
                 'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiruppur', 'Salem',
                 'Tuticorin', 'Udumalaipet']
@@ -98,7 +98,7 @@ class Aravind(object):
         #Find a facility that can cover the patient and have it treat them
         facility_list = getattr(self, treatment_facility)
         for facility in facility_list:
-            if facility.covers_person(person):
+            if facility.can_treat(person):
                 return facility.treat(person)
         return False
 
@@ -116,19 +116,29 @@ class AravindFacility(object):
                 self.district_name]
 
     #True if the district is in the list of districts this hospital covers
-    def covers_person(self, person):
-        return person.district in self.covered_districts
+    def can_treat(self, person):
+        #First check whether the person is in the right district 
+        if not person.district in self.covered_districts:
+            return False
+        #Check whether the facility can treat the patient's symptoms
+        for problem in person.get_health_problem_list():
+            if problem in self.treatable_problems:
+                return True
+        #If we get here, none of the patient's problems matched the problems
+        # this facility can treat
+        return False
 
     def treat(self, person):
         for problem in self.treatable_problems:
             self.treat_problem(problem, person)
         self.charge_fee(person)
+        return True
 
     #problem is a string containing the name of the
     # problem: "", for example
     def treat_problem(self, problem, person):
         health_utility_improvement = {
-                'surgery': 0.14,    #FROM DATA
+                'cataracts': 0.14,    #FROM DATA
                 'glasses': 0.05     #ASSUMPTION
                 }[problem]
         person.health_utility += health_utility_improvement
