@@ -28,10 +28,10 @@ def clean_state_name(state):
     state = state.strip()
     if state not in state_names:
         print 'Warning: state name not found while cleaning:', state
+    return state
 
 def avg(x):
     return float(sum(x)/len(x))
-    return state
 
 class FilterPopulation(object):
     
