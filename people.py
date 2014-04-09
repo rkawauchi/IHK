@@ -112,12 +112,13 @@ def generate_life_exp(gender, age):
         return MaleLifeExp(age)
 
 def generate_health_utility(age):
-    # 0.851886 is calulated based on the paper from
+    # to generate mean closer to 0.851886 calulated based on the paper from
     # http://www.sciencedirect.com/science/article/pii/S016164200100971X
+    # we need to set mu = 1.5 to get truncated/negative-skew distribution
     lower = 0
     upper = 1
     sigma = 0.35
-    mu = 0.851886
+    mu = 1.5
     health_utility = stats.truncnorm((lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma)
     return health_utility.rvs()
 
