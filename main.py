@@ -49,15 +49,14 @@ def test(data, args):
     population = data.get_population_district(test_district.name,
             limit=args['pop_fetch_limit_dist'])
     print 'Testing population of', len(population), 'people'
-    eye_health_treatment_thresholds = util.calc_eye_health_treatment_thresholds(
-            population)
+    #eye_health_treatment_thresholds = util.calc_eye_health_treatment_thresholds( population)
 
     #Create a solution to treat the population
-    solution = health.Aravind(eye_health_treatment_thresholds)
+    solution = health.Aravind()
     #districts = [data.get_district_by_name(district_name) for district_name in solution.get_covered_district_names()] 
     #Need to use all treatment costs for more intelligent filtering
-    filter_test = util.FilterPopulation(max(solution.treatment_costs.values()),
-            eye_health_treatment_thresholds)
+    #filter_test = util.FilterPopulation(max(solution.treatment_costs.values()),
+    #        eye_health_treatment_thresholds)
 
     #Treat the population using the solution
     treated_population = list()
