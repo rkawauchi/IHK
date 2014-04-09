@@ -131,19 +131,20 @@ class Person(Base):
     age = sqlalchemy.Column(sqlalchemy.Integer)
     #currently assuming 0-1 ranking for health measures
     #the data type may change laters
-    eye_health = sqlalchemy.Column(sqlalchemy.Float)
+    health_utility = sqlalchemy.Column(sqlalchemy.Float)
     perceived_health = sqlalchemy.Column(sqlalchemy.Float)
     district = sqlalchemy.Column(sqlalchemy.String, index=True)
     state = sqlalchemy.Column(sqlalchemy.String)
     #urban or rural
     classification = sqlalchemy.Column(sqlalchemy.String)
 
-    def __init__(self, money, gender, age, eye_health, perceived_health, district, state,
+    def __init__(self, money, gender, age, health_utility, perceived_health, district, state,
             classification):
         self.money = money
         self.gender = gender
         self.age = age
-        self.eye_health = eye_health
+        self.health_utility = health_utility
+        self.health_problems = health_problems
         self.perceived_health = perceived_health
         self.district = district
         self.state = state
@@ -153,14 +154,14 @@ class Person(Base):
         return {'money': self.money, 
                 'gender': self.gender,
                 'age': self.age,
-                'eye_health': self.eye_health,
+                'health_utility': self.health_utility,
                 'perceived_health': self.perceived_health,
                 'district': self.district,
                 'state': self.state,
                 'classification': self.classification}
 
     def __repr__(self):
-        return 'Person({0}, {1}, {2})'.format(self.money, self.eye_health, self.perceived_health)
+        return 'Person({0}, {1}, {2})'.format(self.money, self.health_utility, self.perceived_health)
 
 class Database(object):
 
