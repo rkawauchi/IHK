@@ -22,7 +22,7 @@ class Aravind(object):
                 'Tuticorin': ['Tuticorin'],
                 'Udumalaipet': ['Udumalaipet']}
 
-    def __init__(self):
+    def __init__(self, eye_health_treatment_thresholds):
         self.district_names = ['Madurai', 'Theni', 'Tirunelveli', 
                 'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiruppur', 'Salem',
                 'Tuticorin', 'Udumalaipet']
@@ -31,6 +31,7 @@ class Aravind(object):
                 'clinic': 200,
                 'vision_center': 100,
                 'camp': 20}
+        self.eye_health_treatment_thresholds = eye_health_treatment_thresholds
         #ASSUMPTION FROM DATA
         self.urban_hospital_probability = 0.915
         self.urban_clinic_probability = 1 - self.urban_hospital_probability
