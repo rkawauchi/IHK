@@ -31,8 +31,7 @@ class Aravind(object):
                 'clinic': 200,
                 'vision_center': 100,
                 'camp': 20}
-        self.eye_health_treatment_thresholds = eye_health_treatment_thresholds
-        #ASSUMPTION FROM DATA
+        #FROM DATA
         self.urban_hospital_probability = 0.915
         self.urban_clinic_probability = 1 - self.urban_hospital_probability
         self.rural_vision_center_probability = 0.397
@@ -51,31 +50,31 @@ class Aravind(object):
 
     def _init_hospitals(self):
         treatment_cost = self.treatment_costs['hospital']
-        treatable_symptoms = ['eye_health']
+        treateable_problems = ['cataracts', 'glasses']
         for district_name in self.district_names:
             self.hospitals.append(Hospital(district_name, 
-                treatment_cost, treatable_symptoms))
+                treatment_cost, treateable_problems))
 
     def _init_clinics(self):
         treatment_cost = self.treatment_costs['clinic']
-        treatable_symptoms = ['eye_health']
+        treateable_problems = ['eye_health']
         for district_name in self.district_names:
             self.clinics.append(Clinic(district_name,
-                treatment_cost, treatable_symptoms))
+                treatment_cost, treateable_problems))
 
     def _init_vision_centers(self):
         treatment_cost = self.treatment_costs['vision_center']
-        treatable_symptoms = ['eye_health']
+        treateable_problems = ['eye_health']
         for district_name in self.district_names:
             self.vision_centers.append(VisionCenter(district_name,
-                treatment_cost, treatable_symptoms))
+                treatment_cost, treateable_problems))
 
     def _init_camps(self):
         treatment_cost = self.treatment_costs['camp']
-        treatable_symptoms = ['eye_health']
+        treateable_problems = ['eye_health']
         for district_name in self.district_names:
             self.vision_centers.append(Camp(district_name,
-                treatment_cost, treatable_symptoms))
+                treatment_cost, treateable_problems))
 
     #True if treatment was done, False otherwise
     def treat(self, person):
@@ -105,10 +104,10 @@ class Aravind(object):
 
 #Generic class which includes Hospital, EyeClinic, and VisionCamp
 class AravindFacility(object):
-    def __init__(self, district_name, treatment_cost, treatable_symptoms):
+    def __init__(self, district_name, treatment_cost, treateable_problems):
         self.district_name = district_name
         self.treatment_cost = treatment_cost
-        self.treatable_symptoms = treatable_symptoms
+        self.treateable_problems = treateable_problems
         self._init_covered_districts()
 
     def _init_covered_districts(self):
@@ -121,13 +120,13 @@ class AravindFacility(object):
         return person.district in self.covered_districts
 
     def treat(self, person):
-        for symptom in self.treatable_symptoms:
-            self.treat_symptom(symptom, person)
+        for problem in self.treateable_problems:
+            self.treat_problem(problem, person)
         self.charge_fee(person)
 
-    #symptom is a string containing the name of the
+    #problem is a string containing the name of the
     # attribute: "eye_health", for example
-    def treat_symptom(self, symptom, person):
+    def treat_problem(self, problem, person):
         #This is overwritten by each of the subclasses
         pass 
 
@@ -137,50 +136,50 @@ class AravindFacility(object):
 
 class Hospital(AravindFacility):
 
-    def treat_symptom(self, symptom, person):
-        if symptom=='eye_health':
-            #Any patient treated by this hospital has their symptoms increased
+    def treat_problem(self, problem, person):
+        if problem=='eye_health':
+            #Any patient treated by this hospital has their problems increased
             # to a minimum of 0.5
             #This is obviously a placeholder for a more nuanced approach
-            improved_symptom = max(getattr(person, symptom), 0.5)
-            #Change the patient's symptom so it is improved by the hospital
-            setattr(person, symptom, improved_symptom)
+            improved_problem = max(getattr(person, problem), 0.5)
+            #Change the patient's problem so it is improved by the hospital
+            setattr(person, problem, improved_problem)
 
     def charge_fee(self, person):
         person.money -= self.treatment_cost
 
 class Clinic(AravindFacility):
     
-    def treat_symptom(self, symptom, person):
-        if symptom=='eye_health':
+    def treat_problem(self, problem, person):
+        if problem=='eye_health':
             #Any patient treated by this clinic has eye health improved to 0.4
-            improved_symptom = max(getattr(person, symptom), 0.4)
-            #Change the patient's symptom so it is improved by the clinic
-            setattr(person, symptom, improved_symptom)
+            improved_problem = max(getattr(person, problem), 0.4)
+            #Change the patient's problem so it is improved by the clinic
+            setattr(person, problem, improved_problem)
             person.money -= self.treatment_cost
 
     def charge_fee(self, person):
         person.money -= self.treatment_cost
 
 class VisionCenter(AravindFacility):
-    def treat_symptom(self, symptom, person):
-        if symptom=='eye_health':
+    def treat_problem(self, problem, person):
+        if problem=='eye_health':
             #Any patient treated by this clinic has eye health improved to 0.3
-            improved_symptom = max(getattr(person, symptom), 0.3)
-            #Change the patient's symptom so it is improved by the vision center
-            setattr(person, symptom, improved_symptom)
+            improved_problem = max(getattr(person, problem), 0.3)
+            #Change the patient's problem so it is improved by the vision center
+            setattr(person, problem, improved_problem)
             person.money -= self.treatment_cost
 
     def charge_fee(self, person):
         person.money -= self.treatment_cost
 
 class Camp(AravindFacility):
-    def treat_symptom(self, symptom, person):
-        if symptom=='eye_health':
+    def treat_problem(self, problem, person):
+        if problem=='eye_health':
             #Any patient treated by this clinic has eye health improved to 0.2
-            improved_symptom = max(getattr(person, symptom), 0.2)
-            #Change the patient's symptom so it is improved by the camp
-            setattr(person, symptom, improved_symptom)
+            improved_problem = max(getattr(person, problem), 0.2)
+            #Change the patient's problem so it is improved by the camp
+            setattr(person, problem, improved_problem)
             person.money -= self.treatment_cost
 
     def charge_fee(self, person):
