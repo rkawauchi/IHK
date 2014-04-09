@@ -125,77 +125,37 @@ class AravindFacility(object):
         self.charge_fee(person)
 
     #problem is a string containing the name of the
-    # attribute: "eye_health", for example
+    # problem: "", for example
     def treat_problem(self, problem, person):
-        #This is overwritten by each of the subclasses
-        pass 
+        health_utility_improvement = {
+                'surgery': 0.14,    #FROM DATA
+                'glasses': 0.05     #ASSUMPTION
+                }[problem]
+        person.health_utility += health_utility_improvement
 
-    #Also overwritten by subclasses
+    #Overwritten by subclasses
     def charge_fee(self, person):
         pass
 
 class Hospital(AravindFacility):
 
-    def treat_problem(self, problem, person):
-        if problem=='eye_health':
-            #Any patient treated by this hospital has their problems increased
-            # to a minimum of 0.5
-            #This is obviously a placeholder for a more nuanced approach
-            improved_problem = max(getattr(person, problem), 0.5)
-            #Change the patient's problem so it is improved by the hospital
-            setattr(person, problem, improved_problem)
-
     def charge_fee(self, person):
         person.money -= self.treatment_cost
 
 class Clinic(AravindFacility):
-    
-    def treat_problem(self, problem, person):
-        if problem=='eye_health':
-            #Any patient treated by this clinic has eye health improved to 0.4
-            improved_problem = max(getattr(person, problem), 0.4)
-            #Change the patient's problem so it is improved by the clinic
-            setattr(person, problem, improved_problem)
-            person.money -= self.treatment_cost
 
     def charge_fee(self, person):
         person.money -= self.treatment_cost
 
 class VisionCenter(AravindFacility):
-    def treat_problem(self, problem, person):
-        if problem=='eye_health':
-            #Any patient treated by this clinic has eye health improved to 0.3
-            improved_problem = max(getattr(person, problem), 0.3)
-            #Change the patient's problem so it is improved by the vision center
-            setattr(person, problem, improved_problem)
-            person.money -= self.treatment_cost
 
     def charge_fee(self, person):
         person.money -= self.treatment_cost
 
 class Camp(AravindFacility):
-    def treat_problem(self, problem, person):
-        if problem=='eye_health':
-            #Any patient treated by this clinic has eye health improved to 0.2
-            improved_problem = max(getattr(person, problem), 0.2)
-            #Change the patient's problem so it is improved by the camp
-            setattr(person, problem, improved_problem)
-            person.money -= self.treatment_cost
 
     def charge_fee(self, person):
         person.money -= self.treatment_cost
-
-"""
-        self.nbOutpatientsFree
-        self.nbOutpatientPaying = nbPopPaying
-        self.nbSurgeryFree =
-        self.nbSurgerySubsidized =
-        self.nbSurgeryPay =
-        self.priceSurgeryPay = 
-        self.priceSurgerySubsidized = 900 #750*88%+2000*12% (balance between ICCE and ECCE)
-        self.priceSurgeryFree = 0
-        self.nbPopFree = nbPopFree #check sum free + paid = Screened
-"""
 
 '''
 #possible merge 
