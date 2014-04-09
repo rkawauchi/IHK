@@ -36,7 +36,7 @@ def avg(x):
 
 class FilterPopulation(object):
     
-    def __init__(self, cost_threshold, eye_health_treatment_thresholds):
+    def __init__(self, cost_threshold):
         self.cost_threshold = cost_threshold
         self.eye_health_treatment_thresholds = eye_health_treatment_thresholds
 
@@ -104,10 +104,10 @@ def weighted_choice(choices, weights):
 
 #Perform analytics on the treated population
 def analyze_populations(population, treated_population):
-    print 'Average eye health in original population', avg(
-            [person.eye_health for person in population])
-    print 'Average eye health in treated population', avg(
-            [person.eye_health for person in treated_population])
+    print 'Average health utility in original population', avg(
+            [person.health_utility for person in population])
+    print 'Average health utility in treated population', avg(
+            [person.health_utility for person in treated_population])
     
 if __name__ == "__main__":
     args = initialize_argument_parser()
