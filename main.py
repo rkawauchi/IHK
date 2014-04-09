@@ -63,7 +63,9 @@ def test(data, args):
     #Treat the population using the solution
     treated_population = list()
     for person in population:
-        treated_population.append(solution.treat(copy.copy(person)))
+        treated_person = copy.copy(person)
+        solution.treat(treated_person)
+        treated_population.append(treated_person)
 
     #Perform analytics on the treated population
     print 'Average eye health in original population', avg([person.eye_health for person in population])
