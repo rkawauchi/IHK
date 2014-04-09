@@ -132,14 +132,15 @@ class Person(Base):
     #currently assuming 0-1 ranking for health measures
     #the data type may change laters
     health_utility = sqlalchemy.Column(sqlalchemy.Float)
+    health_problems = sqlalchemy.Column(sqlalchemy.String)
     perceived_health = sqlalchemy.Column(sqlalchemy.Float)
     district = sqlalchemy.Column(sqlalchemy.String, index=True)
     state = sqlalchemy.Column(sqlalchemy.String)
     #urban or rural
     classification = sqlalchemy.Column(sqlalchemy.String)
 
-    def __init__(self, money, gender, age, health_utility, perceived_health, district, state,
-            classification):
+    def __init__(self, money, gender, age, health_utility, health_problems,
+            perceived_health, district, state, classification):
         self.money = money
         self.gender = gender
         self.age = age
@@ -155,6 +156,7 @@ class Person(Base):
                 'gender': self.gender,
                 'age': self.age,
                 'health_utility': self.health_utility,
+                'health_problems': self.health_problems,
                 'perceived_health': self.perceived_health,
                 'district': self.district,
                 'state': self.state,

@@ -20,6 +20,7 @@ def generate_person(state, state_total, district, mpce, mpce_total):
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
     health_utility = generate_health_utility(age)
+    health_problems = generate_health_problems()
     perceived_health = generate_perceived_health(state)
     classification = district.classification
     """
@@ -28,8 +29,8 @@ def generate_person(state, state_total, district, mpce, mpce_total):
     if classification = 'Rural':
         city_center_distance = (random.random()*(max_radius-urban_radius)+urban_radius
     """
-    person = io_data.Person(money, gender, age, health_utility, perceived_health, district.name,
-            state.name, classification)
+    person = io_data.Person(money, gender, age, health_utility, health_problems,
+            perceived_health, district.name, state.name, classification)
     #Other variables to potentially add: worry_level, pricing_class, structure, city_center_distance
     return person
 
@@ -123,6 +124,20 @@ def generate_health_utility(age):
     health_utility = stats.truncnorm((lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma)
     return health_utility.rvs()
 
+#Return a comma-separated list of health problems
+#This is HORRIBLE database practice. Don't do this. But we have a deadline, yo
+def generate_health_problems():
+    problems = list()
+    #FROM DATA 
+    cataract_probability = 0.1
+    if random.random() <= cataract_probability:
+        problems.append('cataract')
+    #FROM DATA
+    glasses_probability = 0.3
+    if random.random() <= glasses_probability:
+        problems.append('glasses')
+    return ','.join(problems)
+    
 def generate_perceived_health(state):
     # Human Development Index: HDI
     # Gender Inequality Index: GII
