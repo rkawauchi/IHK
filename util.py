@@ -108,6 +108,16 @@ def analyze_populations(population, treated_population):
             [person.health_utility for person in population])
     print 'Average health utility in treated population', avg(
             [person.health_utility for person in treated_population])
+    glasses_problem = Problem.from_problem_name('glasses')
+    glasses_population = [person for person in population if 
+            glasses_problem in person.get_health_problem_list()]
+    #for[person in population; person.health_problems == 'cataracts']:
+
+    print 'QALY: before treatment', "result"
+
+ 
+def calc_qaly_before(population):
+
     
 if __name__ == "__main__":
     args = initialize_argument_parser()
