@@ -110,7 +110,8 @@ def analyze_populations(population, treated_population):
             [person.health_utility for person in treated_population])
 
 class Problem(object):
-    def __init__(self, health_utility, cost_full, cost_subsidized):
+    def __init__(self, problem_name, health_utility, cost_full, cost_subsidized):
+        self.name = problem_name
         self.health_utility = health_utility
         self.cost_full = cost_full
         self.cost_subsidized = cost_subsidized
@@ -121,7 +122,7 @@ class Problem(object):
                 'cataracts': [0.14, 4750, 750],
                 'glasses': [0.05, 120, 120]
                 }[problem_name]
-        return cls(attributes[0], attributes[1], attributes[2])
+        return cls(problem_name, attributes[0], attributes[1], attributes[2])
     
 if __name__ == "__main__":
     args = initialize_argument_parser()
