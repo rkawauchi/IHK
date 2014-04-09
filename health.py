@@ -27,7 +27,7 @@ class Aravind(object):
         self.district_names = ['Madurai', 'Theni', 'Tirunelveli', 
                 'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiruppur', 'Salem',
                 'Tuticorin', 'Udumalaipet']
-        self.treatment_costs = {
+        self.treatment_costs = { #should be generalized
                 'hospital': 500,
                 'clinic': 200,
                 'vision_center': 100,
@@ -49,6 +49,34 @@ class Aravind(object):
         self._init_vision_centers()
         self._init_camps()
 
+        #init structure_count dict(dict)
+        structure_dict = { 
+                'hospital': 0,
+                'clinic': 0,
+                'vision_center': 0,
+                'camp': 0}
+        structure_count = self.structure_count = dict()
+        structure_count.keys() = self.district_names
+        for key in structure_count.keys():
+            structure_count[key] = structure_dict
+        for i in structure_count.keys():
+            for j in structure_count[i].keys():
+                if j == 'hospitals':
+                    structure_count[i][j] = 1
+                else:
+                    structure_count[i][j] = 1 #here we can automate it with the database
+        
+        #FROM DATA #Manually fixes:
+        structure_count['Coimbatore']['clinic'] = 0 #need to be singular or plural in structures PARKING LOT
+        structure_count['Tiruppur']['clinic'] = 0
+        structure_count['Tiruppur']['vision_center'] = 0
+        structure_count['Dingipul']['clinics'] = 0
+        structure_count['Dingipul']['vision_center'] = 0
+        structure_count['Dingipul']['camp'] = 0
+        structure_count['Salem']['clinics'] = 0
+        structure_count['Salem']['vision_center'] = 0
+
+
     def _init_hospitals(self):
         treatment_cost = self.treatment_costs['hospital']
         treatable_problems = ['cataracts', 'glasses']
@@ -56,8 +84,11 @@ class Aravind(object):
         #FROM DATA
         visit_fee = 50
         for district_name in self.district_names:
-            self.hospitals.append(Hospital(district_name, 
-                treatment_cost, treatable_problems, capacity, visit_fee))
+            if structure_count[district_name]['hospital']: 
+            #case should never happen in the aravind model as 
+            #we define one hospital defining an area. No hopital, no district name
+                self.hospitals.append(Hospital(district_name, 
+                    treatment_cost, treatable_problems, capacity, visit_fee))
 
     def _init_clinics(self):
         treatment_cost = self.treatment_costs['clinic']
@@ -66,6 +97,7 @@ class Aravind(object):
         #FROM DATA
         visit_fee = 20
         for district_name in self.district_names:
+            if not structure_count[district_name]['clinic'] == 0: 
             self.clinics.append(Clinic(district_name,
                 treatment_cost, treatable_problems, capacity, visit_fee))
 
@@ -76,8 +108,9 @@ class Aravind(object):
         #FROM DATA
         visit_fee = 20
         for district_name in self.district_names:
-            self.vision_centers.append(VisionCenter(district_name,
-                treatment_cost, treatable_problems, capacity, visit_fee))
+            if not structure_count[district_name]['vision_center'] == 0: 
+                self.vision_centers.append(VisionCenter(district_name,
+                    treatment_cost, treatable_problems, capacity, visit_fee))
 
     def _init_camps(self):
         treatment_cost = self.treatment_costs['camp']
@@ -86,6 +119,7 @@ class Aravind(object):
         #FROM DATA
         visit_fee = 0
         for district_name in self.district_names:
+                        if not structure_count[district_name]['camp'] == 0: 
             self.vision_centers.append(Camp(district_name,
                 treatment_cost, treatable_problems, capacity, visit_fee))
 
