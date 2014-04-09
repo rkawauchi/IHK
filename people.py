@@ -19,7 +19,7 @@ def generate_person(state, state_total, district, mpce, mpce_total):
     money = generate_money(age, state, state_total, mpce, mpce_total)
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
-    eye_health = generate_eye_health()
+    eye_health = generate_eye_health(age)
     cardio = random.random()
     classification = district.classification
     # worry_level = generate_worry_level() ### to create
@@ -111,9 +111,15 @@ def generate_life_exp(gender, age):
     else:
         return MaleLifeExp(age)
 
-def generate_eye_health():
-    lower, upper = 0, 1
-    mu, sigma = 0.8, 0.35
+def generate_eye_health(age):
+    # assumption that people over 50 years old would have lower eye_health condition
+    lower = 0
+    upper = 1
+    sigma = 0.35
+    if age >= 50:
+        mu = 0.6
+    else: 
+        mu = 0.8
     eye_health = stats.truncnorm((lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma)
     return eye_health.rvs()
 
