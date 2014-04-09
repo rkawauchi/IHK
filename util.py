@@ -36,13 +36,9 @@ def avg(x):
 
 class FilterPopulation(object):
     
-    def __init__(self, cost_threshold, eye_health_threshold_surgery, eye_health_threshold_glasses, population):
+    def __init__(self, cost_threshold, eye_health_treatment_thresholds):
         self.cost_threshold = cost_threshold
-        # thresholds for surgery and glasses in filtering the people
-        self.eye_health_threshold_surgery = np.percentile([person.eye_health for person in population], 10)
-        self.eye_health_threshold_glasses = np.percentile([person.eye_health for person in population], 30)
-        print 'surgery', self.eye_health_threshold_surgery
-        print 'glasses', self.eye_health_threshold_glasses
+        self.eye_health_treatment_thresholds = eye_health_treatment_thresholds
 
     def filter_all(self, person):
         return self.filter_health(person) and self.filter_money(person)
@@ -50,6 +46,12 @@ class FilterPopulation(object):
     def filter_health(self, person):
         return self.filter_eye_health(person)
 
+    def filter_eye_health(self, person):
+        #We only care about the largest treatment threshold
+        return person.eye_health <= max(
+                self.eye_health_treatment_thresholds.values())
+
+    """
     def filter_eye_health_surgery(self, person):
         # filter for those who need surgery who is about 10 % of the population
         return person.eye_health <= self.eye_health_threshold_surgery
@@ -57,6 +59,7 @@ class FilterPopulation(object):
     def filter_eye_health_glasses(self, person):
         # filter for those who need glasses who is about 30 % of the population
         return person.eye_health <= self.eye_health_threshold_glasses
+    """
 
     def filter_money(self, person):
         return person.money>=self.cost_threshold
@@ -75,6 +78,15 @@ class Location(object):
         if location.classification == 'total' or self.classification == location.classification:
             return True
 
+def calc_eye_health_treatment_thresholds(population):
+    eye_health_treatment_thresholds = dict()
+    # thresholds for surgery and glasses in filtering the people
+    eye_health_treatment_thresholds['surgery'] = np.percentile(
+            [person.eye_health for person in population], 10)
+    eye_health_treatment_thresholds['glasses'] = np.percentile(
+            [person.eye_health for person in population], 30)
+    return eye_health_treatment_thresholds
+
 #http://stackoverflow.com/questions/3679694/a-weighted-version-of-random-choice
 #Given a set of choices and corresponding weights, choose a random option
 #using the appropriate weight
@@ -89,3 +101,21 @@ def weighted_choice(choices, weights):
     rnd = random.random() * total
     i = bisect.bisect(cumulative_weights, rnd)
     return choices[i]
+
+#Perform analytics on the treated population
+def analyze_populations(population, treated_population):
+    print 'Average eye health in original population', avg(
+            [person.eye_health for person in population])
+    print 'Average eye health in treated population', avg(
+            [person.eye_health for person in treated_population])
+    
+if __name__ == "__main__":
+    args = initialize_argument_parser()
+    data = io_data.Database(import_data=args['import_data'])
+    #Only run the test if we didn't try to recreate the database
+    # Not strictly necessary, but helps separate workflow
+    if not args['import_data']:
+        if args['profile']:
+            cProfile.run('test(data, args)')
+        else:
+            test(data, args)

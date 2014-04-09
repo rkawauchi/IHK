@@ -29,9 +29,6 @@ def initialize_argument_parser():
             default=False, help='Profile running time')
     return vars(parser.parse_args())
 
-def avg(x):
-    return float(sum(x)/len(x))
-
 #Put test code here so it doesn't clutter up the main method
 def test(data, args):
     test_state_name = args['test_state']
@@ -52,13 +49,15 @@ def test(data, args):
     population = data.get_population_district(test_district.name,
             limit=args['pop_fetch_limit_dist'])
     print 'Testing population of', len(population), 'people'
+    eye_health_treatment_thresholds = util.calc_eye_health_treatment_thresholds(
+            population)
 
     #Create a solution to treat the population
-    solution = health.Aravind()
+    solution = health.Aravind(eye_health_treatment_thresholds)
     #districts = [data.get_district_by_name(district_name) for district_name in solution.get_covered_district_names()] 
     #Need to use all treatment costs for more intelligent filtering
     filter_test = util.FilterPopulation(max(solution.treatment_costs.values()),
-            1, 1, population)
+            eye_health_treatment_thresholds)
 
     #Treat the population using the solution
     treated_population = list()
@@ -67,10 +66,8 @@ def test(data, args):
         solution.treat(treated_person)
         treated_population.append(treated_person)
 
-    #Perform analytics on the treated population
-    print 'Average eye health in original population', avg([person.eye_health for person in population])
-    print 'Average eye health in treated population', avg([person.eye_health for person in treated_population])
-    
+    util.analyze_populations(population, treated_population)
+
 if __name__ == "__main__":
     args = initialize_argument_parser()
     data = io_data.Database(import_data=args['import_data'])
