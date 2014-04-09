@@ -20,16 +20,15 @@ def generate_person(state, state_total, district, mpce, mpce_total):
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
     eye_health = generate_eye_health(age)
-    cardio = random.random()
+    perceived_health = generate_perceived_health(state)
     classification = district.classification
-    # worry_level = generate_worry_level() ### to create
     """
     if classification = 'Urban':
         city_center_distance = urban_radius*random.random()
     if classification = 'Rural':
         city_center_distance = (random.random()*(max_radius-urban_radius)+urban_radius
     """
-    person = io_data.Person(money, gender, age, eye_health, cardio, district.name,
+    person = io_data.Person(money, gender, age, eye_health, perceived_health, district.name,
             state.name, classification)
     #Other variables to potentially add: worry_level, pricing_class, structure, city_center_distance
     return person
@@ -123,8 +122,25 @@ def generate_eye_health(age):
     eye_health = stats.truncnorm((lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma)
     return eye_health.rvs()
 
-def generate_2ndHealth(state_name, class_type, gender, age):
-    return random.random(1)
+def generate_perceived_health(state):
+    # Human Development Index: HDI
+    # Gender Inequality Index: GII
+    # http://wcd.nic.in/publication/GDIGEReport/Part2.pdf
+    # Per analysis in R3.r, there is a strong correlation between gender
+    # development and health level
+    lower = 0
+    upper = 1
+    sigma = 1
+    topList = ('Kerala', 'Goa', 'Manipur')
+    lowList = ('Haryana','Jammu & Kashmir','Gujarat','Jharkhand','Andhra',	'Meghalaya','Bihar','Rajasthan','Chhattisgarh','Assam',	'Uttar Pradesh','Orissa','Madhya Pradesh')
+    if state.name in topList:
+        mu = 0.800
+    elif state.name in lowList:
+        mu = 0.543
+    else:
+        mu = 0.62
+    health = stats.truncnorm((lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma)
+    return health.rvs()
 
 if __name__ == '__main__':
     print generate_eye_health
