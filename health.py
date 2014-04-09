@@ -1,4 +1,5 @@
 import random
+import util
 
 class Aravind(object):
     #Use this to assign each hospital to cover surrounding districts
@@ -116,6 +117,23 @@ class Aravind(object):
 
 #Generic class which includes Hospital, EyeClinic, and VisionCamp
 class AravindFacility(object):
+
+    #Paying, subsidized, free
+    #FROM DATA
+    surgery_fee_proportions = {
+            'Madurai': [69298, 41637, 25647],
+            'Thenia': [6507, 3292, 3360],
+            'Tirunelveli': [26956, 12227, 13470],
+            'Coimbatore': [41418, 25566, 19071],
+            'Pundicherry': [25478, 12974, 16943],
+            'Tirupur': [1934, 381, 87],
+            'Dingipul': [2952, 0, 0],
+            'Salem': [7763, 8, 1423]}
+    #Turn those numbers into actual proportions
+    for state_name, proportions in surgery_fee_proportions.items():
+        total = float(sum(proportions))
+        surgery_fee_proportions[state_name] = [x/total for x in proportions]
+
     def __init__(self, district_name, treatment_cost, treatable_problems,
             capacity, visit_fee):
         self.district_name = district_name
@@ -153,52 +171,31 @@ class AravindFacility(object):
     #problem is a util.Problem
     def treat_problem(self, problem, person):
         person.health_utility += problem.health_utility
+        return True
 
     def charge_visit_fee(self, person):
         person.money -= self.visit_fee
 
-    #Overwritten by subclasses
     def charge_problem_fee(self, problem, person):
-        pass
-
-class Hospital(AravindFacility):
-
-    #Paying, subsidized, free
-    #FROM DATA
-    surgery_fee_proportions = {
-            'Madurai': [69298, 41637, 25647],
-            'Thenia': [6507, 3292, 3360],
-            'Tirunelveli': [26956, 12227, 13470],
-            'Coimbatore': [41418, 25566, 19071],
-            'Pundicherry': [25478, 12974, 16943],
-            'Tirupur': [1934, 381, 87],
-            'Dingipul': [2952, 0, 0],
-            'Salem': [7763, 8, 1423]}
-    #Turn those numbers into actual proportions
-    for state_name, proportions in surgery_fee_proportions.items():
-        total = float(sum(proportions))
-        surgery_fee_proportions[state_name] = [x/total for x in proportions]
-
-    def charge_problem_fee(self, problem, person):
-        if problem == 'surgery':
+        if problem.name == 'cataracts':
             fee_options = [problem.cost_full, problem.cost_subsidized, 0]
             fee = util.weighted_choice(fee_options, 
                     Hospital.surgery_fee_proportions[self.state_name])
-            print 'Fee charged', fee
-            person.money -= fee
+        elif problem.name == 'glasses':
+            #FROM DATA
+            fee = 120
+        else:
+            print 'Warning: unrecognized problem', problem.name
+        person.money -= fee
+
+class Hospital(AravindFacility):
+    pass
 
 class Clinic(AravindFacility):
-
-    def charge_problem_fee(self, person):
-        person.money -= self.treatment_cost
+    pass
 
 class VisionCenter(AravindFacility):
-
-    def charge_problem_fee(self, person):
-        #DATA: 70% of rural people don't pay. 60% of people use camps.
-        # So 1/4 of people in vision centers pay.
-        #MUST CHANGE LATER
-        person.money -= self.treatment_cost
+    pass
 
 class Camp(AravindFacility):
 
