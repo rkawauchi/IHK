@@ -1,3 +1,5 @@
+import random
+
 class Aravind(object):
     #Use this to assign each hospital to cover surrounding districts
     #Based on Aravind's data
@@ -29,6 +31,11 @@ class Aravind(object):
                 'clinic': 200,
                 'vision_center': 100,
                 'camp': 20}
+        #ASSUMPTION FROM DATA
+        self.urban_hospital_probability = 0.91
+        self.urban_clinic_probability = 1 - self.urban_hospital_probability
+        self.rural_vision_center_probability = 0.4
+        self.rural_camp_probability = 1 - self.rural_vision_center_probability
         self._init_facilities()
 
     def _init_facilities(self):
@@ -69,12 +76,31 @@ class Aravind(object):
             self.vision_centers.append(Camp(district_name,
                 treatment_cost, treatable_symptoms))
 
+    #True if treatment was done, False otherwise
     def treat(self, person):
-        for hospital in self.hospitals:
-            if hospital.covers_district_name(person.district):
-                hospital.treat(person)
-        #If patient is not covered, the patient is unchanged
-        return person
+        #Assign the person to a type of facility randomly
+        rnd = random.random()
+        if person.classification == 'urban':
+            if rnd <= self.urban_hospital_probability:
+                treatment_facility = 'hospitals'
+            else:
+                treatment_facility = 'clinics'
+        elif person.classification == 'rural':
+            if rnd <= self.rural_vision_center_probability:
+                treatment_facility = 'vision_centers'
+            else:
+                treatment_facility = 'camps'
+        return self.treat_with_facility(treatment_facility, person)
+
+    #True if treatment was done, False otherwise
+    def treat_with_facility(self, treatment_facility, person):
+        #Now that we know the type of facility
+        #Find a facility that can cover the patient and have it treat them
+        facility_list = getattr(self, treatment_facility)
+        for facility in facility_list:
+            if facility.covers_person(person):
+                return facility.treat(person)
+        return False
 
 #Generic class which includes Hospital, EyeClinic, and VisionCamp
 class AravindFacility(object):
@@ -90,8 +116,8 @@ class AravindFacility(object):
                 self.district_name]
 
     #True if the district is in the list of districts this hospital covers
-    def covers_district_name(self, district_name):
-        return district_name in self.covered_districts
+    def covers_person(self, person):
+        return person.district in self.covered_districts
 
     def treat(self, person):
         for symptom in self.treatable_symptoms:

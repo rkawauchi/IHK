@@ -391,7 +391,7 @@ class Database(object):
         for district in data.session.query(District).filter(
                 District.state == state.name).filter(
                 District.classification == 'total'):
-            populate_district_total(data, district, state, force)
+            self.populate_district_total(district, state, force)
 
     #Create a population distribution for both the urban and rural populations
     #of the district
@@ -455,7 +455,7 @@ class Database(object):
             mpce_total, insertion_count):
         insert = Person.__table__.insert()
         self.engine.execute(insert, 
-                [people.generate_person_dict(self, state, state_total,
+                [people.generate_person_dict(state, state_total,
                     district, mpce, mpce_total) 
                     for j in xrange(insertion_count)])
 
