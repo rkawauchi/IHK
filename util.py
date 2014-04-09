@@ -101,3 +101,21 @@ def weighted_choice(choices, weights):
     rnd = random.random() * total
     i = bisect.bisect(cumulative_weights, rnd)
     return choices[i]
+
+#Perform analytics on the treated population
+def analyze_populations(population, treated_population):
+    print 'Average eye health in original population', avg(
+            [person.eye_health for person in population])
+    print 'Average eye health in treated population', avg(
+            [person.eye_health for person in treated_population])
+    
+if __name__ == "__main__":
+    args = initialize_argument_parser()
+    data = io_data.Database(import_data=args['import_data'])
+    #Only run the test if we didn't try to recreate the database
+    # Not strictly necessary, but helps separate workflow
+    if not args['import_data']:
+        if args['profile']:
+            cProfile.run('test(data, args)')
+        else:
+            test(data, args)

@@ -29,9 +29,6 @@ def initialize_argument_parser():
             default=False, help='Profile running time')
     return vars(parser.parse_args())
 
-def avg(x):
-    return float(sum(x)/len(x))
-
 #Put test code here so it doesn't clutter up the main method
 def test(data, args):
     test_state_name = args['test_state']
@@ -69,10 +66,8 @@ def test(data, args):
         solution.treat(treated_person)
         treated_population.append(treated_person)
 
-    #Perform analytics on the treated population
-    print 'Average eye health in original population', avg([person.eye_health for person in population])
-    print 'Average eye health in treated population', avg([person.eye_health for person in treated_population])
-    
+    util.analyze_populations(population, treated_population)
+
 if __name__ == "__main__":
     args = initialize_argument_parser()
     data = io_data.Database(import_data=args['import_data'])
