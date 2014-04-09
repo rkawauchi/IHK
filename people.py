@@ -132,7 +132,7 @@ def generate_perceived_health(state):
     upper = 1
     sigma = 1
     topList = ('Kerala', 'Goa', 'Manipur')
-    lowList = ('Haryana','Jammu & Kashmir','Gujarat','Jharkhand','Andhra',	'Meghalaya','Bihar','Rajasthan','Chhattisgarh','Assam',	'Uttar Pradesh','Orissa','Madhya Pradesh')
+    lowList = ('Haryana','Jammu and Kashmir','Gujarat','Jharkhand','Andhra Pradesh',	'Meghalaya','Bihar','Rajasthan','Chhattisgarh','Assam','Uttar Pradesh','Odisha','Madhya Pradesh')
     if state.name in topList:
         mu = 0.800
     elif state.name in lowList:
