@@ -1,6 +1,7 @@
 import re
 import random
 import bisect
+import numpy as np
 
 #http://www.gefeg.com/edifact/d03a/s3/codes/cl1h.htm
 #This is a terrible method, but it works for now
@@ -35,10 +36,11 @@ def avg(x):
 
 class FilterPopulation(object):
     
-    def __init__(self, cost_threshold, eye_health_threshold, population):
+    def __init__(self, cost_threshold, eye_health_threshold_surgery, eye_health_threshold_glasses, population):
         self.cost_threshold = cost_threshold
-        self.eye_health_threshold = avg([person.eye_health for person in population])
-        print 'calculated dummy threshold', self.eye_health_threshold
+        # thresholds for surgery and glasses in filtering the people
+        self.eye_health_threshold_surgery = np.percentile([person.eye_health for person in population], 10)
+        self.eye_health_threshold_glasses = np.percentile([person.eye_health for person in population], 30)
 
     def filter_all(self, person):
         return self.filter_health(person) and self.filter_money(person)
@@ -46,8 +48,13 @@ class FilterPopulation(object):
     def filter_health(self, person):
         return self.filter_eye_health(person)
 
-    def filter_eye_health(self, person):
-        return person.eye_health <= self.eye_health_threshold
+    def filter_eye_health_surgery(self, person):
+        # filter for those who need surgery who is about 10 % of the population
+        return person.eye_health <= self.eye_health_threshold_surgery
+
+    def filter_eye_health_glasses(self, person):
+        # filter for those who need glasses who is about 30 % of the population
+        return person.eye_health <= self.eye_health_threshold_glasses
 
     def filter_money(self, person):
         return person.money>=self.cost_threshold
