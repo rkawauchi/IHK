@@ -19,7 +19,7 @@ def generate_person(state, state_total, district, mpce, mpce_total):
     money = generate_money(age, state, state_total, mpce, mpce_total)
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
-    eye_health = generate_eye_health(age)
+    health = generate_health(age)
     perceived_health = generate_perceived_health(state)
     classification = district.classification
     """
@@ -28,7 +28,7 @@ def generate_person(state, state_total, district, mpce, mpce_total):
     if classification = 'Rural':
         city_center_distance = (random.random()*(max_radius-urban_radius)+urban_radius
     """
-    person = io_data.Person(money, gender, age, eye_health, perceived_health, district.name,
+    person = io_data.Person(money, gender, age, health, perceived_health, district.name,
             state.name, classification)
     #Other variables to potentially add: worry_level, pricing_class, structure, city_center_distance
     return person
@@ -110,8 +110,9 @@ def generate_life_exp(gender, age):
     else:
         return MaleLifeExp(age)
 
-def generate_eye_health(age):
-    # assumption that people over 50 years old would have lower eye_health condition
+#Needs to change to average of 0.85
+def generate_health(age):
+    # assumption that people over 50 years old would have lower health condition
     lower = 0
     upper = 1
     sigma = 0.35
@@ -119,8 +120,8 @@ def generate_eye_health(age):
         mu = 0.6
     else: 
         mu = 0.8
-    eye_health = stats.truncnorm((lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma)
-    return eye_health.rvs()
+    health = stats.truncnorm((lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma)
+    return health.rvs()
 
 def generate_perceived_health(state):
     # Human Development Index: HDI
@@ -143,6 +144,6 @@ def generate_perceived_health(state):
     return health.rvs()
 
 if __name__ == '__main__':
-    print generate_eye_health
+    print generate_health()
     print generate_expense_log(mpce)
 
