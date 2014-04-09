@@ -118,7 +118,7 @@ class Aravind(object):
 #Generic class which includes Hospital, EyeClinic, and VisionCamp
 class AravindFacility(object):
 
-    #Paying, subsidized, free
+    #[Paying, subsidized, free]
     #FROM DATA
     surgery_fee_proportions = {
             'Madurai': [69298, 41637, 25647],
@@ -162,8 +162,8 @@ class AravindFacility(object):
     def treat(self, person):
         self.charge_visit_fee(person)
         for problem in person.get_health_problem_list():
-            treatment_performed = self.treat_problem(problem, person)
-            if treatment_performed:
+            is_treatment_performed = self.treat_problem(problem, person)
+            if is_treatment_performed:
                 self.charge_problem_fee(problem, person)
         self.treated_patient_count += 1
         return True
@@ -177,7 +177,7 @@ class AravindFacility(object):
         person.money -= self.visit_fee
 
     def charge_problem_fee(self, problem, person):
-        if problem.name == 'cataracts':
+        if problem.name == 'cataracts': 
             fee_options = [problem.cost_full, problem.cost_subsidized, 0]
             fee = util.weighted_choice(fee_options, 
                     Hospital.surgery_fee_proportions[self.state_name])
@@ -198,10 +198,10 @@ class VisionCenter(AravindFacility):
     pass
 
 class Camp(AravindFacility):
-
     #Camps are free
     def charge_problem_fee(self, person):
         pass
+
 
 '''
 #possible merge 
