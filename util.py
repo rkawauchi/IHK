@@ -108,6 +108,20 @@ def analyze_populations(population, treated_population):
             [person.health_utility for person in population])
     print 'Average health utility in treated population', avg(
             [person.health_utility for person in treated_population])
+
+class Problem(object):
+    def __init__(self, health_utility, cost_full, cost_subsidized):
+        self.health_utility = health_utility
+        self.cost_full = cost_full
+        self.cost_subsidized = cost_subsidized
+       
+    @classmethod
+    def from_problem_name(cls, problem_name):
+        attributes  = {
+                'cataracts': [0.14, 4750, 750],
+                'glasses': [0.05, 120, 120]
+                }[problem_name]
+        return cls(attributes[0], attributes[1], attributes[2])
     
 if __name__ == "__main__":
     args = initialize_argument_parser()
@@ -119,3 +133,5 @@ if __name__ == "__main__":
             cProfile.run('test(data, args)')
         else:
             test(data, args)
+
+        
