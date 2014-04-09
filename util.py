@@ -108,6 +108,50 @@ def analyze_populations(population, treated_population):
             [person.health_utility for person in population])
     print 'Average health utility in treated population', avg(
             [person.health_utility for person in treated_population])
+    ##### QALY for glasses #####
+    # generate before and after population
+    glasses_problem = Problem.from_problem_name('glasses')
+    glasses_population_before = [person for person in population if 
+            person.has_problem(glasses_problem)]
+    glasses_population_after = [person for person in treated_population if 
+            person.has_problem(glasses_problem)]
+    # caluculate ave_age, ave_life_expectancy, and average utility
+    glasses_age_before = avg([person.age for person in glasses_population_before])
+    glasses_age_after = avg([person.age for person in glasses_population_after])
+    glasses_life_expectancy_before = 67
+    glasses_life_expectancy_after = 72
+    glasses_utility_before = avg([person.health_utility for person in glasses_population_before])
+    glasses_utility_after = avg([person.health_utility for person in glasses_population_after])
+    glasses_utility_change = glasses_utility_after - glasses_utility_before
+    qaly_glasses_before = glasses_life_expectancy_before + glasses_utility_before
+    qaly_glasses_after = glasses_life_expectancy_after + glasses_utility_after
+    qaly_change_glasses = qaly_glasses_after - qaly_glasses_before
+    print 'QALY_Glasses: before treatment', qaly_glasses_before
+    print 'QALY_Glasses: after treatment', qaly_glasses_after
+    print 'QALY Glasses: increased by', qaly_change_glasses
+    ##### QALY for cataracts #####
+    # generate before and after population
+    cataracts_problem = Problem.from_problem_name('cataracts')
+    cataracts_population_before = [person for person in population if 
+            person.has_problem(cataracts_problem)]
+    cataracts_population_after = [person for person in treated_population if 
+            person.has_problem(cataracts_problem)]
+    # caluculate ave_age, ave_life_expectancy, and average utility
+    cataracts_age_before = avg([person.age for person in cataracts_population_before])
+    cataracts_age_after = avg([person.age for person in cataracts_population_after])
+    cataracts_life_expectancy_before = 64
+    cataracts_life_expectancy_after = 78
+    cataracts_utility_before = avg([person.health_utility for person in cataracts_population_before])
+    cataracts_utility_after = avg([person.health_utility for person in cataracts_population_after])
+    cataracts_utility_change = cataracts_utility_after - cataracts_utility_before
+    qaly_cataracts_before = cataracts_life_expectancy_before + cataracts_utility_before
+    qaly_cataracts_after = cataracts_life_expectancy_after + cataracts_utility_after
+    qaly_change_cataracts = qaly_cataracts_after - qaly_cataracts_before
+    print 'QALY_Cataracts: before treatment', qaly_cataracts_before
+    print 'QALY_Cataracts: after treatment', qaly_cataracts_after
+    print 'QALY Cataracts: increased by', qaly_change_cataracts
+    print 'Average health_utility increase:', (glasses_utility_change + cataracts_utility_change)/2
+     
 
 class Problem(object):
     def __init__(self, problem_name, health_utility, cost_full, cost_subsidized):
@@ -115,6 +159,9 @@ class Problem(object):
         self.health_utility = health_utility
         self.cost_full = cost_full
         self.cost_subsidized = cost_subsidized
+
+    def equals(self, problem):
+        return self.name == problem.name
        
     @classmethod
     def from_problem_name(cls, problem_name):
