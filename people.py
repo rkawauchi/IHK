@@ -131,7 +131,7 @@ def generate_health_problems():
     #FROM DATA 
     cataract_probability = 0.1
     if random.random() <= cataract_probability:
-        problems.append('cataract')
+        problems.append('cataracts')
     #FROM DATA
     glasses_probability = 0.3
     if random.random() <= glasses_probability:
