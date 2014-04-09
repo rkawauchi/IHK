@@ -50,31 +50,31 @@ class Aravind(object):
 
     def _init_hospitals(self):
         treatment_cost = self.treatment_costs['hospital']
-        treateable_problems = ['cataracts', 'glasses']
+        treatable_problems = ['cataracts', 'glasses']
         for district_name in self.district_names:
             self.hospitals.append(Hospital(district_name, 
-                treatment_cost, treateable_problems))
+                treatment_cost, treatable_problems))
 
     def _init_clinics(self):
         treatment_cost = self.treatment_costs['clinic']
-        treateable_problems = ['eye_health']
+        treatable_problems = ['glasses']
         for district_name in self.district_names:
             self.clinics.append(Clinic(district_name,
-                treatment_cost, treateable_problems))
+                treatment_cost, treatable_problems))
 
     def _init_vision_centers(self):
         treatment_cost = self.treatment_costs['vision_center']
-        treateable_problems = ['eye_health']
+        treatable_problems = ['glasses']
         for district_name in self.district_names:
             self.vision_centers.append(VisionCenter(district_name,
-                treatment_cost, treateable_problems))
+                treatment_cost, treatable_problems))
 
     def _init_camps(self):
         treatment_cost = self.treatment_costs['camp']
-        treateable_problems = ['eye_health']
+        treatable_problems = ['glasses']
         for district_name in self.district_names:
             self.vision_centers.append(Camp(district_name,
-                treatment_cost, treateable_problems))
+                treatment_cost, treatable_problems))
 
     #True if treatment was done, False otherwise
     def treat(self, person):
@@ -104,10 +104,10 @@ class Aravind(object):
 
 #Generic class which includes Hospital, EyeClinic, and VisionCamp
 class AravindFacility(object):
-    def __init__(self, district_name, treatment_cost, treateable_problems):
+    def __init__(self, district_name, treatment_cost, treatable_problems):
         self.district_name = district_name
         self.treatment_cost = treatment_cost
-        self.treateable_problems = treateable_problems
+        self.treatable_problems = treatable_problems
         self._init_covered_districts()
 
     def _init_covered_districts(self):
@@ -120,7 +120,7 @@ class AravindFacility(object):
         return person.district in self.covered_districts
 
     def treat(self, person):
-        for problem in self.treateable_problems:
+        for problem in self.treatable_problems:
             self.treat_problem(problem, person)
         self.charge_fee(person)
 
