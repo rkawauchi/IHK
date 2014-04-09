@@ -119,8 +119,8 @@ class Problem(object):
     @classmethod
     def from_problem_name(cls, problem_name):
         attributes  = {
-                'cataracts': [0.14, 4750, 750],
-                'glasses': [0.05, 120, 120]
+                'cataracts': [0.14, 4750, 750], #FROM DATA
+                'glasses': [0.07, 120, 120]     #ASSUMPTION
                 }[problem_name]
         return cls(problem_name, attributes[0], attributes[1], attributes[2])
     
