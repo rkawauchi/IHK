@@ -164,6 +164,12 @@ class Person(Base):
                     util.Problem.from_problem_name(problem_name)
                     for problem_name in health_problem_names]
             return self.health_problem_list
+
+    def has_problem(self, problem):
+        for my_problem in self.get_health_problem_list():
+            if problem.equals(my_problem):
+                return True
+        return False
         
 
     def to_dict(self):
