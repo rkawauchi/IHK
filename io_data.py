@@ -150,6 +150,15 @@ class Person(Base):
         self.district = district
         self.state = state
         self.classification = classification
+        self.health_problem_list = None
+
+    def get_health_problem_list(self):
+        try:
+            return self.health_problem_list
+        except:
+            self.health_problem_list = self.health_problems.split(',')
+            return self.health_problem_list
+        
 
     def to_dict(self):
         return {'money': self.money, 
