@@ -111,16 +111,13 @@ def generate_life_exp(gender, age):
     else:
         return MaleLifeExp(age)
 
-#Needs to change to average of 0.85
 def generate_health_utility(age):
-    # assumption that people over 50 years old would have lower health condition
+    # 0.851886 is calulated based on the paper from
+    # http://www.sciencedirect.com/science/article/pii/S016164200100971X
     lower = 0
     upper = 1
     sigma = 0.35
-    if age >= 50:
-        mu = 0.6
-    else: 
-        mu = 0.8
+    mu = 0.851886
     health_utility = stats.truncnorm((lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma)
     return health_utility.rvs()
 
