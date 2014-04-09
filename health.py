@@ -32,9 +32,9 @@ class Aravind(object):
                 'vision_center': 100,
                 'camp': 20}
         #ASSUMPTION FROM DATA
-        self.urban_hospital_probability = 0.91
+        self.urban_hospital_probability = 0.915
         self.urban_clinic_probability = 1 - self.urban_hospital_probability
-        self.rural_vision_center_probability = 0.4
+        self.rural_vision_center_probability = 0.397
         self.rural_camp_probability = 1 - self.rural_vision_center_probability
         self._init_facilities()
 
