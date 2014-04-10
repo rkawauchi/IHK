@@ -23,7 +23,7 @@ That tells the program to automatically recreate the database.
         python main.py --test-state "Tamil Nadu" --test-district Theni --pop-gen-limit-dist 10000
     
 
-Option: If you want to run the full test (this will take about 8 min): 
+   *Option: If you want to run the full test (this will take about 8 min):*
         
 
         python main.py --test-state "Tamil Nadu" --test-district Theni
