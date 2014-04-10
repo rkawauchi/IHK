@@ -89,7 +89,7 @@ def generate_gender():
     else:
         return "F"
 
-age_ranges = [[0,9], [10,19], [20,39], [40,59], [60,79], [80,102]]
+age_ranges = [[0,9], [10,19], [20,39], [40,59], [60,79], [80,100]]
 age_weights = {'urban': [x/100 for x in [16.4, 18.3, 35.9, 21.5, 7.3, 0.7]],
         'rural': [x/100 for x in [19.1, 20.7, 33.1, 18.8, 7.6, 0.8]]}
 def generate_age(classification):
@@ -100,38 +100,6 @@ def generate_age(classification):
     # my current idea idea is to simulate age dist and bootstrap
     age_range = util.weighted_choice(age_ranges, age_weights[classification])
     return random.randint(age_range[0], age_range[1])
-
-def init_life_expectancy_distribution():
-    #One per five years of life
-    life_expectancy = dict()
-    life_expectancy_anchor_points_male = [63.8, 62.7, 58.1, 53.4, 52.9, 44.2,
-            39.7, 35.3, 31.1, 26.9, 23, 19.3, 15.7, 12.7, 10.2, 8.3, 6.7,5.2,
-            3.9, 2.8, 2.0]
-    life_expectancy['M'] = list()
-    for i in xrange(20):
-        current_spread = np.linspace(life_expectancy_anchor_points_male[i],
-                life_expectancy_anchor_points_male[i+1], num=5)
-        for life_expectancy_at_age in current_spread:
-            life_expectancy['M'].append(life_expectancy_at_age)
-
-    life_expectancy_anchor_points_female = [67.3, 66.8, 62.2, 57.5, 52.9, 48.4,
-            43.8, 39.2, 34.7, 30.2, 25.8, 25.8, 17.7, 14.3, 11.3, 9.0, 7.0, 5.3,
-            3.9, 2.8, 2.0]
-    life_expectancy['F'] = list()
-    for i in xrange(20):
-        current_spread = np.linspace(life_expectancy_anchor_points_female[i],
-                life_expectancy_anchor_points_female[i+1], num=5)
-        for life_expectancy_at_age in current_spread:
-            life_expectancy['F'].append(life_expectancy_at_age)
-
-    return life_expectancy
-
-life_expectancy = init_life_expectancy_distribution()
-
-def generate_life_exp(gender, age):
-    # life-expectancy data from 
-    # http://www.worldlifeexpectancy.com/country-health-profile/india
-    return life_expectancy[gender][age]
 
 def generate_health_utility(age):
     # to generate mean closer to 0.851886 calulated based on the paper from
