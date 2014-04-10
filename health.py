@@ -101,8 +101,8 @@ class Aravind(object):
                 treatment_facility, person)
         #Pass patients who need surgery along to the city hospitals
         if not treatment_facility == 'hospital' and person.has_problem_by_name('cataracts'):
-            #ASSUMPTION - probability pulled out of my... hat
-            probability_of_going_to_hospital = 0.5
+            #FROM DATA well Wikipedia at least
+            probability_of_going_to_hospital = 0.8
             rnd = random.random()
             if rnd <= probability_of_going_to_hospital:
                 is_treatment_performed = is_treatment_performed or self.treat_with_facility('hospital', person)
