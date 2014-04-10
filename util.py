@@ -102,23 +102,115 @@ def weighted_choice(choices, weights):
     i = bisect.bisect(cumulative_weights, rnd)
     return choices[i]
 
+def init_life_expectancy_distribution():
+    #One per five years of life
+    life_expectancy = dict()
+    life_expectancy_anchor_points_male = [63.8, 62.7, 58.1, 53.4, 52.9, 44.2,
+            39.7, 35.3, 31.1, 26.9, 23, 19.3, 15.7, 12.7, 10.2, 8.3, 6.7,5.2,
+            3.9, 2.8, 2.0]
+    life_expectancy['M'] = list()
+    for i in xrange(20):
+        current_spread = np.linspace(life_expectancy_anchor_points_male[i],
+                life_expectancy_anchor_points_male[i+1], num=5)
+        for life_expectancy_at_age in current_spread:
+            life_expectancy['M'].append(life_expectancy_at_age)
+    life_expectancy['M'].append(life_expectancy_anchor_points_male[-1])
+
+    life_expectancy_anchor_points_female = [67.3, 66.8, 62.2, 57.5, 52.9, 48.4,
+            43.8, 39.2, 34.7, 30.2, 25.8, 25.8, 17.7, 14.3, 11.3, 9.0, 7.0, 5.3,
+            3.9, 2.8, 2.0]
+    life_expectancy['F'] = list()
+    for i in xrange(20):
+        current_spread = np.linspace(life_expectancy_anchor_points_female[i],
+                life_expectancy_anchor_points_female[i+1], num=5)
+        for life_expectancy_at_age in current_spread:
+            life_expectancy['F'].append(life_expectancy_at_age)
+    life_expectancy['F'].append(life_expectancy_anchor_points_female[-1])
+
+    return life_expectancy
+
+life_expectancy = init_life_expectancy_distribution()
+
+def calculate_life_exp(gender, age):
+    # life-expectancy data from 
+    # http://www.worldlifeexpectancy.com/country-health-profile/india
+    return life_expectancy[gender][age]
+
+def calculate_qaly(person):
+    age = person.age
+    life_exp = calculate_life_exp(person.gender, age)
+    util = person.health_utility
+    return life_exp * util
+
 #Perform analytics on the treated population
 def analyze_populations(population, treated_population):
     print 'Average health utility in original population', avg(
             [person.health_utility for person in population])
     print 'Average health utility in treated population', avg(
             [person.health_utility for person in treated_population])
-    ##### QALY for glasses #####
+
+    ##### QALY for Glasses #####
+
     # generate before and after population
     glasses_problem = Problem.from_problem_name('glasses')
     glasses_population_before = [person for person in population if 
             person.has_problem(glasses_problem)]
     glasses_population_after = [person for person in treated_population if 
             person.has_problem(glasses_problem)]
-    # caluculate ave_age, ave_life_expectancy, and average utility
+
+    # QALY_before
+    glasses_untreated_qaly = 0
+    for person in glasses_population_before:
+        glasses_untreated_qaly += calculate_qaly(person)
+    glasses_average_untreated_qaly = glasses_untreated_qaly/len(glasses_population_before)
+    print 'QALY-Glasses: untreated:', glasses_average_untreated_qaly
+
+    # QALY_after
+    glasses_treated_qaly = 0
+    for person in glasses_population_after:
+        glasses_treated_qaly += calculate_qaly(person)
+    glasses_average_treated_qaly = glasses_treated_qaly/len(glasses_population_after)
+    print 'QALY-Glasses: treated:', glasses_average_treated_qaly
+
+    print 'QALY-Glasses: * change *:', glasses_average_treated_qaly - glasses_average_untreated_qaly
+
+     ##### QALY for Cataracts #####
+
+    # generate before and after population
+    cataracts_problem = Problem.from_problem_name('cataracts')
+    cataracts_population_before = [person for person in population if 
+            person.has_problem(cataracts_problem)]
+    cataracts_population_after = [person for person in treated_population if 
+            person.has_problem(cataracts_problem)]
+
+    # QALY_before
+    cataracts_untreated_qaly = 0
+    for person in cataracts_population_before:
+        cataracts_untreated_qaly += calculate_qaly(person)
+    cataracts_average_untreated_qaly = cataracts_untreated_qaly/len(cataracts_population_before)
+    print 'QALY-Cataracts: untreated:', cataracts_average_untreated_qaly
+
+    # QALY_after
+    cataracts_treated_qaly = 0
+    for person in cataracts_population_after:
+        cataracts_treated_qaly += calculate_qaly(person)
+    cataracts_average_treated_qaly = cataracts_treated_qaly/len(cataracts_population_after)
+    print 'QALY-Cataracts: treated:', cataracts_average_treated_qaly
+    
+    print 'QALY-Glasses: * change *:', cataracts_average_treated_qaly - cataracts_average_untreated_qaly
+
+def old_qaly_calc(population, treated_population):
+    # generate before and after population
+    glasses_problem = Problem.from_problem_name('glasses')
+    glasses_population_before = [person for person in population if 
+            person.has_problem(glasses_problem)]
+    glasses_population_after = [person for person in treated_population if 
+            person.has_problem(glasses_problem)]
+    # calculate ave_age
     glasses_age_before = avg([person.age for person in glasses_population_before])
     glasses_age_after = avg([person.age for person in glasses_population_after])
-    glasses_life_expectancy_before = 67
+    # calculate life_exp
+    glasses_life_expectancy_before = 68
     glasses_life_expectancy_after = 72
     glasses_utility_before = avg([person.health_utility for person in glasses_population_before])
     glasses_utility_after = avg([person.health_utility for person in glasses_population_after])
@@ -136,7 +228,7 @@ def analyze_populations(population, treated_population):
             person.has_problem(cataracts_problem)]
     cataracts_population_after = [person for person in treated_population if 
             person.has_problem(cataracts_problem)]
-    # caluculate ave_age, ave_life_expectancy, and average utility
+    # calculate ave_age, ave_life_expectancy, and average utility
     cataracts_age_before = avg([person.age for person in cataracts_population_before])
     cataracts_age_after = avg([person.age for person in cataracts_population_after])
     cataracts_life_expectancy_before = 64
