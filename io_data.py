@@ -170,7 +170,12 @@ class Person(Base):
             if problem.equals(my_problem):
                 return True
         return False
-        
+
+    def has_problem_by_name(self, problem_name):
+        for my_problem in self.get_health_problem_list():
+            if my_problem.name == problem_name:
+                return True
+        return False
 
     def to_dict(self):
         return {'money': self.money, 
