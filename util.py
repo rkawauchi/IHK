@@ -148,6 +148,10 @@ def analyze_populations(population, treated_population):
             [person.health_utility for person in population])
     print 'Average health utility in treated population', avg(
             [person.health_utility for person in treated_population])
+    print 'Average age of original population:', avg(
+            [person.age for person in population])
+    print 'average age of treated population:', avg(
+            [person.age for person in treated_population])
 
     ##### QALY for Glasses #####
 
@@ -157,7 +161,7 @@ def analyze_populations(population, treated_population):
             person.has_problem(glasses_problem)]
     glasses_population_after = [person for person in treated_population if 
             person.has_problem(glasses_problem)]
-
+    print 'No. of patients - Glasses: ', len(glasses_population_before)
     # QALY_before
     glasses_untreated_qaly = 0
     for person in glasses_population_before:
@@ -182,7 +186,7 @@ def analyze_populations(population, treated_population):
             person.has_problem(cataracts_problem)]
     cataracts_population_after = [person for person in treated_population if 
             person.has_problem(cataracts_problem)]
-
+    print 'No. of patients - Cataracts: ', len(cataracts_population_before)
     # QALY_before
     cataracts_untreated_qaly = 0
     for person in cataracts_population_before:
