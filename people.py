@@ -81,9 +81,10 @@ def generate_money(age, state, state_total, mpce, mpce_total):
     return money
 
 def generate_gender():
+    # data distritbuion from census data
+    # http://www.censusindia.gov.in/2011census/hlo/Houselisting_Housing_2011.html
     # mean prob of M = 0.5117376, F = 0.4882624
-    # (I manually calculated from raw data,
-    # calculation refer to R3.r file: "3. Distribution of Age")
+    # (calculation refer to R3.r file: "3. Distribution of Gender")
     if random.random() >= 0.4882624:
         return "M"
     else:
@@ -95,9 +96,6 @@ age_weights = {'urban': [x/100 for x in [16.4, 18.3, 35.9, 21.5, 7.3, 0.7]],
 def generate_age(classification):
     # age distribution at last tab "17.Population by Age-Group"
     # http://rural.nic.in/sites/downloads/IRDR/1.%20Demographic%20Profile.xls
-    # does this need to go to database? or shall we use the average
-    # but this needs to have the total number: pop ***!!!
-    # my current idea idea is to simulate age dist and bootstrap
     age_range = util.weighted_choice(age_ranges, age_weights[classification])
     return random.randint(age_range[0], age_range[1])
 
@@ -134,15 +132,18 @@ def generate_perceived_health(state):
     # development and health level
     lower = 0
     upper = 1
-    sigma = 1
+    sigma = 0.35
     topList = ('Kerala', 'Goa', 'Manipur')
     lowList = ('Haryana','Jammu and Kashmir','Gujarat','Jharkhand','Andhra Pradesh',	'Meghalaya','Bihar','Rajasthan','Chhattisgarh','Assam','Uttar Pradesh','Odisha','Madhya Pradesh')
     if state.name in topList:
-        mu = 0.800
+        # need to have about 0.8 mean in truncated distribution
+        mu = 1.35
     elif state.name in lowList:
-        mu = 0.543
+        # need to have about 0.543 mean in truncated distribution
+        mu = 0.57
     else:
-        mu = 0.62
+        # in middle states need to have about 0.62 in truncated distribution
+        mu = 0.77
     health = stats.truncnorm((lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma)
     return health.rvs()
 

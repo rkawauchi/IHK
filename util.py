@@ -148,6 +148,10 @@ def analyze_populations(population, treated_population):
             [person.health_utility for person in population])
     print 'Average health utility in treated population', avg(
             [person.health_utility for person in treated_population])
+    print 'Average age of original population:', avg(
+            [person.age for person in population])
+    print 'average age of treated population:', avg(
+            [person.age for person in treated_population])
 
     ##### QALY for Glasses #####
 
@@ -157,7 +161,7 @@ def analyze_populations(population, treated_population):
             person.has_problem(glasses_problem)]
     glasses_population_after = [person for person in treated_population if 
             person.has_problem(glasses_problem)]
-
+    print 'No. of patients - Glasses: ', len(glasses_population_before)
     # QALY_before
     glasses_untreated_qaly = 0
     for person in glasses_population_before:
@@ -172,7 +176,7 @@ def analyze_populations(population, treated_population):
     glasses_average_treated_qaly = glasses_treated_qaly/len(glasses_population_after)
     print 'QALY-Glasses: treated:', glasses_average_treated_qaly
 
-    print 'QALY-Glasses: * change *:', glasses_average_treated_qaly - glasses_average_untreated_qaly
+    print '* QALY-Glasses: change by:', glasses_average_treated_qaly - glasses_average_untreated_qaly
 
      ##### QALY for Cataracts #####
 
@@ -182,7 +186,7 @@ def analyze_populations(population, treated_population):
             person.has_problem(cataracts_problem)]
     cataracts_population_after = [person for person in treated_population if 
             person.has_problem(cataracts_problem)]
-
+    print 'No. of patients - Cataracts: ', len(cataracts_population_before)
     # QALY_before
     cataracts_untreated_qaly = 0
     for person in cataracts_population_before:
@@ -197,7 +201,7 @@ def analyze_populations(population, treated_population):
     cataracts_average_treated_qaly = cataracts_treated_qaly/len(cataracts_population_after)
     print 'QALY-Cataracts: treated:', cataracts_average_treated_qaly
     
-    print 'QALY-Glasses: * change *:', cataracts_average_treated_qaly - cataracts_average_untreated_qaly
+    print '* QALY-Cataracts: change by:', cataracts_average_treated_qaly - cataracts_average_untreated_qaly
 
 def old_qaly_calc(population, treated_population):
     # generate before and after population
