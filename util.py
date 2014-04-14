@@ -99,7 +99,7 @@ def weighted_choice(choices, weights):
         cumulative_weights.append(total)
     #total should 1 if weights is a proper distribution
     rnd = random.random() * total
-    i = bisect.bisect(cumulative_weights, rnd)
+    i = bisect.bisect(cumulative_weights, rnd) #faster search
     return choices[i]
 
 def init_life_expectancy_distribution():
@@ -255,7 +255,7 @@ class Problem(object):
     def equals(self, problem):
         return self.name == problem.name
        
-    @classmethod
+    @classmethod #[health_utility, cost_full, cost_subsidized]
     def from_problem_name(cls, problem_name):
         attributes  = {
                 'cataracts': [0.14, 4750, 750], #FROM DATA

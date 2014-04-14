@@ -24,8 +24,10 @@ class Aravind(object):
                 'Udumalaipet': ['Udumalaipet']}
 
     def __init__(self):
-        self.district_names = Aravind.covered_district_mapping.keys()
-        self.treatment_costs = {
+        self.district_names = ['Madurai', 'Theni', 'Tirunelveli', 
+                'Coimbatore', 'Pondicherry', 'Dindigul', 'Tiruppur', 'Salem',
+                'Tuticorin', 'Udumalaipet']
+        self.treatment_costs = { #should be generalized
                 'hospital': 500,
                 'clinic': 200,
                 'vision_center': 100,
@@ -47,14 +49,40 @@ class Aravind(object):
         self._init_vision_centers()
         self._init_camps()
 
+        #init structure_count dict(dict)
+        structure_dict = { 
+                'hospital': 0,
+                'clinic': 0,
+                'vision_center': 0,
+                'camp': 0}
+        structure_count = self.structure_count = dict()
+        for name in self.district_names:
+            structure_count[name] = structure_dict
+        for i in structure_count.keys():
+            for j in structure_count[i].keys():
+                if j == 'hospitals':
+                    structure_count[i][j] = 1
+                else:
+                    structure_count[i][j] = 1 #here we can automate it with the database
+        
+        #FROM DATA #Manually fixes:
+        structure_count['Coimbatore']['clinic'] = 0 #need to be singular or plural in structures PARKING LOT
+        structure_count['Tiruppur']['clinic'] = 0
+        structure_count['Tiruppur']['vision_center'] = 0
+        structure_count['Dingipul']['clinics'] = 0
+        structure_count['Dingipul']['vision_center'] = 0
+        structure_count['Dingipul']['camp'] = 0
+        structure_count['Salem']['clinics'] = 0
+        structure_count['Salem']['vision_center'] = 0
+
+
     def _init_hospitals(self):
         treatable_problems = ['cataracts', 'glasses']
         capacity = 1000000
         #FROM DATA
         visit_fee = 50
         for district_name in self.district_names:
-            self.hospitals.append(Hospital(district_name, treatable_problems,
-                capacity, visit_fee))
+                self.hospitals.append(Hospital(district_name, treatment_cost, treatable_problems, capacity, visit_fee))
 
     def _init_clinics(self):
         treatable_problems = ['glasses']
@@ -62,8 +90,9 @@ class Aravind(object):
         #FROM DATA
         visit_fee = 20
         for district_name in self.district_names:
-            self.clinics.append(Clinic(district_name, treatable_problems,
-                capacity, visit_fee))
+            if not structure_count[district_name]['clinic'] == 0: 
+                self.clinics.append(Clinic(district_name,
+                treatment_cost, treatable_problems, capacity, visit_fee))
 
     def _init_vision_centers(self):
         treatable_problems = ['glasses']
@@ -71,8 +100,9 @@ class Aravind(object):
         #FROM DATA
         visit_fee = 20
         for district_name in self.district_names:
-            self.vision_centers.append(VisionCenter(district_name,
-                treatable_problems, capacity, visit_fee))
+            if not structure_count[district_name]['vision_center'] == 0: 
+                    self.vision_centers.append(VisionCenter(district_name,
+                    treatment_cost, treatable_problems, capacity, visit_fee))
 
     def _init_camps(self):
         treatable_problems = ['glasses']
@@ -80,8 +110,9 @@ class Aravind(object):
         #FROM DATA
         visit_fee = 0
         for district_name in self.district_names:
-            self.camps.append(Camp(district_name, treatable_problems,
-                capacity, visit_fee))
+            if not structure_count[district_name]['camp'] == 0: 
+                self.vision_centers.append(Camp(district_name,
+                treatment_cost, treatable_problems, capacity, visit_fee))
 
     #True if treatment was done, False otherwise
     def treat(self, person):
@@ -121,7 +152,7 @@ class Aravind(object):
 #Generic class which includes Hospital, EyeClinic, and VisionCamp
 class AravindFacility(object):
 
-    #Paying, subsidized, free
+    #[Paying, subsidized, free]
     #FROM DATA
     surgery_fee_proportions_by_state = {
             'Madurai': [69298, 41637, 25647],
@@ -164,8 +195,8 @@ class AravindFacility(object):
     def treat(self, person):
         self.charge_visit_fee(person)
         for problem in person.get_health_problem_list():
-            treatment_performed = self.treat_problem(problem, person)
-            if treatment_performed:
+            is_treatment_performed = self.treat_problem(problem, person)
+            if is_treatment_performed:
                 self.charge_problem_fee(problem, person)
         self.treated_patient_count += 1
         return True
@@ -179,7 +210,7 @@ class AravindFacility(object):
         person.money -= self.visit_fee
 
     def charge_problem_fee(self, problem, person):
-        if problem.name == 'cataracts':
+        if problem.name == 'cataracts': 
             fee_options = [problem.cost_full, problem.cost_subsidized, 0]
             fee = util.weighted_choice(fee_options, 
                     Hospital.surgery_fee_proportions_by_state[self.state_name])
@@ -204,10 +235,10 @@ class VisionCenter(AravindFacility):
     pass
 
 class Camp(AravindFacility):
-
     #Camps are free
     def charge_problem_fee(self, problem, person):
         pass
+
 
 '''
 #possible merge 
