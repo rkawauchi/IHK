@@ -89,7 +89,7 @@ def generate_gender():
     else:
         return "F"
 
-age_ranges = [[0,9], [10,19], [20,39], [40,59], [60,79], [80,102]]
+age_ranges = [[0,9], [10,19], [20,39], [40,59], [60,79], [80,100]]
 age_weights = {'urban': [x/100 for x in [16.4, 18.3, 35.9, 21.5, 7.3, 0.7]],
         'rural': [x/100 for x in [19.1, 20.7, 33.1, 18.8, 7.6, 0.8]]}
 def generate_age(classification):
@@ -101,23 +101,14 @@ def generate_age(classification):
     age_range = util.weighted_choice(age_ranges, age_weights[classification])
     return random.randint(age_range[0], age_range[1])
 
-def generate_life_exp(gender, age):
-    # life-expectancy data from 
-    # http://www.worldlifeexpectancy.com/country-health-profile/india
-    MaleLifeExp = {"0":63.8, "5":62.7, "10":58.1, "15":53.4, "20":52.9, "25":44.2, "30":39.7, "35":35.3, "40":31.1, "45":26.9, "50":23, "55":19.3, "60":15.7, "65":12.7, "70":10.2, "75":8.3, "80":6.7,"85":5.2, "90":3.9, "95":2.8, "100":2.0}
-    FemaleLifeExp = {"0":67.3, "5":66.8, "10":62.2, "15":57.5, "20":52.9, "25":48.4, "30":43.8, "35":39.2, "40":34.7, "45":30.2, "50":25.8, "55":25.8, "60":17.7, "65":14.3, "70":11.3, "75":9.0, "80":7.0,"85":5.3, "90":3.9, "95":2.8, "100":2.0}
-    if gender == 'F':
-        return FemaleLifeExp(age)
-    else:
-        return MaleLifeExp(age)
-
 def generate_health_utility(age):
-    # 0.851886 is calulated based on the paper from
+    # to generate mean closer to 0.851886 calulated based on the paper from
     # http://www.sciencedirect.com/science/article/pii/S016164200100971X
+    # we need to set mu = 1.5 to get truncated/negative-skew distribution
     lower = 0
     upper = 1
     sigma = 0.35
-    mu = 0.851886
+    mu = 1.5
     health_utility = stats.truncnorm((lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma)
     return health_utility.rvs()
 
@@ -156,6 +147,7 @@ def generate_perceived_health(state):
     return health.rvs()
 
 if __name__ == '__main__':
-    print generate_health()
-    print generate_expense_log(mpce)
+    #print generate_health()
+    #print generate_expense_log(mpce)
+    print generate_life_exp('M', 10)
 

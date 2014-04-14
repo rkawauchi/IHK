@@ -77,19 +77,14 @@ class Aravind(object):
 
 
     def _init_hospitals(self):
-        treatment_cost = self.treatment_costs['hospital']
         treatable_problems = ['cataracts', 'glasses']
         capacity = 1000000
         #FROM DATA
         visit_fee = 50
         for district_name in self.district_names:
-            if structure_count[district_name]['hospital']: 
-            #case should never happen in the aravind model as 
-            #we define one hospital defining an area. No hopital, no district name
                 self.hospitals.append(Hospital(district_name, treatment_cost, treatable_problems, capacity, visit_fee))
 
     def _init_clinics(self):
-        treatment_cost = self.treatment_costs['clinic']
         treatable_problems = ['glasses']
         capacity = 1000000
         #FROM DATA
@@ -100,7 +95,6 @@ class Aravind(object):
                 treatment_cost, treatable_problems, capacity, visit_fee))
 
     def _init_vision_centers(self):
-        treatment_cost = self.treatment_costs['vision_center']
         treatable_problems = ['glasses']
         capacity = 1000000
         #FROM DATA
@@ -111,7 +105,6 @@ class Aravind(object):
                     treatment_cost, treatable_problems, capacity, visit_fee))
 
     def _init_camps(self):
-        treatment_cost = self.treatment_costs['camp']
         treatable_problems = ['glasses']
         capacity = 1000000
         #FROM DATA
@@ -135,7 +128,16 @@ class Aravind(object):
                 treatment_facility = 'vision_centers'
             else:
                 treatment_facility = 'camps'
-        return self.treat_with_facility(treatment_facility, person)
+        is_treatment_performed = self.treat_with_facility(
+                treatment_facility, person)
+        #Pass patients who need surgery along to the city hospitals
+        if not treatment_facility == 'hospital' and person.has_problem_by_name('cataracts'):
+            #FROM DATA well Wikipedia at least
+            probability_of_going_to_hospital = 0.8
+            rnd = random.random()
+            if rnd <= probability_of_going_to_hospital:
+                is_treatment_performed = is_treatment_performed or self.treat_with_facility('hospital', person)
+        return is_treatment_performed
 
     #True if treatment was done, False otherwise
     def treat_with_facility(self, treatment_facility, person):
@@ -152,7 +154,7 @@ class AravindFacility(object):
 
     #[Paying, subsidized, free]
     #FROM DATA
-    surgery_fee_proportions = {
+    surgery_fee_proportions_by_state = {
             'Madurai': [69298, 41637, 25647],
             'Thenia': [6507, 3292, 3360],
             'Tirunelveli': [26956, 12227, 13470],
@@ -162,14 +164,13 @@ class AravindFacility(object):
             'Dingipul': [2952, 0, 0],
             'Salem': [7763, 8, 1423]}
     #Turn those numbers into actual proportions
-    for state_name, proportions in surgery_fee_proportions.items():
+    for state_name, proportions in surgery_fee_proportions_by_state.items():
         total = float(sum(proportions))
-        surgery_fee_proportions[state_name] = [x/total for x in proportions]
+        surgery_fee_proportions_by_state[state_name] = [x/total for x in proportions]
 
-    def __init__(self, district_name, treatment_cost, treatable_problems,
+    def __init__(self, district_name, treatable_problems,
             capacity, visit_fee):
         self.district_name = district_name
-        self.treatment_cost = treatment_cost
         self.treatable_problems = treatable_problems
         self.capacity = capacity
         self.visit_fee = visit_fee
@@ -212,7 +213,7 @@ class AravindFacility(object):
         if problem.name == 'cataracts': 
             fee_options = [problem.cost_full, problem.cost_subsidized, 0]
             fee = util.weighted_choice(fee_options, 
-                    Hospital.surgery_fee_proportions[self.state_name])
+                    Hospital.surgery_fee_proportions_by_state[self.state_name])
         elif problem.name == 'glasses':
             #FROM DATA
             fee = 120
@@ -221,6 +222,10 @@ class AravindFacility(object):
         person.money -= fee
 
 class Hospital(AravindFacility):
+    def __init__(self, district_name, treatable_problems,
+            capacity, visit_fee):
+        super(Hospital, self).__init__(district_name, treatable_problems,
+                capacity, visit_fee)
     pass
 
 class Clinic(AravindFacility):
@@ -231,7 +236,7 @@ class VisionCenter(AravindFacility):
 
 class Camp(AravindFacility):
     #Camps are free
-    def charge_problem_fee(self, person):
+    def charge_problem_fee(self, problem, person):
         pass
 
 
