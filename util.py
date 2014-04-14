@@ -99,7 +99,7 @@ def weighted_choice(choices, weights):
         cumulative_weights.append(total)
     #total should 1 if weights is a proper distribution
     rnd = random.random() * total
-    i = bisect.bisect(cumulative_weights, rnd)
+    i = bisect.bisect(cumulative_weights, rnd) #faster search
     return choices[i]
 
 #Perform analytics on the treated population
@@ -116,7 +116,7 @@ class Problem(object):
         self.cost_full = cost_full
         self.cost_subsidized = cost_subsidized
        
-    @classmethod
+    @classmethod #[health_utility, cost_full, cost_subsidized]
     def from_problem_name(cls, problem_name):
         attributes  = {
                 'cataracts': [0.14, 4750, 750],

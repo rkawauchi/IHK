@@ -56,9 +56,8 @@ class Aravind(object):
                 'vision_center': 0,
                 'camp': 0}
         structure_count = self.structure_count = dict()
-        structure_count.keys() = self.district_names
-        for key in structure_count.keys():
-            structure_count[key] = structure_dict
+        for name in self.district_names:
+            structure_count[name] = structure_dict
         for i in structure_count.keys():
             for j in structure_count[i].keys():
                 if j == 'hospitals':
@@ -87,8 +86,7 @@ class Aravind(object):
             if structure_count[district_name]['hospital']: 
             #case should never happen in the aravind model as 
             #we define one hospital defining an area. No hopital, no district name
-                self.hospitals.append(Hospital(district_name, 
-                    treatment_cost, treatable_problems, capacity, visit_fee))
+                self.hospitals.append(Hospital(district_name, treatment_cost, treatable_problems, capacity, visit_fee))
 
     def _init_clinics(self):
         treatment_cost = self.treatment_costs['clinic']
@@ -98,7 +96,7 @@ class Aravind(object):
         visit_fee = 20
         for district_name in self.district_names:
             if not structure_count[district_name]['clinic'] == 0: 
-            self.clinics.append(Clinic(district_name,
+                self.clinics.append(Clinic(district_name,
                 treatment_cost, treatable_problems, capacity, visit_fee))
 
     def _init_vision_centers(self):
@@ -109,7 +107,7 @@ class Aravind(object):
         visit_fee = 20
         for district_name in self.district_names:
             if not structure_count[district_name]['vision_center'] == 0: 
-                self.vision_centers.append(VisionCenter(district_name,
+                    self.vision_centers.append(VisionCenter(district_name,
                     treatment_cost, treatable_problems, capacity, visit_fee))
 
     def _init_camps(self):
@@ -119,8 +117,8 @@ class Aravind(object):
         #FROM DATA
         visit_fee = 0
         for district_name in self.district_names:
-                        if not structure_count[district_name]['camp'] == 0: 
-            self.vision_centers.append(Camp(district_name,
+            if not structure_count[district_name]['camp'] == 0: 
+                self.vision_centers.append(Camp(district_name,
                 treatment_cost, treatable_problems, capacity, visit_fee))
 
     #True if treatment was done, False otherwise
