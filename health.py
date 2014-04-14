@@ -44,10 +44,6 @@ class Aravind(object):
         self.clinics = list()
         self.vision_centers = list()
         self.camps = list()
-        self._init_hospitals()
-        self._init_clinics()
-        self._init_vision_centers()
-        self._init_camps()
 
         #init structure_count dict(dict)
         structure_dict = { 
@@ -55,26 +51,42 @@ class Aravind(object):
                 'clinic': 0,
                 'vision_center': 0,
                 'camp': 0}
-        structure_count = self.structure_count = dict()
+        self.structure_count = dict()
         for name in self.district_names:
-            structure_count[name] = structure_dict
-        for i in structure_count.keys():
-            for j in structure_count[i].keys():
+            self.structure_count[name] = structure_dict
+        for i in self.structure_count.keys():
+            for j in self.structure_count[i].keys():
                 if j == 'hospitals':
-                    structure_count[i][j] = 1
+                    self.structure_count[i][j] = 1
                 else:
-                    structure_count[i][j] = 1 #here we can automate it with the database
+                    self.structure_count[i][j] = 1 #here we can automate it with the database
         
         #FROM DATA #Manually fixes:
-        structure_count['Coimbatore']['clinic'] = 0 #need to be singular or plural in structures PARKING LOT
-        structure_count['Tiruppur']['clinic'] = 0
-        structure_count['Tiruppur']['vision_center'] = 0
-        structure_count['Dingipul']['clinics'] = 0
-        structure_count['Dingipul']['vision_center'] = 0
-        structure_count['Dingipul']['camp'] = 0
-        structure_count['Salem']['clinics'] = 0
-        structure_count['Salem']['vision_center'] = 0
+        try:
+            self.structure_count['Coimbatore']['clinic'] = 0 #need to be singular or plural in structures PARKING LOT
+        except KeyError:
+            pass
+        try:
+            self.structure_count['Tiruppur']['clinic'] = 0
+            self.structure_count['Tiruppur']['vision_center'] = 0
+        except KeyError:
+            pass
+        try:
+            self.structure_count['Dingipul']['clinics'] = 0
+            self.structure_count['Dingipul']['vision_center'] = 0
+            self.structure_count['Dingipul']['camp'] = 0
+        except KeyError:
+            pass
+        try:
+            self.structure_count['Salem']['clinics'] = 0
+            self.structure_count['Salem']['vision_center'] = 0
+        except KeyError:
+            pass
 
+        self._init_hospitals()
+        self._init_clinics()
+        self._init_vision_centers()
+        self._init_camps()
 
     def _init_hospitals(self):
         treatable_problems = ['cataracts', 'glasses']
@@ -82,7 +94,8 @@ class Aravind(object):
         #FROM DATA
         visit_fee = 50
         for district_name in self.district_names:
-                self.hospitals.append(Hospital(district_name, treatment_cost, treatable_problems, capacity, visit_fee))
+                self.hospitals.append(Hospital(district_name,
+                    treatable_problems, capacity, visit_fee))
 
     def _init_clinics(self):
         treatable_problems = ['glasses']
@@ -90,7 +103,7 @@ class Aravind(object):
         #FROM DATA
         visit_fee = 20
         for district_name in self.district_names:
-            if not structure_count[district_name]['clinic'] == 0: 
+            if not self.structure_count[district_name]['clinic'] == 0: 
                 self.clinics.append(Clinic(district_name,
                 treatment_cost, treatable_problems, capacity, visit_fee))
 
@@ -100,9 +113,9 @@ class Aravind(object):
         #FROM DATA
         visit_fee = 20
         for district_name in self.district_names:
-            if not structure_count[district_name]['vision_center'] == 0: 
+            if not self.structure_count[district_name]['vision_center'] == 0: 
                     self.vision_centers.append(VisionCenter(district_name,
-                    treatment_cost, treatable_problems, capacity, visit_fee))
+                    treatable_problems, capacity, visit_fee))
 
     def _init_camps(self):
         treatable_problems = ['glasses']
@@ -110,9 +123,9 @@ class Aravind(object):
         #FROM DATA
         visit_fee = 0
         for district_name in self.district_names:
-            if not structure_count[district_name]['camp'] == 0: 
+            if not self.structure_count[district_name]['camp'] == 0: 
                 self.vision_centers.append(Camp(district_name,
-                treatment_cost, treatable_problems, capacity, visit_fee))
+                treatable_problems, capacity, visit_fee))
 
     #True if treatment was done, False otherwise
     def treat(self, person):
@@ -136,7 +149,7 @@ class Aravind(object):
             probability_of_going_to_hospital = 0.8
             rnd = random.random()
             if rnd <= probability_of_going_to_hospital:
-                is_treatment_performed = is_treatment_performed or self.treat_with_facility('hospital', person)
+                is_treatment_performed = is_treatment_performed or self.treat_with_facility('hospitals', person)
         return is_treatment_performed
 
     #True if treatment was done, False otherwise
