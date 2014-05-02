@@ -147,11 +147,11 @@ def analyze_populations(population, treated_population):
     print 'Average health utility in original population', avg(
             [person.health_utility for person in population])
     print 'Average health utility in treated population', avg(
-            [person.health_utility for person in treated_population])
+            [person.health_utility for person in treated_population if person.get_is_treated()])
     print 'Average age of original population:', avg(
             [person.age for person in population])
-    print 'average age of treated population:', avg(
-            [person.age for person in treated_population])
+    print 'average age of treated population:', avg([person.age
+        for person in treated_population if person.get_is_treated()])
 
     ##### QALY for Glasses #####
 
