@@ -206,13 +206,15 @@ class AravindFacility(object):
         return True
 
     def treat(self, person):
+        any_treatments_performed = False
         self.charge_visit_fee(person)
         for problem in person.get_health_problem_list():
             is_treatment_performed = self.treat_problem(problem, person)
             if is_treatment_performed:
                 self.charge_problem_fee(problem, person)
+                any_treatments_performed = True
         self.treated_patient_count += 1
-        return True
+        return any_treatments_performed
 
     #problem is a util.Problem
     def treat_problem(self, problem, person):
