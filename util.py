@@ -161,7 +161,7 @@ def analyze_populations(population, treated_population):
             person.has_problem(glasses_problem)]
     glasses_population_after = [person for person in treated_population if 
             person.has_problem(glasses_problem)]
-    print 'No. of patients - Glasses: ', len(glasses_population_before)
+    print 'No. of people who needed glasses: ', len(glasses_population_before)
     # QALY_before
     glasses_untreated_qaly = 0
     for person in glasses_population_before:
@@ -186,7 +186,7 @@ def analyze_populations(population, treated_population):
             person.has_problem(cataracts_problem)]
     cataracts_population_after = [person for person in treated_population if 
             person.has_problem(cataracts_problem)]
-    print 'No. of patients - Cataracts: ', len(cataracts_population_before)
+    print 'No. of patients who had cataracts: ', len(cataracts_population_before)
     # QALY_before
     cataracts_untreated_qaly = 0
     for person in cataracts_population_before:
