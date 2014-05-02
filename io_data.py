@@ -177,6 +177,15 @@ class Person(Base):
                 return True
         return False
 
+    def get_is_treated(self):
+        try:
+            return self.is_treated
+        except:
+            return False
+
+    def set_treated(self, is_treated):
+        self.is_treated = True
+
     def to_dict(self):
         return {'money': self.money, 
                 'gender': self.gender,
