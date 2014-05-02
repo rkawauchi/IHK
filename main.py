@@ -4,6 +4,7 @@ import util
 import health
 import cProfile
 import copy
+import os
 
 #Define commmand line arguments which can be passed to main.py
 #Currently irrelevant, but could be useful later
@@ -69,6 +70,8 @@ def test(data, args):
 
 if __name__ == "__main__":
     args = initialize_argument_parser()
+    if args['import_data']:
+        os.remove('database.sqlite3')
     data = io_data.Database(import_data=args['import_data'])
     #Only run the test if we didn't try to recreate the database
     # Not strictly necessary, but helps separate workflow
