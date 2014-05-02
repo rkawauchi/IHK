@@ -20,7 +20,7 @@ def generate_person(state, state_total, district, mpce, mpce_total):
     #Just a number in a uniform distribution from 0-1
     #Obviously needs to be changed later
     health_utility = generate_health_utility(age)
-    health_problems = generate_health_problems()
+    health_problems = generate_health_problems(age)
     perceived_health = generate_perceived_health(state)
     classification = district.classification
     """
@@ -112,17 +112,25 @@ def generate_health_utility(age):
 
 #Return a comma-separated list of health problems
 #This is HORRIBLE database practice. Don't do this. But we have a deadline, yo
-def generate_health_problems():
+def generate_health_problems(age):
     problems = list()
+    average_age = 29 #Based on the age distribution above
     #FROM DATA 
-    cataract_probability = 0.1
+    cataract_probability = weight_probability_by_age(0.1, age, average_age)
     if random.random() <= cataract_probability:
         problems.append('cataracts')
     #FROM DATA
-    glasses_probability = 0.3
+    glasses_probability = weight_probability_by_age(0.3, age, average_age)
     if random.random() <= glasses_probability:
         problems.append('glasses')
     return ','.join(problems)
+
+def weight_probability_by_age(probability, age, average_age):
+    if age <= average_age:
+        probability /= 5
+    elif age >= average_age*2:
+        probability *= 5
+    return probability
     
 def generate_perceived_health(state):
     # Human Development Index: HDI
