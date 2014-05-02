@@ -32,7 +32,7 @@ def clean_state_name(state):
     return state
 
 def avg(x):
-    return float(sum(x)/len(x))
+    return sum(x)/float(len(x))
 
 class FilterPopulation(object):
     
