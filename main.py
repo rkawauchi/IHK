@@ -63,7 +63,8 @@ def test(data, args):
     treated_population = list()
     for person in population:
         treated_person = copy.copy(person)
-        solution.treat(treated_person)
+        if solution.treat(treated_person):
+            treated_person.set_treated(True)
         treated_population.append(treated_person)
 
     util.analyze_populations(population, treated_population)
