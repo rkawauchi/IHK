@@ -201,8 +201,12 @@ def analyze_populations(population, treated_population):
     cataracts_average_treated_qaly = cataracts_treated_qaly/len(cataracts_population_after)
     print 'QALY-Cataracts: treated:', cataracts_average_treated_qaly
     
-    print '* QALY-Cataracts: change by:', cataracts_average_treated_qaly - cataracts_average_untreated_qaly
+    cataracts_qaly_improvement = cataracts_average_treated_qaly - cataracts_average_untreated_qaly
+    print '* QALY-Cataracts: change by:', cataracts_qaly_improvement
 
+    return cataracts_qaly_improvement
+
+"""
 def old_qaly_calc(population, treated_population):
     # generate before and after population
     glasses_problem = Problem.from_problem_name('glasses')
@@ -247,7 +251,7 @@ def old_qaly_calc(population, treated_population):
     print 'QALY_Cataracts: after treatment', qaly_cataracts_after
     print 'QALY Cataracts: increased by', qaly_change_cataracts
     print 'Average health_utility increase:', (glasses_utility_change + cataracts_utility_change)/2
-     
+"""
 
 class Problem(object):
     def __init__(self, problem_name, health_utility, cost_full, cost_subsidized):
