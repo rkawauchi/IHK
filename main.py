@@ -18,9 +18,11 @@ def initialize_argument_parser():
     parser.add_argument('-s', '--test-state', dest='test_state', type=str,
             choices = util.state_names)
     parser.add_argument('-d', '--test-district', dest='test_district', type=str)
+    parser.add_argument('-t', '--trials', dest='trials', type=int,
+            default=1, help='Number of simulation trials to run')
     parser.add_argument('--district-index', dest='district_index', type=int,
             default = 0, help='Select a district in a state by its index')
-    parser.add_argument('--pop-gen-limit-dist', dest='pop_gen_limit_dist',
+    parser.add_argument('-l', '--pop-gen-limit-dist', dest='pop_gen_limit_dist',
             type=int, default=None, 
             help='Limit the population inserted into each district for speed')
     parser.add_argument('--pop-fetch-limit-dist', dest='pop_fetch_limit_dist',
@@ -69,6 +71,13 @@ def test(data, args):
 
     util.analyze_populations(population, treated_population)
 
+def iterated_test(data, args):
+    for i in xrange(args['trials']):
+        #If we're doing multiple tests, need to refresh the database
+        if i>0:
+            data = io_data.Database(import_data=True)
+        test(data, args)
+
 if __name__ == "__main__":
     args = initialize_argument_parser()
     if args['import_data']:
@@ -81,6 +90,6 @@ if __name__ == "__main__":
     # Not strictly necessary, but helps separate workflow
     if not args['import_data']:
         if args['profile']:
-            cProfile.run('test(data, args)')
+            cProfile.run('iterated_test(data, args)')
         else:
-            test(data, args)
+            iterated_test(data, args)
