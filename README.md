@@ -23,7 +23,7 @@ That tells the program to automatically recreate the database.
         python main.py --test-state "Tamil Nadu" --test-district Theni --pop-gen-limit-dist 10000
 
 
-   *Option 1: To run the test multiple times, att "-t n" where n = number of trials:* 
+   *Option 1: To run the test multiple times, add "-t n" at the end where n = number of trials:* 
 
         
         python main.py --test-state "Tamil Nadu" --test-district Theni --pop-gen-limit-dist 10000 -t 1000
