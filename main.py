@@ -1,5 +1,6 @@
 import argparse
 import matplotlib.pyplot as pyplot
+import cPickle
 import io_data
 import util
 import health
@@ -85,6 +86,9 @@ def iterated_test(data, args):
     pyplot.xlabel('Trial')
     pyplot.ylabel('QALY Improvement')
     pyplot.show()
+    #Safe the qaly improvement to file so we can manipulate it later
+    output_file = open('qaly_improvement.pkl', 'wb')
+    cPickle.dump(qaly_improvement, output_file)
 
 if __name__ == "__main__":
     args = initialize_argument_parser()
