@@ -1,4 +1,5 @@
 import argparse
+import matplotlib.pyplot as pyplot
 import io_data
 import util
 import health
@@ -69,14 +70,21 @@ def test(data, args):
             treated_person.set_treated(True)
         treated_population.append(treated_person)
 
-    util.analyze_populations(population, treated_population)
+    qaly_improvement = util.analyze_populations(population, treated_population)
+    return qaly_improvement
 
 def iterated_test(data, args):
+    qaly_improvement = list()
     for i in xrange(args['trials']):
         #If we're doing multiple tests, need to refresh the database
         if i>0:
             data = io_data.Database(import_data=True)
-        test(data, args)
+        qaly_improvement.append(test(data, args))
+    print qaly_improvement
+    pyplot.hist(qaly_improvement)
+    pyplot.xlabel('Trial')
+    pyplot.ylabel('QALY Improvement')
+    pyplot.show()
 
 if __name__ == "__main__":
     args = initialize_argument_parser()
