@@ -87,8 +87,9 @@ def iterated_test(data, args):
     pyplot.ylabel('Trial Count')
     pyplot.show()
     #Safe the qaly improvement to file so we can manipulate it later
-    output_file = open('qaly_improvement.pkl', 'wb')
-    cPickle.dump(qaly_improvement, output_file)
+    output_file = open('qaly_improvement.csv', 'w')
+    for i, qaly in enumerate(qaly_improvement):
+        output_file.write('{0},{1}\n'.format(i, qaly))
 
 if __name__ == "__main__":
     args = initialize_argument_parser()
