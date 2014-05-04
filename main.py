@@ -35,7 +35,7 @@ def initialize_argument_parser():
     return vars(parser.parse_args())
 
 #Put test code here so it doesn't clutter up the main method
-def test(data, args):
+def test(data, args, force_population = False):
     test_state_name = args['test_state']
     test_state = data.get_state_by_name(test_state_name)
     print 'test_state', test_state
@@ -48,7 +48,7 @@ def test(data, args):
     
     #Generate the population
     data.populate_district_total(test_district,
-            limit = args['pop_gen_limit_dist'])
+            limit = args['pop_gen_limit_dist'], force = force_population)
 
     #Fetch the population from the database
     population = data.get_population_district(test_district.name,
@@ -79,12 +79,12 @@ def iterated_test(data, args):
     for i in xrange(args['trials']):
         #If we're doing multiple tests, need to refresh the database
         if i>0:
-            data = io_data.Database(import_data=True)
-        qaly_improvement.append(test(data, args))
+            data = io_data.Database()
+        qaly_improvement.append(test(data, args, force_population = True))
     print qaly_improvement
     pyplot.hist(qaly_improvement)
-    pyplot.xlabel('Trial')
-    pyplot.ylabel('QALY Improvement')
+    pyplot.xlabel('QALY Improvement')
+    pyplot.ylabel('Trial Count')
     pyplot.show()
     #Safe the qaly improvement to file so we can manipulate it later
     output_file = open('qaly_improvement.pkl', 'wb')
