@@ -27,8 +27,8 @@ def clean_state_name(state):
     state = re.sub('Himacahl', 'Himachal', state)
     state = re.sub('&', 'and', state)
     state = state.strip()
-    if state not in state_names:
-        print 'Warning: state name not found while cleaning:', state
+    #if state not in state_names:
+    #    print 'Warning: state name not found while cleaning:', state
     return state
 
 def avg(x):
