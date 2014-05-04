@@ -38,3 +38,4 @@ nosetests.xml
 # Custom
 tags
 database.sqlite3
+*.pkl
