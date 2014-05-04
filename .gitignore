@@ -39,3 +39,4 @@ nosetests.xml
 tags
 database.sqlite3
 *.pkl
+qaly_improvement.csv
