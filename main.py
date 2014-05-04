@@ -72,7 +72,10 @@ def test(data, args):
 if __name__ == "__main__":
     args = initialize_argument_parser()
     if args['import_data']:
-        os.remove('database.sqlite3')
+        try:
+            os.remove('database.sqlite3')
+        except:
+            pass
     data = io_data.Database(import_data=args['import_data'])
     #Only run the test if we didn't try to recreate the database
     # Not strictly necessary, but helps separate workflow
