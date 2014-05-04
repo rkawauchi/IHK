@@ -115,14 +115,17 @@ def generate_health_utility(age):
 def generate_health_problems(age):
     problems = list()
     average_age = 29 #Based on the age distribution above
-    #FROM DATA 
-    cataract_probability = weight_probability_by_age(0.1, age, average_age)
-    if random.random() <= cataract_probability:
-        problems.append('cataracts')
-    #FROM DATA
+     #FROM DATA
     glasses_probability = weight_probability_by_age(0.3, age, average_age)
     if random.random() <= glasses_probability:
         problems.append('glasses')
+    # Cataract only for those over 50
+    if age >=70:
+        #FROM DATA 
+        #cataract_probability = weight_probability_by_age(0.1, age, average_age)
+        #if random.random() <= cataract_probability:
+        problems.append('cataracts')
+
     return ','.join(problems)
 
 def weight_probability_by_age(probability, age, average_age):
