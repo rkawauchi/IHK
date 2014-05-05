@@ -132,3 +132,20 @@ Beta
 # [Education,]  -0.9997093899
 # [Income,]     -0.9931986439
 # [Gender.Dev,]  2.9921899757
+
+# QALY improvement
+true.mean = 1.621
+qaly= as.matrix(read.csv("/Users/RieK/IHK/qaly_improvement.csv"))
+den = density(qaly)
+myhist = hist(qaly, main = "1,000 Replications of QALY Change", border=FALSE,col = "limegreen")
+abline(v=mean(qaly),col="red",lwd=2)
+msg1 = paste("Mean QALY Change: ",round(mean(qaly),digit=5),sep="")
+msg2 = paste("SD QALY Change: ",round(sd(qaly),digit=5),sep="")
+z = round( (mean(qaly) - true.mean) / sd(qaly), digit=4)
+msg3 = paste("Z-Score: ", z, sep="")
+legend("topright", c(msg1,msg2,msg3), text.col="red",bty='n',cex=1)
+multiplier = myhist$counts / myhist$density
+den$y = den$y * multiplier[1]
+lines(den, col = "blue")
+
+
