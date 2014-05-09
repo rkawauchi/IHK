@@ -135,12 +135,31 @@ Beta
 
 # QALY improvement
 true.mean = 1.621
-qaly= as.matrix(read.csv("/Users/RieK/IHK/qaly_improvement.csv"))
+# after running 1,000 model, save the data as it gets erased if another run is initiated!
+qaly70= as.matrix(read.csv("/Users/RieK/IHK/qaly_improvement.csv"))
+save(qaly70,file='qaly70.rda') # in RieK/R folder
+
+load("qaly68.rda")
+qaly = as.matrix(qaly68[,2])
 den = density(qaly)
-myhist = hist(qaly, main = "1,000 Replications of QALY Change", border=FALSE,col = "limegreen")
+myhist = hist(qaly, main = "1,000 Replications of QALY Simulation", xlab = "QALY", ylab = "Simulated Frequency", border=FALSE,col = "limegreen")
 abline(v=mean(qaly),col="red",lwd=2)
-msg1 = paste("Mean QALY Change: ",round(mean(qaly),digit=5),sep="")
-msg2 = paste("SD QALY Change: ",round(sd(qaly),digit=5),sep="")
+msg1 = paste("Mean QALY: ",round(mean(qaly),digit=5),sep="")
+msg2 = paste("SD QALY: ",round(sd(qaly),digit=5),sep="")
+z = round( (mean(qaly) - true.mean) / sd(qaly), digit=4)
+msg3 = paste("Z-Score: ", z, sep="")
+legend("topright", c(msg1,msg2,msg3), text.col="red",bty='n',cex=1)
+multiplier = myhist$counts / myhist$density
+den$y = den$y * multiplier[1]
+lines(den, col = "blue")
+
+load("qaly70.rda")
+qaly = as.matrix(qaly70[,2])
+den = density(qaly)
+myhist = hist(qaly, main = "1,000 Replications of QALY Simulation", xlab = "QALY", ylab = "Simulated Frequency", border=FALSE,col = "limegreen")
+abline(v=mean(qaly),col="red",lwd=2)
+msg1 = paste("Mean QALY: ",round(mean(qaly),digit=5),sep="")
+msg2 = paste("SD QALY: ",round(sd(qaly),digit=5),sep="")
 z = round( (mean(qaly) - true.mean) / sd(qaly), digit=4)
 msg3 = paste("Z-Score: ", z, sep="")
 legend("topright", c(msg1,msg2,msg3), text.col="red",bty='n',cex=1)
