@@ -120,7 +120,7 @@ def generate_health_problems(age):
     if random.random() <= glasses_probability:
         problems.append('glasses')
     # Cataract only for those over 50
-    if age >=70:
+    if age >=68:
         #FROM DATA 
         #cataract_probability = weight_probability_by_age(0.1, age, average_age)
         #if random.random() <= cataract_probability:
